@@ -4,7 +4,7 @@ import { loadRecords } from "@docfonts/registry";
 import FaceGrid from "../../components/FaceGrid.astro";
 import VerdictBadge from "../../components/VerdictBadge.astro";
 import Base from "../../layouts/Base.astro";
-import { VERDICT_META, pct } from "../../lib/verdict";
+import { FACE_ORDER, VERDICT_META, isQualified, pct } from "../../lib/verdict";
 
 // One canonical static page per PROPRIETARY font (the SEO surface). People search the proprietary
 // name, so the title carries it. No split /fonts and /pairs - avoid keyword cannibalization.
@@ -31,6 +31,14 @@ const gateRows: [string, string][] = [
   ["layout", record.gates.layout],
   ["ship", record.gates.ship],
 ];
+
+const qualified = isQualified(record);
+const faceRows = record.faceVerdicts
+  ? FACE_ORDER.filter((f) => record.faceVerdicts?.[f]).map((f) => ({
+      face: f,
+      verdict: record.faceVerdicts?.[f],
+    }))
+  : [];
 ---
 
 <Base title={title} description={description}>
@@ -48,10 +56,44 @@ const gateRows: [string, string][] = [
           "No open metric clone."
         )
       }
-      <VerdictBadge verdict={record.verdict} />
+      <VerdictBadge verdict={record.verdict} qualified={qualified} />
     </div>
     {record.notes && <p class="notes">{record.notes}</p>}
   </section>
+
+  {
+    faceRows.length > 0 && (
+      <section>
+        <div class="lbl">Per-face verdict</div>
+        <div class="faceverdicts">
+          {faceRows.map(({ face, verdict }) => (
+            <div class="fv">
+              <span class="fvname mono">{face}</span>
+              <VerdictBadge verdict={verdict as Props["record"]["verdict"]} />
+            </div>
+          ))}
+        </div>
+        {record.glyphExceptions && record.glyphExceptions.length > 0 && (
+          <ul class="exceptions">
+            {record.glyphExceptions.map((e) => (
+              <li>
+                <span class="mono">
+                  {e.styleKey} · U+{e.codepoint.toString(16).toUpperCase().padStart(4, "0")} · &Delta;{" "}
+                  {pct(e.advanceDelta)}
+                </span>
+                <span class="exnote">{e.note}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p class="fineprint">
+          Per-face verdicts are authoritative: this substitute is not uniformly{" "}
+          {VERDICT_META[record.verdict].label}. The top-level verdict is the substitute
+          recommendation, not an all-faces-pass claim.
+        </p>
+      </section>
+    )
+  }
 
   <section>
     <div class="lbl">The measurement</div>
@@ -119,6 +161,53 @@ const gateRows: [string, string][] = [
 </Base>
 
 <style>
+  .faceverdicts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .fv {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+  .fvname {
+    font-size: 12px;
+    color: var(--ink2);
+    min-width: 64px;
+  }
+  .exceptions {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .exceptions li {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--v-cell);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .exceptions .mono {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink);
+    display: block;
+  }
+  .exceptions .exnote {
+    font-size: 13px;
+    color: var(--ink2);
+    margin-top: 4px;
+    display: block;
+    line-height: 1.5;
+  }
   .head {
     padding: 40px 0 8px;
   }

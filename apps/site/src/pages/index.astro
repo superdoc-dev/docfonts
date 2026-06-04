@@ -4,7 +4,7 @@ import { loadRecords } from "@docfonts/registry";
 import Base from "../layouts/Base.astro";
 import FaceGrid from "../components/FaceGrid.astro";
 import VerdictBadge from "../components/VerdictBadge.astro";
-import { VERDICT_META, VERDICT_ORDER, pct } from "../lib/verdict";
+import { VERDICT_META, VERDICT_ORDER, isQualified, pct } from "../lib/verdict";
 
 const records = loadRecords();
 
@@ -136,7 +136,7 @@ function advText(r: EvidenceRecord): string | null {
                 </td>
                 <td class="lic">{r.candidateLicense ?? "-"}</td>
                 <td>
-                  <VerdictBadge verdict={r.verdict} />
+                  <VerdictBadge verdict={r.verdict} qualified={isQualified(r)} />
                 </td>
               </tr>
             ))

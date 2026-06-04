@@ -14,6 +14,15 @@ const VERDICTS = [
   "no_substitute",
 ] as const;
 const GATE = ["pass", "not_run", "fail"] as const;
+/** the four named faces plus "other"; faceVerdicts / glyphExceptions key off these. */
+const STYLE_KEYS_LIST = [
+  "regular",
+  "bold",
+  "italic",
+  "boldItalic",
+  "other",
+] as const;
+const STYLE_KEYS: ReadonlySet<string> = new Set(STYLE_KEYS_LIST);
 /**
  * Verdicts that name a specific substitute and therefore must carry a candidate. visual_only is NOT
  * here: a visual row may publish candidate:null (no human-approved pick) with the closest measured
@@ -71,6 +80,28 @@ export const EVIDENCE_RECORDS_SCHEMA = {
       },
       measurementRefs: { type: "array", items: { type: "string" } },
       exportRule: { const: "preserve_original_name" },
+      faceVerdicts: {
+        type: "object",
+        description:
+          "Per-face verdict, authoritative when present. A face differing from the top-level verdict qualifies the record.",
+        propertyNames: { enum: STYLE_KEYS_LIST },
+        additionalProperties: { enum: VERDICTS },
+      },
+      glyphExceptions: {
+        type: "array",
+        description:
+          "Named glyph-level advance divergences that qualify a face.",
+        items: {
+          type: "object",
+          required: ["styleKey", "codepoint", "advanceDelta", "note"],
+          properties: {
+            styleKey: { enum: STYLE_KEYS_LIST },
+            codepoint: { type: "number" },
+            advanceDelta: { type: "number" },
+            note: { type: "string" },
+          },
+        },
+      },
     },
   },
 } as const;
@@ -165,6 +196,45 @@ export function validateRecords(
         errors.push(`${at}: no_substitute must not carry a candidate`);
       if (NEEDS_CANDIDATE.has(r.verdict) && !hasCandidate)
         errors.push(`${at}: verdict "${r.verdict}" requires a candidate`);
+    }
+
+    // face-scoped evidence (optional): faceVerdicts values are real verdicts on real style keys;
+    // glyphExceptions name a style key and carry a note. When present they make the record qualified.
+    if (r.faceVerdicts != null) {
+      const fv = r.faceVerdicts as Record<string, unknown>;
+      for (const [k, v] of Object.entries(fv)) {
+        if (!STYLE_KEYS.has(k))
+          errors.push(`${at}.faceVerdicts has unknown style key: ${k}`);
+        if (!VERDICTS.includes(v as (typeof VERDICTS)[number]))
+          errors.push(`${at}.faceVerdicts.${k} invalid verdict: ${String(v)}`);
+      }
+    }
+    if (r.glyphExceptions != null) {
+      if (!Array.isArray(r.glyphExceptions))
+        errors.push(`${at}.glyphExceptions must be an array`);
+      else
+        r.glyphExceptions.forEach((e, j) => {
+          const ex = e as unknown as Record<string, unknown>;
+          if (!STYLE_KEYS.has(ex.styleKey as string))
+            errors.push(
+              `${at}.glyphExceptions[${j}].styleKey invalid: ${String(ex.styleKey)}`,
+            );
+          if (typeof ex.codepoint !== "number")
+            errors.push(
+              `${at}.glyphExceptions[${j}].codepoint must be a number`,
+            );
+          if (
+            typeof ex.advanceDelta !== "number" ||
+            !Number.isFinite(ex.advanceDelta)
+          )
+            errors.push(
+              `${at}.glyphExceptions[${j}].advanceDelta must be a finite number`,
+            );
+          if (typeof ex.note !== "string" || !ex.note)
+            errors.push(
+              `${at}.glyphExceptions[${j}].note must be a non-empty string`,
+            );
+        });
     }
 
     // ref resolution + gate<->proof consistency (only when the measurement set is supplied)

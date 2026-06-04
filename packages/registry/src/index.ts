@@ -28,6 +28,7 @@ export type {
   EvidenceRecord,
   FaceAggregateMeasurement,
   Gates,
+  GlyphException,
   LayoutProof,
   LiveLayoutMeasurement,
   MeasurementId,
