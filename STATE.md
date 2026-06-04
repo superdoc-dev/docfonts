@@ -62,9 +62,9 @@ document-fidelity substitution registry) was found.
 ## Scaffold (done 2026-06-04)
 
 Bun monorepo mirroring the sibling conventions (Bun workspaces, Biome 2.4.7, bunfig, `@scope/name`
-packages with `main/types = src/index.ts`, root tsconfig paths). Committed + pushed:
-**github.com/superdoc-dev/doc-fonts** (branch `main`, as caio-pizzol; first commit a809925). Note: the
-GitHub repo slug is `doc-fonts` (hyphen) while the package/brand/domain is `docfonts` (docfonts.dev).
+packages with `main/types = src/index.ts`, root tsconfig paths). Repo:
+**github.com/superdoc-dev/docfonts** (branch `main`, as caio-pizzol; first commit a809925). The repo
+was renamed from `doc-fonts` to `docfonts`, so the slug now matches the package / brand / domain.
 
 ```
 docfonts/
