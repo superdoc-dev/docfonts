@@ -103,21 +103,20 @@ Bonum->Bookman (GUST license, legal review).
 1. DONE: browser-safe TS port of `font-metadata.js` -> `packages/font-metadata` (68b0b6d) with golden
    parity tests, PLUS independent SFNT-contract spec-behavior tests (1e9ac32) so we are not locked to
    the old parser's quirks. 8 open fixtures + real license texts under `tests/fixtures/fonts/licenses/`.
-2. PARTIAL: 9 REAL seed records from font-fidelity-research (scorecard 2026-06-03 + decision-catalog):
-   7 metric_safe clones (Calibri/Carlito 0.00/0.00 ... Cambria/Caladea 0.01/0.05), Comic Sans/Comic
-   Neue visual_only (9.73/13.84), Aptos no_substitute ("no open metric clone"; closest Source Sans 3
-   is visual fallback only). **HAZARD: `data/registry/records.json` is committed as `[]` and reverts
-   to `[]` every turn** (an external process rewrites it; my edits to it do not persist). So the
-   durable home for the seed is `packages/registry/src/seed.ts` (typed `EvidenceRecord[]`, so it is
-   validated at COMPILE time - stronger than the schema, which accepts `[]`). `loadRecords()` prefers
-   records.json when non-empty, else falls back to `SEED_RECORDS`, so a fresh build reproduces the
-   full site from saved source regardless of the reset. Regression guard: `packages/registry/
-   records.test.ts` fails if `loadRecords()` is empty / missing key records (calibri, aptos). All 9
-   pass `validateRecords` (`{ok:true}`). To make records.json itself durable, COMMIT it (or implement
-   import-research.ts). STILL TODO: `scripts/import-research.ts` to regenerate records.json from corpus
-   + measurements (the proof-layer measurement JSONs are not written; records reference IDs only).
-   Note: patched two files left stale by a concurrent registry refactor (resolverAction->policyAction):
-   `schema.test.ts` fixture + a cast in `schema.ts` - reconcile with whoever owns that refactor.
+2. SCHEMA + INTERIM SEED (committed; `data/registry/records.json` stays the canonical generated
+   artifact and is EMPTY until the importer runs). Two record sources are kept explicit (e8ae777):
+   `loadRecords()` returns ONLY records.json (no silent fallback); `loadSeedRecords()` returns the
+   INTERIM research seed in `packages/registry/src/seed.ts` (typed `EvidenceRecord[]`, validated at
+   COMPILE time). The site consumes `loadSeedRecords()` BY NAME so the temporary dependency is visible.
+   The seed carries 9 records from font-fidelity-research with gates/notes corrected to match
+   `STATUS.csv`: 5 clones `verified_shipped` (ship=pass); Calibri/Georgia/Arial Narrow layout-proven
+   (layout=pass, each backed by a `face_aggregate` proof ref); Georgia/Arial Narrow ship=fail on LEGAL,
+   not layout; Comic Sans visual_only; Aptos no_substitute. Schema hardened: `PolicyAction`
+   (renamed from resolverAction, renderer-neutral), nullable `candidate`, `top_candidates` bakeoff
+   kind, stricter `validateRecords` (dup IDs, candidate shape, verdict<->candidate, ref resolution,
+   layout-gate<->proof). STILL TODO (step 3.2): `scripts/import-research.ts` to GENERATE records.json
+   + the proof-layer measurement JSONs (incl. the `face_aggregate` proofs the seed forward-references)
+   from corpus + measurements; then the site switches from `loadSeedRecords()` to `loadRecords()`.
 3. `packages/core` scoring/verdict logic from the catalog rules.
 4. `packages/docx-fonts` scanner; wire `apps/cli`. (Scanner UI shell exists in the site; parser stub.)
 5. PARTIAL: `apps/site` is now **Astro 6 + Bun, static output, Cloudflare Pages** (NOT the old
@@ -131,11 +130,9 @@ Bonum->Bookman (GUST license, legal review).
    STILL TODO: guides pages, real scanner parse (wire @docfonts/docx-fonts), build-time specimens.
    COMMITTED on branch `caio-pizzol/site-scaffold` (commit 5e6fb4d) - NOT on main, NOT pushed.
    Now git-reproducible: a detached fresh checkout of 5e6fb4d + `bun install` (no node_modules, no
-   untracked files) builds **11 pages** incl. all 9 `/fonts/<font>` even with records.json = [] (seed
-   fallback works from git alone = what Cloudflare Pages sees). Gates: typecheck clean, `bun test`
-   39 pass, lint clean. The commit also folds in the concurrent resolverAction->policyAction registry
-   refactor (it was uncommitted in the worktree and the seed depends on it; flagged in the commit body)
-   - reconcile with whoever owns that refactor before merging to main.
+   untracked files) builds **11 pages** incl. all 9 `/fonts/<font>` even with records.json = [], because
+   the pages read the explicit `loadSeedRecords()` (NOT a fallback) from git alone = what Cloudflare
+   Pages sees. Gates: typecheck clean, `bun test` 39 pass, lint clean.
 6. Buy docfonts.dev (+ .com/.org) if not already purchased. (Repo: superdoc-dev/docfonts.)
 
 Brand/design system from the mockups (`mockups/`, gitignored from biome) is now codified in
