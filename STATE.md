@@ -50,7 +50,9 @@ document-fidelity substitution registry) was found.
 ## Scaffold (done 2026-06-04)
 
 Bun monorepo mirroring the sibling conventions (Bun workspaces, Biome 2.4.7, bunfig, `@scope/name`
-packages with `main/types = src/index.ts`, root tsconfig paths). `git init` done; not committed.
+packages with `main/types = src/index.ts`, root tsconfig paths). Committed + pushed:
+**github.com/superdoc-dev/doc-fonts** (branch `main`, as caio-pizzol; first commit a809925). Note: the
+GitHub repo slug is `doc-fonts` (hyphen) while the package/brand/domain is `docfonts` (docfonts.dev).
 
 ```
 docfonts/
@@ -91,7 +93,7 @@ Bonum->Bookman (GUST license, legal review).
 3. `packages/core` scoring/verdict logic from the catalog rules.
 4. `packages/docx-fonts` scanner; wire `apps/cli`.
 5. `apps/site`: per-proprietary-font pages + guides + the client-side scanner, generated from registry.
-6. Buy docfonts.dev (+ .com/.org). Commit when ready (not committed yet).
+6. Buy docfonts.dev (+ .com/.org). (Baseline already committed + pushed to superdoc-dev/doc-fonts.)
 
 ## Out of scope (explicit)
 
