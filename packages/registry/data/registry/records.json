@@ -237,25 +237,41 @@
     },
     "advance": {
       "meanDelta": 0,
-      "maxDelta": 0
+      "maxDelta": 0.5
     },
-    "candidateLicense": "GPLv2 + font exception",
-    "candidateLicenseSource": "apryse fallback summary 2026-06-04",
+    "candidateLicense": "GPLv2-with-font-exception",
+    "candidateLicenseSource": "font-fidelity-research future-direct-candidates packet 2026-06-03 (liberationfonts)",
     "gates": {
       "static": "pass",
       "metric": "pass",
-      "layout": "pass",
+      "layout": "not_run",
       "ship": "fail"
     },
     "measurementRefs": [
-      "arial-narrow__liberation-sans-narrow#analytic_advance#2026-06-03",
-      "arial-narrow__liberation-sans-narrow#face_aggregate#2026-06-03"
+      "arial-narrow_regular__liberation-sans-narrow#regular#w400#546e8957#analytic_advance#2026-06-04",
+      "arial-narrow_bold__liberation-sans-narrow#bold#w700#8e5eb509#analytic_advance#2026-06-04",
+      "arial-narrow_italic__liberation-sans-narrow#italic#w400#c5de4127#analytic_advance#2026-06-04",
+      "arial-narrow_boldItalic__liberation-sans-narrow#boldItalic#w700#57fe1513#analytic_advance#2026-06-04"
     ],
     "policyAction": "substitute",
-    "confidence": "R",
+    "confidence": "high",
     "exportRule": "preserve_original_name",
-    "measuredDate": "2026-06-03",
-    "notes": "All 4 faces layout-proven 2026-06-03 vs Word (family-status.json); ship gate = GPLv2+font-exception legal review"
+    "measuredDate": "2026-06-04",
+    "notes": "Liberation Sans Narrow is the substitute. Faces regular/italic/boldItalic are metric-safe; bold is qualified - metric-safe except the no-break space U+00A0 (see glyphExceptions). faceVerdicts is authoritative; the top-level verdict is the substitute recommendation, not an all-faces-pass claim.",
+    "faceVerdicts": {
+      "regular": "metric_safe",
+      "bold": "visual_only",
+      "italic": "metric_safe",
+      "boldItalic": "metric_safe"
+    },
+    "glyphExceptions": [
+      {
+        "styleKey": "bold",
+        "codepoint": 160,
+        "advanceDelta": 0.5,
+        "note": "Arial Narrow Bold no-break space (U+00A0) is double-width (2x the regular space); Liberation Sans Narrow Bold matches the regular space, so lines containing a non-breaking space reflow. All other glyphs, and the regular/italic/boldItalic faces, match within the direct metric threshold."
+      }
+    ]
   },
   {
     "evidenceId": "aptos",
