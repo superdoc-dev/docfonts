@@ -1,0 +1,13 @@
+{
+  "name": "@docfonts/site",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "echo \"TODO: site dev (Bun + React + prerender, per docx-tools/apps/web)\"",
+    "build": "echo \"TODO: prerender static pages from @docfonts/registry\""
+  },
+  "dependencies": {
+    "@docfonts/core": "workspace:*",
+    "@docfonts/registry": "workspace:*"
+  }
+}
