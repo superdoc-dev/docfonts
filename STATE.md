@@ -107,7 +107,7 @@ Bonum->Bookman (GUST license, legal review).
 3. `packages/core` scoring/verdict logic from the catalog rules.
 4. `packages/docx-fonts` scanner; wire `apps/cli`.
 5. `apps/site`: per-proprietary-font pages + guides + the client-side scanner, generated from registry.
-6. Buy docfonts.dev (+ .com/.org). (Baseline already committed + pushed to superdoc-dev/doc-fonts.)
+6. Buy docfonts.dev (+ .com/.org) if not already purchased. (Repo: superdoc-dev/docfonts.)
 
 ## Out of scope (explicit)
 
