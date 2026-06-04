@@ -1,7 +1,7 @@
 {
   "corpusId": "future-direct-candidates-2026-06-03",
   "source": "SuperDoc future-direct candidates (legal-review packet, open fonts only)",
-  "sourceUrl": "internal: legal-review packet future-direct-candidates; per-family source URL on each family",
+  "sourceUrl": "multiple public upstreams; see families[].sourceUrl",
   "retrievedDate": "2026-06-03",
   "families": [
     {

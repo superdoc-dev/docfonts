@@ -61,8 +61,7 @@ export function futureDirectCandidatesSource(
     corpusId: `future-direct-candidates-${dateStamp}`,
     source:
       "SuperDoc future-direct candidates (legal-review packet, open fonts only)",
-    sourceUrl:
-      "internal: legal-review packet future-direct-candidates; per-family source URL on each family",
+    sourceUrl: "multiple public upstreams; see families[].sourceUrl",
     retrievedDate: dateStamp,
     licenseSource: `SuperDoc legal-review packet ${dateStamp} (future-direct-candidates)`,
     *faces(): Iterable<RawCorpusFace> {
