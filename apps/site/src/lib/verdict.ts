@@ -1,4 +1,5 @@
 import type { Verdict } from "@docfonts/core";
+import type { StyleKey } from "@docfonts/font-metadata";
 
 /**
  * Presentation metadata for the six verdicts. The taxonomy lives in @docfonts/core; this is the
@@ -64,4 +65,26 @@ export const VERDICT_ORDER: Verdict[] = [
 /** Format an advance fraction (0.0001) as a percentage string ("0.01%"). */
 export function pct(fraction: number): string {
   return `${(fraction * 100).toFixed(2)}%`;
+}
+
+/** The four named faces, in display order. */
+export const FACE_ORDER: StyleKey[] = [
+  "regular",
+  "bold",
+  "italic",
+  "boldItalic",
+];
+
+/**
+ * A record is QUALIFIED when it carries per-face verdicts and at least one face differs from the
+ * top-level verdict (e.g. Cambria: metric_safe overall, but boldItalic is only visual). Consumers
+ * must surface this so the top-level verdict is never shown as an unqualified all-faces claim.
+ */
+export function isQualified(record: {
+  verdict: Verdict;
+  faceVerdicts?: Partial<Record<StyleKey, Verdict>>;
+}): boolean {
+  const fv = record.faceVerdicts;
+  if (!fv) return false;
+  return Object.values(fv).some((v) => v && v !== record.verdict);
 }

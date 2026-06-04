@@ -113,6 +113,25 @@ describe("face-scoped evidence (faceVerdicts + glyphExceptions)", () => {
     expect(validateRecords([bad]).ok).toBe(false);
   });
 
+  it("rejects a glyph exception with a non-finite advanceDelta", () => {
+    const bad = {
+      ...faceScoped,
+      glyphExceptions: [
+        {
+          styleKey: "boldItalic",
+          codepoint: 0x60,
+          advanceDelta: Number.NaN,
+          note: "x",
+        },
+      ],
+    } as unknown as EvidenceRecord;
+    const r = validateRecords([bad]);
+    expect(r.ok).toBe(false);
+    expect(
+      r.errors.some((e) => e.includes("advanceDelta must be a finite number")),
+    ).toBe(true);
+  });
+
   it("rejects a glyph exception without a note", () => {
     const bad = {
       ...faceScoped,

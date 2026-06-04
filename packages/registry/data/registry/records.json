@@ -48,8 +48,8 @@
       "boldItalic": true
     },
     "advance": {
-      "meanDelta": 0.000081,
-      "maxDelta": 0.0017842
+      "meanDelta": 0.0002378,
+      "maxDelta": 0.2310758
     },
     "candidateLicense": "Apache-2.0",
     "candidateLicenseSource": "apryse fallback summary 2026-06-04",

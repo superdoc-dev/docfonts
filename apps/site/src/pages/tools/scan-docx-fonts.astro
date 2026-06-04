@@ -39,16 +39,25 @@ import Base from "../../layouts/Base.astro";
   const esc = (s: string) =>
     s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
-  function badge(verdict: keyof typeof VERDICT_META) {
+  function badge(verdict: keyof typeof VERDICT_META, qualified: boolean) {
     const m = VERDICT_META[verdict];
-    return `<span class="badge ${m.cls}"><span class="g" aria-hidden="true">${m.glyph}</span>${m.label}</span>`;
+    const q = qualified
+      ? ` <span class="qualified" title="Per-face verdicts differ; see the font page.">qualified</span>`
+      : "";
+    return `<span class="badge ${m.cls}"><span class="g" aria-hidden="true">${m.glyph}</span>${m.label}</span>${q}`;
+  }
+
+  function isQualified(rec: (typeof records)[number]): boolean {
+    const fv = rec.faceVerdicts;
+    if (!fv) return false;
+    return Object.values(fv).some((v) => v && v !== rec.verdict);
   }
 
   function row(name: string, role: string) {
     const rec = findByOriginal(records, name)[0];
     const sub = rec?.candidate?.candidateFamily;
     const verdictCell = rec
-      ? badge(rec.verdict as keyof typeof VERDICT_META)
+      ? badge(rec.verdict as keyof typeof VERDICT_META, isQualified(rec))
       : `<span class="unknown">not measured yet</span>`;
     const subCell = rec ? (sub ? esc(sub) : "<span class='dash'>no open clone</span>") : "<span class='dash'>-</span>";
     return `<tr><td class="fam">${esc(name)}${role ? `<span class="role">${role}</span>` : ""}</td>
@@ -217,5 +226,18 @@ import Base from "../../layouts/Base.astro";
     font-family: var(--mono);
     font-size: 12px;
     color: var(--ink3);
+  }
+  .out :global(.qualified) {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--v-cell);
+    border: 1px solid #b4530940;
+    background: #b4530910;
+    border-radius: 5px;
+    padding: 3px 6px;
+    margin-left: 6px;
   }
 </style>
