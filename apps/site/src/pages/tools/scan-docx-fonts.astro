@@ -4,14 +4,15 @@ import Base from "../../layouts/Base.astro";
 
 <Base
   title="Scan a .docx for fonts | docfonts"
-  description="See every font a .docx declares, and what can stand in for each. Runs entirely in your browser - the file never uploads."
+  description="See the fonts a .docx declares - across its text, styles, headers and footers, footnotes, endnotes, comments, and theme - and what can stand in for each. Runs entirely in your browser; the file never uploads."
 >
   <section class="head">
     <div class="eyebrow">In-browser scanner</div>
     <h1>Scan a .docx for fonts.</h1>
     <p class="lead">
-      See every font a document declares, and the measured verdict for each. The file is parsed
-      locally in your browser and never uploads.
+      See the fonts a document declares - across its text, styles, headers and footers, footnotes,
+      endnotes, comments, and theme - with the measured verdict for each. The file is parsed locally
+      in your browser and never uploads.
     </p>
   </section>
 
@@ -26,26 +27,60 @@ import Base from "../../layouts/Base.astro";
 </Base>
 
 <script>
+  import { scanDocxFonts } from "@docfonts/docx-fonts";
+  import { findByOriginal, loadRecords } from "@docfonts/registry";
+  import { VERDICT_META } from "../../lib/verdict";
+
   const input = document.getElementById("file") as HTMLInputElement;
   const drop = document.getElementById("drop") as HTMLLabelElement;
   const out = document.getElementById("out") as HTMLDivElement;
+  const records = loadRecords();
+
+  const esc = (s: string) =>
+    s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+
+  function badge(verdict: keyof typeof VERDICT_META) {
+    const m = VERDICT_META[verdict];
+    return `<span class="badge ${m.cls}"><span class="g" aria-hidden="true">${m.glyph}</span>${m.label}</span>`;
+  }
+
+  function row(name: string, role: string) {
+    const rec = findByOriginal(records, name)[0];
+    const sub = rec?.candidate?.candidateFamily;
+    const verdictCell = rec
+      ? badge(rec.verdict as keyof typeof VERDICT_META)
+      : `<span class="unknown">not measured yet</span>`;
+    const subCell = rec ? (sub ? esc(sub) : "<span class='dash'>no open clone</span>") : "<span class='dash'>-</span>";
+    return `<tr><td class="fam">${esc(name)}${role ? `<span class="role">${role}</span>` : ""}</td>
+      <td class="sub">${subCell}</td><td>${verdictCell}</td></tr>`;
+  }
 
   async function handle(file: File) {
     // Read locally only. This never performs a network request - that is the whole point.
     const bytes = new Uint8Array(await file.arrayBuffer());
     const kb = (bytes.byteLength / 1024).toFixed(1);
     out.hidden = false;
-    out.innerHTML = `
-      <div class="card">
-        <div class="fn">${file.name}</div>
+
+    let usage: ReturnType<typeof scanDocxFonts>;
+    try {
+      usage = scanDocxFonts(bytes);
+    } catch (e) {
+      out.innerHTML = `<div class="card"><div class="fn">${esc(file.name)}</div>
         <div class="meta mono">${kb} KB · read locally · not uploaded</div>
-        <p class="todo">
-          Font extraction is being wired up (the <code>@docfonts/docx-fonts</code> parser reads
-          <code>[Content_Types].xml</code>, <code>word/theme/theme1.xml</code>, and <code>w:rFonts</code>).
-          Once it lands, each declared font is matched to its measured registry verdict here, still
-          entirely in your browser.
-        </p>
-      </div>`;
+        <p class="err">Could not read this file as a .docx: ${esc((e as Error).message)}</p></div>`;
+      return;
+    }
+
+    const roleOf = (f: string) =>
+      f === usage.theme?.major ? "theme heading" : f === usage.theme?.minor ? "theme body" : "";
+    const rows = usage.declared.map((f) => row(f, roleOf(f))).join("");
+    const n = usage.declared.length;
+    out.innerHTML = `<div class="card">
+      <div class="fn">${esc(file.name)}</div>
+      <div class="meta mono">${kb} KB · ${n} font${n === 1 ? "" : "s"} · read locally · not uploaded</div>
+      <table class="restbl"><thead><tr><th>Font in document</th><th>Open substitute</th><th>Verdict</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+    </div>`;
   }
 
   input.addEventListener("change", () => {
@@ -131,17 +166,56 @@ import Base from "../../layouts/Base.astro";
     color: var(--ink3);
     margin-top: 4px;
   }
-  .out :global(.todo) {
-    color: var(--ink2);
+  .out :global(.err) {
+    color: var(--v-clay);
     font-size: 13.5px;
     margin-top: 12px;
-    line-height: 1.6;
   }
-  .out :global(code) {
+  .out :global(.restbl) {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+  }
+  .out :global(.restbl th) {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    font-weight: 500;
+    padding: 6px 12px 6px 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .out :global(.restbl td) {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  .out :global(.restbl tr:last-child td) {
+    border-bottom: none;
+  }
+  .out :global(.restbl .fam) {
+    font-weight: 600;
+  }
+  .out :global(.restbl .role) {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink3);
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .out :global(.restbl .sub) {
+    color: var(--ink2);
+  }
+  .out :global(.restbl .dash) {
+    color: var(--ink3);
+  }
+  .out :global(.restbl .unknown) {
     font-family: var(--mono);
     font-size: 12px;
-    background: var(--paper);
-    padding: 1px 5px;
-    border-radius: 4px;
+    color: var(--ink3);
   }
 </style>
