@@ -7,18 +7,23 @@
  * Re-running reproduces byte-identical output from the same sources.
  *
  * SEPARATION OF CONCERNS (the architectural point):
- *   - MECHANICAL (this script): gates, candidate, license, advance deltas, measurement refs - all
- *     pulled from STRUCTURED columns, never inferred from note prose.
- *   - EDITORIAL (data/registry/verdicts.json): the public verdict for rows whose taxonomy is a human
- *     judgment (visual_only / cell_width_only / no_substitute). metric_safe is the ONLY verdict
- *     derived structurally (STATUS verified_shipped / layout_proven_all_faces).
- *   - A row is emitted only if (a) it is metric_safe, or (b) it has a curated verdict AND a structured
- *     advance measurement. Everything else is SKIPPED and LOGGED - never guessed, never unbacked.
+ *   - MECHANICAL (this script): gates, advance deltas, license, measurement refs - all pulled from
+ *     STRUCTURED columns, never inferred from note prose.
+ *   - EDITORIAL (data/registry/verdicts.json): the public verdict AND the public candidate for rows
+ *     whose taxonomy/choice is a human judgment. The importer attaches numbers ONLY to the curated
+ *     candidate - it never anoints a substitute by "closest advance". metric_safe is the only verdict
+ *     derived structurally (STATUS verified_shipped / layout_proven_all_faces), and its candidate
+ *     comes from the STATUS substitute column.
+ *   - A non-metric row publishes a CANDIDATE only if verdicts.json names one AND a structured advance
+ *     exists for that exact candidate. Otherwise candidate is null and the closest measured fonts live
+ *     only in a top_candidates measurement (shown, never claimed as "the" substitute). Rows with no
+ *     curated verdict, or a curated candidate lacking a structured measurement, are SKIPPED + LOGGED.
  *
  * SOURCES (read-only sibling research repo):
  *   - STATUS.csv                     gate authority (static/metric/layout/ship) + status.
- *   - apryse ...summary-simple.csv   primary advance/license/candidate authority (curated 1-best).
- *   - curated-proprietary scorecard  advance/license fallback for fonts absent from the apryse summary.
+ *   - apryse ...summary-simple.csv   curated 1-best advance/license per font.
+ *   - curated-proprietary scorecard  per-candidate advance/license (for a specific curated candidate,
+ *                                    and for fonts absent from the apryse summary).
  *
  * OUTPUT (committed):
  *   - data/registry/records.json     EvidenceRecord[]
@@ -43,6 +48,7 @@ import type {
 import verdictsDoc from "../packages/registry/data/registry/verdicts.json";
 import {
   type AnalyticAdvanceMeasurement,
+  type CandidateScore,
   type EvidenceRecord,
   type FaceAggregateMeasurement,
   type Gates,
@@ -77,8 +83,12 @@ const MEASURED_DATE = "2026-06-03";
 const ORACLE_ENV = "Windows 11 M365 Word (font-fidelity-research, 2026-06)";
 const METHOD = "analytic-hmtx-v1";
 
-const CURATED: Record<string, { verdict: Verdict; rationale: string }> =
-  verdictsDoc.verdicts as never;
+interface CuratedEntry {
+  verdict: Verdict;
+  candidate?: string;
+  rationale: string;
+}
+const CURATED: Record<string, CuratedEntry> = verdictsDoc.verdicts as never;
 
 function parseCsv(text: string): Record<string, string>[] {
   const rows: string[][] = [];
@@ -128,6 +138,7 @@ const stripParens = (s: string) =>
     .replace(/\s*\(.*?\)\s*/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+const norm = (s: string) => stripParens(s).toLowerCase();
 const gate = (v: string): GateStatus =>
   v === "pass" ? "pass" : v === "fail" ? "fail" : "not_run";
 const policyFor = (v: Verdict): PolicyAction =>
@@ -139,7 +150,7 @@ const policyFor = (v: Verdict): PolicyAction =>
         ? "preserve_only"
         : "category_fallback";
 
-interface AdvanceSrc {
+interface Measured {
   candidate: string;
   meanDelta: number;
   maxDelta: number;
@@ -147,41 +158,61 @@ interface AdvanceSrc {
   source: string;
 }
 
-/** Structured advance for a font: apryse summary if present, else best (lowest-mean) curated-scorecard row. */
-function advanceFor(
+const apryseMeasured = (a?: Record<string, string>): Measured | null =>
+  a &&
+  a.mean_advance_delta_pct !== "n/a" &&
+  a.fallback_class !== "not" &&
+  a.fallback_class !== "manual"
+    ? {
+        candidate: stripParens(a.fallback_found_so_far),
+        meanDelta: Number(a.mean_advance_delta_pct) / 100,
+        maxDelta: Number(a.max_advance_delta_pct) / 100,
+        license: a.fallback_license !== "n/a" ? a.fallback_license : null,
+        source: "apryse fallback summary 2026-06-04",
+      }
+    : null;
+
+const scoreMeasured = (r: Record<string, string>): Measured => ({
+  candidate: r.candidate,
+  meanDelta: Number(r.weighted_mean_adv_pct) / 100,
+  maxDelta: Number(r.max_adv_pct) / 100,
+  license: r.license || null,
+  source: "curated-proprietary scorecard 2026-06-03",
+});
+
+/** The closest measured fallback for a font (apryse 1-best, else lowest-mean scorecard row). For top_candidates / metric_safe. */
+function closestMeasured(
   font: string,
   apryse: Map<string, Record<string, string>>,
-  scoreByFont: Map<string, Record<string, string>[]>,
-): AdvanceSrc | null {
-  const a = apryse.get(font.toLowerCase());
-  if (
-    a &&
-    a.mean_advance_delta_pct !== "n/a" &&
-    a.fallback_class !== "not" &&
-    a.fallback_class !== "manual"
-  ) {
-    return {
-      candidate: stripParens(a.fallback_found_so_far),
-      meanDelta: Number(a.mean_advance_delta_pct) / 100,
-      maxDelta: Number(a.max_advance_delta_pct) / 100,
-      license: a.fallback_license !== "n/a" ? a.fallback_license : null,
-      source: "apryse fallback summary 2026-06-04",
-    };
-  }
-  const rows = scoreByFont.get(font.toLowerCase());
-  if (rows && rows.length) {
-    const best = rows.reduce((m, r) =>
-      Number(r.weighted_mean_adv_pct) < Number(m.weighted_mean_adv_pct) ? r : m,
+  score: Map<string, Record<string, string>[]>,
+): Measured | null {
+  const a = apryseMeasured(apryse.get(font.toLowerCase()));
+  if (a) return a;
+  const rows = score.get(font.toLowerCase());
+  if (rows?.length)
+    return scoreMeasured(
+      rows.reduce((m, r) =>
+        Number(r.weighted_mean_adv_pct) < Number(m.weighted_mean_adv_pct)
+          ? r
+          : m,
+      ),
     );
-    return {
-      candidate: best.candidate,
-      meanDelta: Number(best.weighted_mean_adv_pct) / 100,
-      maxDelta: Number(best.max_adv_pct) / 100,
-      license: best.license || null,
-      source: "curated-proprietary scorecard 2026-06-03",
-    };
-  }
   return null;
+}
+
+/** Structured advance for a SPECIFIC curated candidate (never "closest"). null if no measurement names it. */
+function measuredForCandidate(
+  font: string,
+  candidate: string,
+  apryse: Map<string, Record<string, string>>,
+  score: Map<string, Record<string, string>[]>,
+): Measured | null {
+  const a = apryseMeasured(apryse.get(font.toLowerCase()));
+  if (a && norm(a.candidate) === norm(candidate)) return a;
+  const row = score
+    .get(font.toLowerCase())
+    ?.find((r) => norm(r.candidate) === norm(candidate));
+  return row ? scoreMeasured(row) : null;
 }
 
 function main() {
@@ -201,10 +232,10 @@ function main() {
       r,
     ]),
   );
-  const scoreByFont = new Map<string, Record<string, string>[]>();
+  const score = new Map<string, Record<string, string>[]>();
   for (const r of parseCsv(readFileSync(SCORECARD_CSV, "utf8"))) {
     const k = r.logical_font.toLowerCase();
-    scoreByFont.set(k, [...(scoreByFont.get(k) ?? []), r]);
+    score.set(k, [...(score.get(k) ?? []), r]);
   }
 
   const records: EvidenceRecord[] = [];
@@ -233,24 +264,23 @@ function main() {
       layout: gate(s.layout_gate),
       ship: gate(s.ship_gate),
     };
-    const adv = advanceFor(original, apryse, scoreByFont);
-    if (!adv) {
-      skipped.push(
-        `${original}: verdict ${verdict} but NO structured advance measurement found (not published)`,
-      );
-      continue;
-    }
-
-    const isNoSub = verdict === "no_substitute";
-    const candidateFamily = isNoSub
-      ? null
-      : structural
-        ? stripParens(s.substitute_or_policy)
-        : adv.candidate;
-    const candidateSlug = candidateFamily ? slug(candidateFamily) : null;
     const refs: string[] = [];
+    let candidateFamily: string | null = null;
+    let recordAdvance: { meanDelta: number; maxDelta: number } | undefined;
+    let recordLicense: string | null = null;
+    let recordLicenseSource: string | undefined;
 
-    if (isNoSub) {
+    if (verdict === "no_substitute") {
+      // candidate stays null; closest measured fonts live only in top_candidates.
+      const m = closestMeasured(original, apryse, score);
+      const cands: CandidateScore[] = m
+        ? [
+            {
+              candidate: { candidateFamily: m.candidate },
+              advance: { meanDelta: m.meanDelta, maxDelta: m.maxDelta },
+            },
+          ]
+        : [];
       const mid = `${id}#top_candidates#${MEASURED_DATE}`;
       refs.push(mid);
       measurements.push({
@@ -260,48 +290,93 @@ function main() {
         originalOracleEnv: "hmtx analytic (no oracle render)",
         methodVersion: METHOD,
         measuredDate: MEASURED_DATE,
-        candidates: [
-          {
-            candidate: { candidateFamily: adv.candidate },
-            advance: { meanDelta: adv.meanDelta, maxDelta: adv.maxDelta },
-          },
-        ],
-        notes: curated.rationale,
+        candidates: cands,
+        notes: curated?.rationale,
       } satisfies TopCandidatesMeasurement);
-    } else if (candidateFamily && candidateSlug) {
-      const mid = `${id}__${candidateSlug}#analytic_advance#${MEASURED_DATE}`;
-      refs.push(mid);
-      measurements.push({
-        kind: "analytic_advance",
-        measurementId: mid,
-        originalFont: original,
-        originalOracleEnv: "hmtx analytic (no oracle render)",
-        candidate: { candidateFamily },
-        methodVersion: METHOD,
-        measuredDate: MEASURED_DATE,
-        advance: { meanDelta: adv.meanDelta, maxDelta: adv.maxDelta },
-      } satisfies AnalyticAdvanceMeasurement);
-    }
-    if (gates.layout === "pass" && candidateFamily && candidateSlug) {
-      const mid = `${id}__${candidateSlug}#face_aggregate#${MEASURED_DATE}`;
-      refs.push(mid);
-      measurements.push({
-        kind: "face_aggregate",
-        measurementId: mid,
-        originalFont: original,
-        originalOracleEnv: ORACLE_ENV,
-        candidate: { candidateFamily },
-        methodVersion: METHOD,
-        measuredDate: MEASURED_DATE,
-        faces: { regular: true, bold: true, italic: true, boldItalic: true },
-        notes: "All four faces layout-proven vs Word (family-status.json).",
-      } satisfies FaceAggregateMeasurement);
-    }
-    if (refs.length === 0) {
-      skipped.push(
-        `${original}: verdict ${verdict} produced no measurement (not published)`,
-      );
-      continue;
+    } else {
+      // metric_safe candidate = STATUS substitute; non-metric candidate = curated (verdicts.json) only.
+      const wantCandidate = structural
+        ? stripParens(s.substitute_or_policy)
+        : curated?.candidate;
+      const m = wantCandidate
+        ? structural
+          ? closestMeasured(original, apryse, score)
+          : measuredForCandidate(original, wantCandidate, apryse, score)
+        : null;
+
+      if (wantCandidate && m) {
+        candidateFamily = wantCandidate;
+        recordAdvance = { meanDelta: m.meanDelta, maxDelta: m.maxDelta };
+        recordLicense = m.license;
+        recordLicenseSource = m.source;
+        const cslug = slug(candidateFamily);
+        const aid = `${id}__${cslug}#analytic_advance#${MEASURED_DATE}`;
+        refs.push(aid);
+        measurements.push({
+          kind: "analytic_advance",
+          measurementId: aid,
+          originalFont: original,
+          originalOracleEnv: "hmtx analytic (no oracle render)",
+          candidate: { candidateFamily },
+          methodVersion: METHOD,
+          measuredDate: MEASURED_DATE,
+          advance: recordAdvance,
+        } satisfies AnalyticAdvanceMeasurement);
+        if (gates.layout === "pass") {
+          const fid = `${id}__${cslug}#face_aggregate#${MEASURED_DATE}`;
+          refs.push(fid);
+          measurements.push({
+            kind: "face_aggregate",
+            measurementId: fid,
+            originalFont: original,
+            originalOracleEnv: ORACLE_ENV,
+            candidate: { candidateFamily },
+            methodVersion: METHOD,
+            measuredDate: MEASURED_DATE,
+            faces: {
+              regular: true,
+              bold: true,
+              italic: true,
+              boldItalic: true,
+            },
+            notes: "All four faces layout-proven vs Word (family-status.json).",
+          } satisfies FaceAggregateMeasurement);
+        }
+      } else if (structural) {
+        skipped.push(
+          `${original}: metric_safe but no structured advance for STATUS candidate "${wantCandidate}" (not published)`,
+        );
+        continue;
+      } else {
+        // visual_only with no curated candidate: candidate null, closest shown in top_candidates only.
+        const m2 = closestMeasured(original, apryse, score);
+        const cands: CandidateScore[] = m2
+          ? [
+              {
+                candidate: { candidateFamily: m2.candidate },
+                advance: { meanDelta: m2.meanDelta, maxDelta: m2.maxDelta },
+              },
+            ]
+          : [];
+        if (cands.length === 0) {
+          skipped.push(
+            `${original}: ${verdict} with no curated candidate and no structured measurement (not published)`,
+          );
+          continue;
+        }
+        const mid = `${id}#top_candidates#${MEASURED_DATE}`;
+        refs.push(mid);
+        measurements.push({
+          kind: "top_candidates",
+          measurementId: mid,
+          originalFont: original,
+          originalOracleEnv: "hmtx analytic (no oracle render)",
+          methodVersion: METHOD,
+          measuredDate: MEASURED_DATE,
+          candidates: cands,
+          notes: curated?.rationale,
+        } satisfies TopCandidatesMeasurement);
+      }
     }
 
     const fourFace = verdict === "metric_safe";
@@ -316,13 +391,9 @@ function main() {
         italic: fourFace,
         boldItalic: fourFace,
       },
-      // no_substitute has no chosen candidate, so no record-level advance/license: the closest-candidate
-      // numbers live only in the top_candidates measurement (and must not read as "this substitute = X%").
-      advance: isNoSub
-        ? undefined
-        : { meanDelta: adv.meanDelta, maxDelta: adv.maxDelta },
-      candidateLicense: isNoSub ? null : adv.license,
-      candidateLicenseSource: isNoSub ? undefined : adv.source,
+      advance: recordAdvance,
+      candidateLicense: recordLicense,
+      candidateLicenseSource: recordLicenseSource,
       gates,
       measurementRefs: refs,
       policyAction: policyFor(verdict),
@@ -385,11 +456,9 @@ function main() {
       `${JSON.stringify(ms, null, 2)}\n`,
     );
 
+  const withCand = records.filter((r) => r.candidate).length;
   console.log(
-    `[import] wrote ${records.length} records + ${measurements.length} measurements (${byFont.size} files).`,
-  );
-  console.log(
-    `[import] verdicts: ${records.filter((r) => r.verdict === "metric_safe").length} metric_safe (structural), ${records.filter((r) => r.verdict !== "metric_safe").length} curated.`,
+    `[import] wrote ${records.length} records (${withCand} with a published candidate) + ${measurements.length} measurements (${byFont.size} files).`,
   );
   if (skipped.length)
     console.log(

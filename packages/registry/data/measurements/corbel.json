@@ -1,17 +1,22 @@
 [
   {
-    "kind": "analytic_advance",
-    "measurementId": "corbel__source-sans-3#analytic_advance#2026-06-03",
+    "kind": "top_candidates",
+    "measurementId": "corbel#top_candidates#2026-06-03",
     "originalFont": "Corbel",
     "originalOracleEnv": "hmtx analytic (no oracle render)",
-    "candidate": {
-      "candidateFamily": "Source Sans 3"
-    },
     "methodVersion": "analytic-hmtx-v1",
     "measuredDate": "2026-06-03",
-    "advance": {
-      "meanDelta": 0.011439999999999999,
-      "maxDelta": 0.06863000000000001
-    }
+    "candidates": [
+      {
+        "candidate": {
+          "candidateFamily": "Source Sans 3"
+        },
+        "advance": {
+          "meanDelta": 0.011439999999999999,
+          "maxDelta": 0.06863000000000001
+        }
+      }
+    ],
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
   }
 ]

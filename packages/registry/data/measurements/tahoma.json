@@ -1,17 +1,22 @@
 [
   {
-    "kind": "analytic_advance",
-    "measurementId": "tahoma__viga#analytic_advance#2026-06-03",
+    "kind": "top_candidates",
+    "measurementId": "tahoma#top_candidates#2026-06-03",
     "originalFont": "Tahoma",
     "originalOracleEnv": "hmtx analytic (no oracle render)",
-    "candidate": {
-      "candidateFamily": "Viga"
-    },
     "methodVersion": "analytic-hmtx-v1",
     "measuredDate": "2026-06-03",
-    "advance": {
-      "meanDelta": 0.01532,
-      "maxDelta": 0.07153999999999999
-    }
+    "candidates": [
+      {
+        "candidate": {
+          "candidateFamily": "Viga"
+        },
+        "advance": {
+          "meanDelta": 0.01532,
+          "maxDelta": 0.07153999999999999
+        }
+      }
+    ],
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
   }
 ]

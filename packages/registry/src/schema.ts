@@ -14,11 +14,14 @@ const VERDICTS = [
   "no_substitute",
 ] as const;
 const GATE = ["pass", "not_run", "fail"] as const;
-/** verdicts that assert an open substitute and therefore must carry a candidate. */
+/**
+ * Verdicts that name a specific substitute and therefore must carry a candidate. visual_only is NOT
+ * here: a visual row may publish candidate:null (no human-approved pick) with the closest measured
+ * fonts shown only in a top_candidates measurement.
+ */
 const NEEDS_CANDIDATE: ReadonlySet<string> = new Set([
   "metric_safe",
   "cell_width_only",
-  "visual_only",
 ]);
 /** measurement kinds that can substantiate a passing layout gate. */
 const LAYOUT_PROOF_KINDS: ReadonlySet<string> = new Set([

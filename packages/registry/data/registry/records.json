@@ -304,9 +304,7 @@
   {
     "evidenceId": "verdana",
     "originalFont": "Verdana",
-    "candidate": {
-      "candidateFamily": "Tsukimi Rounded"
-    },
+    "candidate": null,
     "verdict": "visual_only",
     "faces": {
       "regular": false,
@@ -314,12 +312,7 @@
       "italic": false,
       "boldItalic": false
     },
-    "advance": {
-      "meanDelta": 0.02007,
-      "maxDelta": 0.08816
-    },
-    "candidateLicense": "OFL-1.1",
-    "candidateLicenseSource": "apryse fallback summary 2026-06-04",
+    "candidateLicense": null,
     "gates": {
       "static": "not_run",
       "metric": "fail",
@@ -327,20 +320,18 @@
       "ship": "not_run"
     },
     "measurementRefs": [
-      "verdana__tsukimi-rounded#analytic_advance#2026-06-03"
+      "verdana#top_candidates#2026-06-03"
     ],
     "policyAction": "category_fallback",
     "confidence": "R",
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
-    "notes": "Category visual fallback; fails worst-case advance."
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
   },
   {
     "evidenceId": "tahoma",
     "originalFont": "Tahoma",
-    "candidate": {
-      "candidateFamily": "Viga"
-    },
+    "candidate": null,
     "verdict": "visual_only",
     "faces": {
       "regular": false,
@@ -348,12 +339,7 @@
       "italic": false,
       "boldItalic": false
     },
-    "advance": {
-      "meanDelta": 0.01532,
-      "maxDelta": 0.07153999999999999
-    },
-    "candidateLicense": "OFL-1.1",
-    "candidateLicenseSource": "apryse fallback summary 2026-06-04",
+    "candidateLicense": null,
     "gates": {
       "static": "not_run",
       "metric": "fail",
@@ -361,20 +347,18 @@
       "ship": "not_run"
     },
     "measurementRefs": [
-      "tahoma__viga#analytic_advance#2026-06-03"
+      "tahoma#top_candidates#2026-06-03"
     ],
     "policyAction": "category_fallback",
     "confidence": "R",
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
-    "notes": "Category visual fallback; not metric."
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
   },
   {
     "evidenceId": "trebuchet-ms",
     "originalFont": "Trebuchet MS",
-    "candidate": {
-      "candidateFamily": "Fira Sans"
-    },
+    "candidate": null,
     "verdict": "visual_only",
     "faces": {
       "regular": false,
@@ -382,12 +366,7 @@
       "italic": false,
       "boldItalic": false
     },
-    "advance": {
-      "meanDelta": 0.01424,
-      "maxDelta": 0.05218
-    },
-    "candidateLicense": "OFL-1.1",
-    "candidateLicenseSource": "apryse fallback summary 2026-06-04",
+    "candidateLicense": null,
     "gates": {
       "static": "not_run",
       "metric": "fail",
@@ -395,13 +374,13 @@
       "ship": "not_run"
     },
     "measurementRefs": [
-      "trebuchet-ms__fira-sans#analytic_advance#2026-06-03"
+      "trebuchet-ms#top_candidates#2026-06-03"
     ],
     "policyAction": "category_fallback",
     "confidence": "R",
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
-    "notes": "Category visual fallback; not metric."
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
   },
   {
     "evidenceId": "comic-sans-ms",
@@ -435,14 +414,12 @@
     "confidence": "R",
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
-    "notes": "Category-correct visual fallback; advance too far for metric fidelity."
+    "notes": "Category-correct visual fallback (the established open Comic Sans alternative); advance too far for metric fidelity."
   },
   {
     "evidenceId": "candara",
     "originalFont": "Candara",
-    "candidate": {
-      "candidateFamily": "Source Sans 3"
-    },
+    "candidate": null,
     "verdict": "visual_only",
     "faces": {
       "regular": false,
@@ -450,12 +427,7 @@
       "italic": false,
       "boldItalic": false
     },
-    "advance": {
-      "meanDelta": 0.01458,
-      "maxDelta": 0.03256
-    },
-    "candidateLicense": "OFL-1.1",
-    "candidateLicenseSource": "curated-proprietary scorecard 2026-06-03",
+    "candidateLicense": null,
     "gates": {
       "static": "not_run",
       "metric": "fail",
@@ -463,20 +435,18 @@
       "ship": "not_run"
     },
     "measurementRefs": [
-      "candara__source-sans-3#analytic_advance#2026-06-03"
+      "candara#top_candidates#2026-06-03"
     ],
     "policyAction": "category_fallback",
     "confidence": "R",
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
-    "notes": "Category visual fallback; fails worst-case advance."
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
   },
   {
     "evidenceId": "constantia",
     "originalFont": "Constantia",
-    "candidate": {
-      "candidateFamily": "Caladea"
-    },
+    "candidate": null,
     "verdict": "visual_only",
     "faces": {
       "regular": false,
@@ -484,12 +454,7 @@
       "italic": false,
       "boldItalic": false
     },
-    "advance": {
-      "meanDelta": 0.03603,
-      "maxDelta": 0.14167
-    },
-    "candidateLicense": "Apache-2.0",
-    "candidateLicenseSource": "curated-proprietary scorecard 2026-06-03",
+    "candidateLicense": null,
     "gates": {
       "static": "not_run",
       "metric": "fail",
@@ -497,20 +462,18 @@
       "ship": "not_run"
     },
     "measurementRefs": [
-      "constantia__caladea#analytic_advance#2026-06-03"
+      "constantia#top_candidates#2026-06-03"
     ],
     "policyAction": "category_fallback",
     "confidence": "R",
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
-    "notes": "Category visual fallback; not metric."
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
   },
   {
     "evidenceId": "corbel",
     "originalFont": "Corbel",
-    "candidate": {
-      "candidateFamily": "Source Sans 3"
-    },
+    "candidate": null,
     "verdict": "visual_only",
     "faces": {
       "regular": false,
@@ -518,12 +481,7 @@
       "italic": false,
       "boldItalic": false
     },
-    "advance": {
-      "meanDelta": 0.011439999999999999,
-      "maxDelta": 0.06863000000000001
-    },
-    "candidateLicense": "OFL-1.1",
-    "candidateLicenseSource": "curated-proprietary scorecard 2026-06-03",
+    "candidateLicense": null,
     "gates": {
       "static": "not_run",
       "metric": "fail",
@@ -531,13 +489,13 @@
       "ship": "not_run"
     },
     "measurementRefs": [
-      "corbel__source-sans-3#analytic_advance#2026-06-03"
+      "corbel#top_candidates#2026-06-03"
     ],
     "policyAction": "category_fallback",
     "confidence": "R",
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
-    "notes": "Category visual fallback; fails worst-case advance."
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
   },
   {
     "evidenceId": "lucida-console",
