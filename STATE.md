@@ -129,9 +129,13 @@ Bonum->Bookman (GUST license, legal review).
    No SSR adapter (add @astrojs/cloudflare only when a route needs SSR). CF Pages build: root dir =
    repo root, build = `bun run --cwd apps/site build`, output = `apps/site/dist` (see apps/site/README).
    STILL TODO: guides pages, real scanner parse (wire @docfonts/docx-fonts), build-time specimens.
-   Verified THIS turn from saved source (records.json = []): fresh `bun run --cwd apps/site build` =
-   **11 pages** (9 `/fonts/<font>` incl. calibri, via seed fallback), `bun run typecheck` clean,
-   `bun test` = 39 pass, `bun run lint` clean. Not committed yet (user's call).
+   COMMITTED on branch `caio-pizzol/site-scaffold` (commit 5e6fb4d) - NOT on main, NOT pushed.
+   Now git-reproducible: a detached fresh checkout of 5e6fb4d + `bun install` (no node_modules, no
+   untracked files) builds **11 pages** incl. all 9 `/fonts/<font>` even with records.json = [] (seed
+   fallback works from git alone = what Cloudflare Pages sees). Gates: typecheck clean, `bun test`
+   39 pass, lint clean. The commit also folds in the concurrent resolverAction->policyAction registry
+   refactor (it was uncommitted in the worktree and the seed depends on it; flagged in the commit body)
+   - reconcile with whoever owns that refactor before merging to main.
 6. Buy docfonts.dev (+ .com/.org) if not already purchased. (Repo: superdoc-dev/docfonts.)
 
 Brand/design system from the mockups (`mockups/`, gitignored from biome) is now codified in
