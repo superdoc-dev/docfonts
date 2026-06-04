@@ -1,0 +1,74 @@
+[
+  {
+    "kind": "analytic_advance",
+    "measurementId": "calibri_regular__carlito#regular#w400#b4ff23ba#analytic_advance#2026-06-04",
+    "originalFont": "Calibri",
+    "originalOracleEnv": "macOS 26.4.1; oracle font: Calibri from Microsoft Word 16.109.3 (app DFonts bundle); analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Carlito",
+      "candidateFaceId": "carlito#regular#w400#b4ff23ba",
+      "fileSha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    }
+  },
+  {
+    "kind": "analytic_advance",
+    "measurementId": "calibri_bold__carlito#bold#w700#0f62ab34#analytic_advance#2026-06-04",
+    "originalFont": "Calibri",
+    "originalOracleEnv": "macOS 26.4.1; oracle font: Calibri from Microsoft Word 16.109.3 (app DFonts bundle); analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Carlito",
+      "candidateFaceId": "carlito#bold#w700#0f62ab34",
+      "fileSha256": "0f62ab34ad5d079a0a28fac01bcf7c7a724a4db4d6cb99cab9cabff382fbb80f"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    }
+  },
+  {
+    "kind": "analytic_advance",
+    "measurementId": "calibri_italic__carlito#italic#w400#718a0663#analytic_advance#2026-06-04",
+    "originalFont": "Calibri",
+    "originalOracleEnv": "macOS 26.4.1; oracle font: Calibri from Microsoft Word 16.109.3 (app DFonts bundle); analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Carlito",
+      "candidateFaceId": "carlito#italic#w400#718a0663",
+      "fileSha256": "718a0663864d37a4868220a19b9668a5fe10a46197f6df367b4c2c30c04c026c"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    }
+  },
+  {
+    "kind": "analytic_advance",
+    "measurementId": "calibri_boldItalic__carlito#boldItalic#w700#380764b6#analytic_advance#2026-06-04",
+    "originalFont": "Calibri",
+    "originalOracleEnv": "macOS 26.4.1; oracle font: Calibri from Microsoft Word 16.109.3 (app DFonts bundle); analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Carlito",
+      "candidateFaceId": "carlito#boldItalic#w700#380764b6",
+      "fileSha256": "380764b6898d7b73ceae6384b2958b196d2a0428962ef3adf138d27947228666"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    }
+  }
+]

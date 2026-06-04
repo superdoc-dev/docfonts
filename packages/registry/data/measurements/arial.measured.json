@@ -1,0 +1,74 @@
+[
+  {
+    "kind": "analytic_advance",
+    "measurementId": "arial_regular__liberation-sans#regular#w400#76d04c18#analytic_advance#2026-06-04",
+    "originalFont": "Arial",
+    "originalOracleEnv": "macOS 26.4.1 system fonts (/System/Library/Fonts/Supplemental): Arial, Times New Roman, Courier New; analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Liberation Sans",
+      "candidateFaceId": "liberation-sans#regular#w400#76d04c18",
+      "fileSha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    }
+  },
+  {
+    "kind": "analytic_advance",
+    "measurementId": "arial_bold__liberation-sans#bold#w700#788abee4#analytic_advance#2026-06-04",
+    "originalFont": "Arial",
+    "originalOracleEnv": "macOS 26.4.1 system fonts (/System/Library/Fonts/Supplemental): Arial, Times New Roman, Courier New; analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Liberation Sans",
+      "candidateFaceId": "liberation-sans#bold#w700#788abee4",
+      "fileSha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    }
+  },
+  {
+    "kind": "analytic_advance",
+    "measurementId": "arial_italic__liberation-sans#italic#w400#e5bae5c4#analytic_advance#2026-06-04",
+    "originalFont": "Arial",
+    "originalOracleEnv": "macOS 26.4.1 system fonts (/System/Library/Fonts/Supplemental): Arial, Times New Roman, Courier New; analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Liberation Sans",
+      "candidateFaceId": "liberation-sans#italic#w400#e5bae5c4",
+      "fileSha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    }
+  },
+  {
+    "kind": "analytic_advance",
+    "measurementId": "arial_boldItalic__liberation-sans#boldItalic#w700#698da70f#analytic_advance#2026-06-04",
+    "originalFont": "Arial",
+    "originalOracleEnv": "macOS 26.4.1 system fonts (/System/Library/Fonts/Supplemental): Arial, Times New Roman, Courier New; analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Liberation Sans",
+      "candidateFaceId": "liberation-sans#boldItalic#w700#698da70f",
+      "fileSha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    }
+  }
+]
