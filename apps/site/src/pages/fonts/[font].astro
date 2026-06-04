@@ -1,6 +1,6 @@
 ---
 import type { EvidenceRecord } from "@docfonts/registry";
-import { loadSeedRecords } from "@docfonts/registry";
+import { loadRecords } from "@docfonts/registry";
 import FaceGrid from "../../components/FaceGrid.astro";
 import VerdictBadge from "../../components/VerdictBadge.astro";
 import Base from "../../layouts/Base.astro";
@@ -9,7 +9,7 @@ import { VERDICT_META, pct } from "../../lib/verdict";
 // One canonical static page per PROPRIETARY font (the SEO surface). People search the proprietary
 // name, so the title carries it. No split /fonts and /pairs - avoid keyword cannibalization.
 export function getStaticPaths() {
-  return loadSeedRecords().map((r) => ({ params: { font: r.evidenceId }, props: { record: r } }));
+  return loadRecords().map((r) => ({ params: { font: r.evidenceId }, props: { record: r } }));
 }
 
 interface Props {
