@@ -62,7 +62,6 @@ const STYLE_ORDER = ["regular", "bold", "italic", "boldItalic", "other"];
 async function buildManifest(src: CorpusSource): Promise<CorpusManifest> {
   const byFamily = new Map<string, CorpusFamily>();
   const seenSha = new Set<string>();
-  const licenseTextSha = new Map<string, string>(); // license id -> text hash (computed once)
 
   for (const raw of src.faces()) {
     if (PROPRIETARY.has(raw.family.toLowerCase())) {
@@ -81,12 +80,15 @@ async function buildManifest(src: CorpusSource): Promise<CorpusManifest> {
     if (!parsed.ok)
       throw new Error(`parse failed for ${raw.fileName}: ${parsed.error}`);
     const meta = parsed.face.metadata;
+    const weight = meta.face.weightClass ?? 400;
 
     const face: CorpusFace = {
-      candidateFaceId: `${slug(raw.family)}#${meta.face.styleKey}`,
+      // globally stable id: family + style + weight + sha prefix, so multiple weights or builds of
+      // the same styleKey never collide. fileSha256 stays the durable join key.
+      candidateFaceId: `${slug(raw.family)}#${meta.face.styleKey}#w${weight}#${sha.slice(0, 8)}`,
       family: raw.family,
       styleKey: meta.face.styleKey,
-      weight: meta.face.weightClass ?? 400,
+      weight,
       style: meta.face.italic ? "italic" : "normal",
       fileName: raw.fileName,
       fileSha256: sha,
@@ -95,24 +97,22 @@ async function buildManifest(src: CorpusSource): Promise<CorpusManifest> {
 
     let fam = byFamily.get(raw.family);
     if (!fam) {
-      if (!licenseTextSha.has(raw.license)) {
-        licenseTextSha.set(raw.license, await sha256Hex(raw.licenseTextBytes));
-      }
       fam = {
         family: raw.family,
         license: raw.license,
         licenseSource: src.licenseSource,
-        licenseTextSha256: licenseTextSha.get(raw.license) as string,
+        // hash THIS family's actual license bytes - never reused by license label, since two OFL
+        // families can ship different copyright/license files.
+        licenseTextSha256: await sha256Hex(raw.licenseTextBytes),
+        licenseUrl: raw.licenseUrl,
         sourceUrl: raw.sourceUrl,
         faces: [],
       };
       byFamily.set(raw.family, fam);
     }
-    // dedup logical faces within a family (family | styleKey).
-    if (fam.faces.some((f) => f.styleKey === face.styleKey)) {
-      throw new Error(
-        `duplicate logical face ${raw.family} | ${face.styleKey}`,
-      );
+    // dedup on the full stable identity, not just styleKey (multiple weights share a styleKey).
+    if (fam.faces.some((f) => f.candidateFaceId === face.candidateFaceId)) {
+      throw new Error(`duplicate face identity ${face.candidateFaceId}`);
     }
     fam.faces.push(face);
   }

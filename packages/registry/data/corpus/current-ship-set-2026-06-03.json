@@ -9,10 +9,11 @@
       "license": "Apache-2.0",
       "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
       "licenseTextSha256": "bc001a7f4917f4be71b85ae1ed9c7a246c47ee1c0de423d855101a2addcb26ab",
-      "sourceUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+      "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
       "faces": [
         {
-          "candidateFaceId": "caladea#regular",
+          "candidateFaceId": "caladea#regular#w400#d2f6cad3",
           "family": "Caladea",
           "styleKey": "regular",
           "weight": 400,
@@ -72,7 +73,7 @@
           }
         },
         {
-          "candidateFaceId": "caladea#bold",
+          "candidateFaceId": "caladea#bold#w700#74eda4fc",
           "family": "Caladea",
           "styleKey": "bold",
           "weight": 700,
@@ -132,7 +133,7 @@
           }
         },
         {
-          "candidateFaceId": "caladea#italic",
+          "candidateFaceId": "caladea#italic#w400#9c968bf6",
           "family": "Caladea",
           "styleKey": "italic",
           "weight": 400,
@@ -192,7 +193,7 @@
           }
         },
         {
-          "candidateFaceId": "caladea#boldItalic",
+          "candidateFaceId": "caladea#boldItalic#w700#f47a35ad",
           "family": "Caladea",
           "styleKey": "boldItalic",
           "weight": 700,
@@ -258,10 +259,11 @@
       "license": "OFL-1.1",
       "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
       "licenseTextSha256": "6119382bc0a82723217ee623e1093f9f0d704d879f12df7cb45224f3bbd160ae",
-      "sourceUrl": "http://scripts.sil.org/OFL",
+      "licenseUrl": "http://scripts.sil.org/OFL",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
       "faces": [
         {
-          "candidateFaceId": "carlito#regular",
+          "candidateFaceId": "carlito#regular#w400#b4ff23ba",
           "family": "Carlito",
           "styleKey": "regular",
           "weight": 400,
@@ -319,7 +321,7 @@
           }
         },
         {
-          "candidateFaceId": "carlito#bold",
+          "candidateFaceId": "carlito#bold#w700#0f62ab34",
           "family": "Carlito",
           "styleKey": "bold",
           "weight": 700,
@@ -377,7 +379,7 @@
           }
         },
         {
-          "candidateFaceId": "carlito#italic",
+          "candidateFaceId": "carlito#italic#w400#718a0663",
           "family": "Carlito",
           "styleKey": "italic",
           "weight": 400,
@@ -435,7 +437,7 @@
           }
         },
         {
-          "candidateFaceId": "carlito#boldItalic",
+          "candidateFaceId": "carlito#boldItalic#w700#380764b6",
           "family": "Carlito",
           "styleKey": "boldItalic",
           "weight": 700,
@@ -499,10 +501,11 @@
       "license": "OFL-1.1",
       "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
       "licenseTextSha256": "6119382bc0a82723217ee623e1093f9f0d704d879f12df7cb45224f3bbd160ae",
-      "sourceUrl": "http://scripts.sil.org/OFL",
+      "licenseUrl": "http://scripts.sil.org/OFL",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
       "faces": [
         {
-          "candidateFaceId": "liberation-mono#regular",
+          "candidateFaceId": "liberation-mono#regular#w400#f2b83c76",
           "family": "Liberation Mono",
           "styleKey": "regular",
           "weight": 400,
@@ -560,7 +563,7 @@
           }
         },
         {
-          "candidateFaceId": "liberation-mono#bold",
+          "candidateFaceId": "liberation-mono#bold#w700#bd62a067",
           "family": "Liberation Mono",
           "styleKey": "bold",
           "weight": 700,
@@ -618,7 +621,7 @@
           }
         },
         {
-          "candidateFaceId": "liberation-mono#italic",
+          "candidateFaceId": "liberation-mono#italic#w400#605c01c7",
           "family": "Liberation Mono",
           "styleKey": "italic",
           "weight": 400,
@@ -676,7 +679,7 @@
           }
         },
         {
-          "candidateFaceId": "liberation-mono#boldItalic",
+          "candidateFaceId": "liberation-mono#boldItalic#w700#79451f3c",
           "family": "Liberation Mono",
           "styleKey": "boldItalic",
           "weight": 700,
@@ -740,10 +743,11 @@
       "license": "OFL-1.1",
       "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
       "licenseTextSha256": "6119382bc0a82723217ee623e1093f9f0d704d879f12df7cb45224f3bbd160ae",
-      "sourceUrl": "http://scripts.sil.org/OFL",
+      "licenseUrl": "http://scripts.sil.org/OFL",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
       "faces": [
         {
-          "candidateFaceId": "liberation-sans#regular",
+          "candidateFaceId": "liberation-sans#regular#w400#76d04c18",
           "family": "Liberation Sans",
           "styleKey": "regular",
           "weight": 400,
@@ -801,7 +805,7 @@
           }
         },
         {
-          "candidateFaceId": "liberation-sans#bold",
+          "candidateFaceId": "liberation-sans#bold#w700#788abee4",
           "family": "Liberation Sans",
           "styleKey": "bold",
           "weight": 700,
@@ -859,7 +863,7 @@
           }
         },
         {
-          "candidateFaceId": "liberation-sans#italic",
+          "candidateFaceId": "liberation-sans#italic#w400#e5bae5c4",
           "family": "Liberation Sans",
           "styleKey": "italic",
           "weight": 400,
@@ -917,7 +921,7 @@
           }
         },
         {
-          "candidateFaceId": "liberation-sans#boldItalic",
+          "candidateFaceId": "liberation-sans#boldItalic#w700#698da70f",
           "family": "Liberation Sans",
           "styleKey": "boldItalic",
           "weight": 700,
@@ -981,10 +985,11 @@
       "license": "OFL-1.1",
       "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
       "licenseTextSha256": "6119382bc0a82723217ee623e1093f9f0d704d879f12df7cb45224f3bbd160ae",
-      "sourceUrl": "http://scripts.sil.org/OFL",
+      "licenseUrl": "http://scripts.sil.org/OFL",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
       "faces": [
         {
-          "candidateFaceId": "liberation-serif#regular",
+          "candidateFaceId": "liberation-serif#regular#w400#058ea808",
           "family": "Liberation Serif",
           "styleKey": "regular",
           "weight": 400,
@@ -1042,7 +1047,7 @@
           }
         },
         {
-          "candidateFaceId": "liberation-serif#bold",
+          "candidateFaceId": "liberation-serif#bold#w700#d754ba42",
           "family": "Liberation Serif",
           "styleKey": "bold",
           "weight": 700,
@@ -1100,7 +1105,7 @@
           }
         },
         {
-          "candidateFaceId": "liberation-serif#italic",
+          "candidateFaceId": "liberation-serif#italic#w400#0e3dea9f",
           "family": "Liberation Serif",
           "styleKey": "italic",
           "weight": 400,
@@ -1158,7 +1163,7 @@
           }
         },
         {
-          "candidateFaceId": "liberation-serif#boldItalic",
+          "candidateFaceId": "liberation-serif#boldItalic#w700#f17db8af",
           "family": "Liberation Serif",
           "styleKey": "boldItalic",
           "weight": 700,

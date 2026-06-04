@@ -42,10 +42,13 @@ export interface CorpusFace {
 
 export interface CorpusFamily {
   family: string;
-  license: string; // e.g. "OFL-1.1"
-  licenseSource: string; // where the license came from, e.g. "google/fonts ofl/carlito"
+  license: string; // license id, e.g. "OFL-1.1"
+  licenseSource: string; // provenance label for the pairing, e.g. "google/fonts ofl/carlito"
   /** sha256 of the exact license file that accompanied this source - proves file + license pairing. */
   licenseTextSha256: string;
+  /** canonical URL of the license id, e.g. "http://scripts.sil.org/OFL". NOT the font source. */
+  licenseUrl?: string;
+  /** where the FONT files came from (source / upstream), distinct from licenseUrl. */
   sourceUrl: string;
   faces: CorpusFace[];
 }

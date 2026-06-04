@@ -18,9 +18,11 @@ export interface RawCorpusFace {
   expectedSha256?: string;
   /** license id, e.g. "OFL-1.1" | "Apache-2.0". */
   license: string;
-  /** the exact license text bytes; the driver derives licenseTextSha256 from these. */
+  /** the exact license text bytes accompanying THIS family; the driver hashes these per family. */
   licenseTextBytes: Uint8Array;
-  /** upstream / license URL for this family. */
+  /** canonical URL of the license id (e.g. SIL OFL / Apache). NOT where the font came from. */
+  licenseUrl: string;
+  /** where the FONT files came from (source / upstream), distinct from licenseUrl. */
   sourceUrl: string;
 }
 

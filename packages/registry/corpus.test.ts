@@ -39,21 +39,23 @@ describe("loadCorpus (open-font corpus manifests)", () => {
     }
   });
 
-  test("no duplicate logical face within a family (family | styleKey)", () => {
-    for (const m of manifests) {
-      for (const fam of m.families) {
-        const keys = fam.faces.map((f) => `${fam.family}|${f.styleKey}`);
-        expect(new Set(keys).size).toBe(keys.length);
-      }
-    }
+  test("candidateFaceId is globally unique and weight/sha-qualified (future-safe identity)", () => {
+    const ids = faces.map(({ face }) => face.candidateFaceId);
+    expect(new Set(ids).size).toBe(ids.length);
+    // identity carries weight + a sha prefix so multiple weights of one styleKey never collide.
+    for (const id of ids) expect(id).toMatch(/#w\d+#[0-9a-f]{8}$/);
   });
 
-  test("every family carries license provenance + a well-formed license-text hash", () => {
+  test("every family carries license provenance + a well-formed license-text hash + license URL", () => {
     for (const m of manifests) {
       for (const fam of m.families) {
         expect(fam.license).toBeTruthy();
         expect(fam.licenseSource).toBeTruthy();
         expect(fam.licenseTextSha256).toMatch(HEX64);
+        // licenseUrl is the license's URL; sourceUrl is where the font came from - distinct fields.
+        expect(fam.licenseUrl).toBeTruthy();
+        expect(fam.sourceUrl).toBeTruthy();
+        expect(fam.sourceUrl).not.toBe(fam.licenseUrl);
       }
     }
   });

@@ -98,7 +98,12 @@ export function shipSetSource(
           expectedSha256: r.source_ttf_sha256 || undefined,
           license: r.license,
           licenseTextBytes: readLicense(r.license),
-          sourceUrl: r.font_license_url || "",
+          licenseUrl: r.font_license_url || "",
+          // The CSV records these as "LibreOffice app font resource" but carries no precise per-family
+          // upstream URL, so the font source is recorded at the granularity actually known - not a
+          // guessed repo path. A future adapter with real per-family upstreams can set this precisely.
+          sourceUrl:
+            "LibreOffice app font resources (https://www.libreoffice.org/)",
         };
       }
     },
