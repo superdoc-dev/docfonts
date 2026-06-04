@@ -1,0 +1,17 @@
+[
+  {
+    "kind": "analytic_advance",
+    "measurementId": "courier-new__liberation-mono#analytic_advance#2026-06-03",
+    "originalFont": "Courier New",
+    "originalOracleEnv": "hmtx analytic (no oracle render)",
+    "candidate": {
+      "candidateFamily": "Liberation Mono"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-03",
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    }
+  }
+]

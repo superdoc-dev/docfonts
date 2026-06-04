@@ -1,0 +1,17 @@
+[
+  {
+    "kind": "analytic_advance",
+    "measurementId": "lucida-console__cousine#analytic_advance#2026-06-03",
+    "originalFont": "Lucida Console",
+    "originalOracleEnv": "hmtx analytic (no oracle render)",
+    "candidate": {
+      "candidateFamily": "Cousine"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-03",
+    "advance": {
+      "meanDelta": 0.004050000000000001,
+      "maxDelta": 0.004050000000000001
+    }
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "_doc": "Curated EDITORIAL verdicts for rows whose taxonomy is a human judgment, not a structured fact. STATUS.csv lumps these under 'visual_only'; the metric_safe rows are NOT here (those are derived structurally from verified_shipped / layout_proven_all_faces). This file owns ONLY the public verdict; the importer attaches gates/candidate/advance/provenance mechanically from structured sources (apryse summary, curated scorecard). A row here is only emitted if a structured advance measurement exists for it.",
+  "verdicts": {
+    "aptos": {
+      "verdict": "no_substitute",
+      "rationale": "No open metric clone; the closest open font reflows. Customer-supplied first, else a reported visual fallback."
+    },
+    "consolas": {
+      "verdict": "cell_width_only",
+      "rationale": "Monospace cell-width match only (single advance ratio), not shape-proven; no italic face."
+    },
+    "lucida-console": {
+      "verdict": "cell_width_only",
+      "rationale": "Monospace cell-width match only; not shape/code-font proven."
+    },
+    "comic-sans-ms": {
+      "verdict": "visual_only",
+      "rationale": "Category-correct visual fallback; advance too far for metric fidelity."
+    },
+    "verdana": {
+      "verdict": "visual_only",
+      "rationale": "Category visual fallback; fails worst-case advance."
+    },
+    "tahoma": {
+      "verdict": "visual_only",
+      "rationale": "Category visual fallback; not metric."
+    },
+    "trebuchet-ms": {
+      "verdict": "visual_only",
+      "rationale": "Category visual fallback; not metric."
+    },
+    "candara": {
+      "verdict": "visual_only",
+      "rationale": "Category visual fallback; fails worst-case advance."
+    },
+    "constantia": {
+      "verdict": "visual_only",
+      "rationale": "Category visual fallback; not metric."
+    },
+    "corbel": {
+      "verdict": "visual_only",
+      "rationale": "Category visual fallback; fails worst-case advance."
+    }
+  }
+}

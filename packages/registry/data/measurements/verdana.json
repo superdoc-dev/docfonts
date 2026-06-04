@@ -1,0 +1,17 @@
+[
+  {
+    "kind": "analytic_advance",
+    "measurementId": "verdana__tsukimi-rounded#analytic_advance#2026-06-03",
+    "originalFont": "Verdana",
+    "originalOracleEnv": "hmtx analytic (no oracle render)",
+    "candidate": {
+      "candidateFamily": "Tsukimi Rounded"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-03",
+    "advance": {
+      "meanDelta": 0.02007,
+      "maxDelta": 0.08816
+    }
+  }
+]

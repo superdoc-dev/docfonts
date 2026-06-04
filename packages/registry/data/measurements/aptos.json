@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "top_candidates",
+    "measurementId": "aptos#top_candidates#2026-06-03",
+    "originalFont": "Aptos",
+    "originalOracleEnv": "hmtx analytic (no oracle render)",
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-03",
+    "candidates": [
+      {
+        "candidate": {
+          "candidateFamily": "Barlow"
+        },
+        "advance": {
+          "meanDelta": 0.01163,
+          "maxDelta": 0.05888
+        }
+      }
+    ],
+    "notes": "No open metric clone; the closest open font reflows. Customer-supplied first, else a reported visual fallback."
+  }
+]
