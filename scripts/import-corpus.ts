@@ -20,6 +20,7 @@ import type {
   CorpusManifest,
 } from "@docfonts/registry";
 import { futureDirectCandidatesSource } from "./corpus-sources/future-direct-candidates";
+import { gelasioInstancesSource } from "./corpus-sources/gelasio-instances";
 import { shipSetSource } from "./corpus-sources/ship-set";
 import type { CorpusSource } from "./corpus-sources/types";
 
@@ -37,11 +38,13 @@ const DEFAULT_PACKET = join(
 /** registry of source adapters by id. New sources slot in here. */
 const SOURCES: Record<string, (inputPath?: string) => CorpusSource> = {
   "current-ship-set": (p) => shipSetSource(p ?? DEFAULT_PACKET),
-  // Static four-face future candidates only. Gelasio (variable) is deferred until variable instancing.
+  // Static four-face future candidates only (Gelasio is variable, handled by the generated source).
   "future-direct-candidates": (p) =>
     futureDirectCandidatesSource(p ?? DEFAULT_PACKET, [
       "Liberation Sans Narrow",
     ]),
+  // Gelasio: deterministic statics instanced from the upstream VF (run gen-variable-instances.sh).
+  "generated-instances": (p) => gelasioInstancesSource(p ?? DEFAULT_PACKET),
 };
 
 /** logical-font names we must NEVER ingest as corpus candidates (the corpus is open fonts only). */
@@ -99,6 +102,7 @@ async function buildManifest(src: CorpusSource): Promise<CorpusManifest> {
       style: meta.face.italic ? "italic" : "normal",
       fileName: raw.fileName,
       fileSha256: sha,
+      ...(raw.instancedFrom ? { instancedFrom: raw.instancedFrom } : {}),
       metadata: meta,
     };
 

@@ -1,0 +1,294 @@
+{
+  "corpusId": "generated-instances-2026-06-03",
+  "source": "Gelasio static instances generated from the upstream variable fonts (deterministic)",
+  "sourceUrl": "multiple public upstreams; see families[].sourceUrl",
+  "retrievedDate": "2026-06-03",
+  "families": [
+    {
+      "family": "Gelasio",
+      "license": "OFL-1.1",
+      "licenseSource": "SuperDoc legal-review packet 2026-06-03 (gelasio VF, instanced)",
+      "licenseTextSha256": "b393cb01867c919b44381512120dc3e4c954c7b47e2035c405f3a324799a4d29",
+      "licenseUrl": "https://openfontlicense.org/",
+      "sourceUrl": "https://github.com/SorkinType/Gelasio",
+      "faces": [
+        {
+          "candidateFaceId": "gelasio#regular#w400#1543f04d",
+          "family": "Gelasio",
+          "styleKey": "regular",
+          "weight": 400,
+          "style": "normal",
+          "fileName": "Gelasio-Regular.ttf",
+          "fileSha256": "1543f04d4c55d0dc88b136993bb2312ba57c648564c26256f2df316d7af02b16",
+          "instancedFrom": {
+            "sourceFamily": "Gelasio",
+            "sourceFileName": "Gelasio[wght].ttf",
+            "sourceFileSha256": "4daecea457258c9ebeb8bc99ed3fd24353618bfad3ea4b93fa0b5d0468fc04e4",
+            "axes": {
+              "wght": 400
+            },
+            "tool": "fontTools.varLib.instancer",
+            "toolVersion": "4.63.0",
+            "reproNote": "SOURCE_DATE_EPOCH=0 fontTools.varLib.instancer --update-name-table"
+          },
+          "metadata": {
+            "fileSha256": "1543f04d4c55d0dc88b136993bb2312ba57c648564c26256f2df316d7af02b16",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Gelasio",
+              "subfamily": "Regular",
+              "fullName": "Gelasio Regular",
+              "postscriptName": "Gelasio-Regular"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": false,
+              "bold": false,
+              "styleKey": "regular"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1900,
+                "descent": -700,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 1900,
+                "descent": -700,
+                "lineGap": 0
+              },
+              "win": {
+                "ascent": 2600,
+                "descent": 800
+              },
+              "useTypoMetrics": true,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "unknown",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "gelasio#bold#w700#5a1b9bd7",
+          "family": "Gelasio",
+          "styleKey": "bold",
+          "weight": 700,
+          "style": "normal",
+          "fileName": "Gelasio-Bold.ttf",
+          "fileSha256": "5a1b9bd72ba16e8ac4e12ac59d95b26a95c1fea67f5fbf07f63b0edbd6b049ab",
+          "instancedFrom": {
+            "sourceFamily": "Gelasio",
+            "sourceFileName": "Gelasio[wght].ttf",
+            "sourceFileSha256": "4daecea457258c9ebeb8bc99ed3fd24353618bfad3ea4b93fa0b5d0468fc04e4",
+            "axes": {
+              "wght": 700
+            },
+            "tool": "fontTools.varLib.instancer",
+            "toolVersion": "4.63.0",
+            "reproNote": "SOURCE_DATE_EPOCH=0 fontTools.varLib.instancer --update-name-table"
+          },
+          "metadata": {
+            "fileSha256": "5a1b9bd72ba16e8ac4e12ac59d95b26a95c1fea67f5fbf07f63b0edbd6b049ab",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Gelasio",
+              "subfamily": "Bold",
+              "fullName": "Gelasio Bold",
+              "postscriptName": "Gelasio-Bold"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": false,
+              "bold": true,
+              "styleKey": "bold"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1900,
+                "descent": -700,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 1900,
+                "descent": -700,
+                "lineGap": 0
+              },
+              "win": {
+                "ascent": 2600,
+                "descent": 800
+              },
+              "useTypoMetrics": true,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "unknown",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "gelasio#italic#w400#be1243a9",
+          "family": "Gelasio",
+          "styleKey": "italic",
+          "weight": 400,
+          "style": "italic",
+          "fileName": "Gelasio-Italic.ttf",
+          "fileSha256": "be1243a9217091059073ff906692aafb43afa9e32332f6c24c68420d66ae79fe",
+          "instancedFrom": {
+            "sourceFamily": "Gelasio",
+            "sourceFileName": "Gelasio-Italic[wght].ttf",
+            "sourceFileSha256": "52559e845a4d33514e5f93bb9ae7dbeae1894a53f2c565a15f18af40cd337c09",
+            "axes": {
+              "wght": 400
+            },
+            "tool": "fontTools.varLib.instancer",
+            "toolVersion": "4.63.0",
+            "reproNote": "SOURCE_DATE_EPOCH=0 fontTools.varLib.instancer --update-name-table"
+          },
+          "metadata": {
+            "fileSha256": "be1243a9217091059073ff906692aafb43afa9e32332f6c24c68420d66ae79fe",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Gelasio",
+              "subfamily": "Italic",
+              "fullName": "Gelasio Italic",
+              "postscriptName": "GelasioItalic-Italic"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": true,
+              "bold": false,
+              "styleKey": "italic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1900,
+                "descent": -700,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 1900,
+                "descent": -700,
+                "lineGap": 0
+              },
+              "win": {
+                "ascent": 2600,
+                "descent": 800
+              },
+              "useTypoMetrics": true,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "unknown",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "gelasio#boldItalic#w700#6f3b3f7a",
+          "family": "Gelasio",
+          "styleKey": "boldItalic",
+          "weight": 700,
+          "style": "italic",
+          "fileName": "Gelasio-BoldItalic.ttf",
+          "fileSha256": "6f3b3f7a646f05bfe2c0581e2a6b0671da288e0680550731e2e5682d572bbed8",
+          "instancedFrom": {
+            "sourceFamily": "Gelasio",
+            "sourceFileName": "Gelasio-Italic[wght].ttf",
+            "sourceFileSha256": "52559e845a4d33514e5f93bb9ae7dbeae1894a53f2c565a15f18af40cd337c09",
+            "axes": {
+              "wght": 700
+            },
+            "tool": "fontTools.varLib.instancer",
+            "toolVersion": "4.63.0",
+            "reproNote": "SOURCE_DATE_EPOCH=0 fontTools.varLib.instancer --update-name-table"
+          },
+          "metadata": {
+            "fileSha256": "6f3b3f7a646f05bfe2c0581e2a6b0671da288e0680550731e2e5682d572bbed8",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Gelasio",
+              "subfamily": "Bold Italic",
+              "fullName": "Gelasio Bold Italic",
+              "postscriptName": "GelasioItalic-BoldItalic"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": true,
+              "bold": true,
+              "styleKey": "boldItalic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1900,
+                "descent": -700,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 1900,
+                "descent": -700,
+                "lineGap": 0
+              },
+              "win": {
+                "ascent": 2600,
+                "descent": 800
+              },
+              "useTypoMetrics": true,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "unknown",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

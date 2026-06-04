@@ -42,7 +42,23 @@ describe("loadCorpus (open-font corpus manifests)", () => {
       "regular",
     ]);
     expect(lsn?.license).toBe("GPLv2-with-font-exception");
-    expect(faces.length).toBe(24);
+    expect(faces.length).toBe(28); // 20 ship-set + 4 LSN + 4 Gelasio instances
+  });
+
+  test("Gelasio instances carry full variable-instance provenance (instancedFrom)", () => {
+    const gen = manifests.find(
+      (m) => m.corpusId === "generated-instances-2026-06-03",
+    );
+    const gelasio = gen?.families.find((f) => f.family === "Gelasio");
+    expect(gelasio?.faces.length).toBe(4);
+    const bold = gelasio?.faces.find((f) => f.styleKey === "bold");
+    expect(bold?.instancedFrom).toBeTruthy();
+    expect(bold?.instancedFrom?.sourceFileName).toBe("Gelasio[wght].ttf");
+    expect(bold?.instancedFrom?.axes.wght).toBe(700);
+    expect(bold?.instancedFrom?.sourceFileSha256).toMatch(HEX64);
+    expect(bold?.instancedFrom?.tool).toContain("instancer");
+    // every Gelasio face is generated, so every one must carry instancedFrom.
+    for (const f of gelasio?.faces ?? []) expect(f.instancedFrom).toBeTruthy();
   });
 
   test("every face fileSha256 is well-formed and globally unique (dedup by hash)", () => {
