@@ -35,10 +35,12 @@ export type {
   MeasurementKind,
   MeasurementResult,
   TopCandidatesMeasurement,
+  VariableInstanceProvenance,
 } from "./types";
 
 import shipSetCorpus from "../data/corpus/current-ship-set-2026-06-03.json";
 import futureDirectCandidatesCorpus from "../data/corpus/future-direct-candidates-2026-06-03.json";
+import generatedInstancesCorpus from "../data/corpus/generated-instances-2026-06-03.json";
 import recordsData from "../data/registry/records.json";
 import type { CorpusManifest, EvidenceRecord } from "./types";
 
@@ -60,6 +62,7 @@ export function loadCorpus(): CorpusManifest[] {
   return [
     shipSetCorpus as unknown as CorpusManifest,
     futureDirectCandidatesCorpus as unknown as CorpusManifest,
+    generatedInstancesCorpus as unknown as CorpusManifest,
   ];
 }
 
