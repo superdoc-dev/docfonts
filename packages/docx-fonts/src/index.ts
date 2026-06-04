@@ -1,6 +1,8 @@
 /**
  * @docfonts/docx-fonts - parse font declarations from a .docx: theme1.xml (major/minor), w:rFonts
- * (explicit typefaces + theme references), styles, headers, and footers. Knows DOCX only.
+ * (explicit typefaces + theme references) across the main story, styles, headers, footers,
+ * footnotes, endnotes, and comments. Text-box runs are covered (they live inside those parts).
+ * Knows DOCX only.
  *
  * Boundary: must NOT import @docfonts/core (scoring) or @docfonts/font-metadata (SFNT parsing).
  * Output is the set of declared/used font names; scoring + resolution happen elsewhere.
@@ -98,12 +100,12 @@ export function scanDocxFonts(docxBytes: Uint8Array): DocxFontUsage {
     else if (/^major/i.test(value) && theme?.major) declared.add(theme.major);
   };
 
-  // Parts that carry run / style font declarations.
-  const parts = Object.keys(zip).filter(
-    (p) =>
-      p === "word/document.xml" ||
-      p === "word/styles.xml" ||
-      /^word\/(header|footer)\d*\.xml$/.test(p),
+  // Parts that carry run / style font declarations. Text-box runs live inside these parts (e.g.
+  // w:txbxContent in the document/headers), so they are covered without a separate pass.
+  const parts = Object.keys(zip).filter((p) =>
+    /^word\/(document|styles|footnotes|endnotes|comments|header\d*|footer\d*)\.xml$/.test(
+      p,
+    ),
   );
   for (const path of parts) {
     const xml = entryText(zip, path);

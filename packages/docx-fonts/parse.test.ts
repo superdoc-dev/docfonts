@@ -70,6 +70,23 @@ describe("scanDocxFonts", () => {
     expect(u.theme).toBeUndefined();
   });
 
+  test("covers fonts in footnotes, endnotes, and comments", () => {
+    const part = (font: string) =>
+      `<w:root xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:p><w:r><w:rPr><w:rFonts w:ascii="${font}"/></w:rPr></w:r></w:p></w:root>`;
+    const u = scanDocxFonts(
+      docx({
+        "word/document.xml": DOC,
+        "word/footnotes.xml": part("Garamond"),
+        "word/endnotes.xml": part("Palatino Linotype"),
+        "word/comments.xml": part("Courier New"),
+      }),
+    );
+    expect(u.declared).toContain("Garamond");
+    expect(u.declared).toContain("Palatino Linotype");
+    expect(u.declared).toContain("Courier New");
+  });
+
   test("tolerates non-standard namespace prefixes on elements (OOXML binds ns, not the prefix)", () => {
     const doc = `<x:document xmlns:x="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><x:body>
       <x:p><x:r><x:rPr><x:rFonts x:ascii="Tahoma"/></x:rPr></x:r></x:p></x:body></x:document>`;
