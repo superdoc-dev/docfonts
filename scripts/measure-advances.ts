@@ -31,6 +31,11 @@ import {
 } from "@docfonts/registry";
 import { advanceDelta, LATIN_PROSE_V1 } from "./measure/advance-delta";
 import { toAnalyticMeasurement } from "./measure/measurement";
+import {
+  formatSkipReport,
+  planMeasurements,
+  type SkippedItem,
+} from "./measure/plan";
 
 const slug = (s: string) =>
   s
@@ -80,76 +85,89 @@ async function main() {
     );
   }
 
+  // Decide what to measure and what to skip BEFORE reading candidate bytes, so the run self-audits.
+  const hasOracle = (originalFont: string, styleKey: string) =>
+    oracles.has(`${originalFont.toLowerCase()}|${styleKey}`);
+  const { planned, skipped } = planMeasurements(
+    records,
+    corpus.map(({ face: c }) => ({
+      family: c.family,
+      candidateFaceId: c.candidateFaceId,
+      fileName: c.fileName,
+      fileSha256: c.fileSha256,
+      styleKey: c.styleKey,
+    })),
+    hasOracle,
+  );
+
   const measurements: AnalyticAdvanceMeasurement[] = [];
   const byFile = new Map<string, AnalyticAdvanceMeasurement[]>();
+  const runtimeSkips: SkippedItem[] = [];
 
-  for (const rec of records) {
-    const candFamily = rec.candidate?.candidateFamily;
-    if (!candFamily) continue; // no_substitute / preserve / customer-supplied: nothing to measure
-    for (const { face: cf } of corpus.filter(
-      (c) => c.face.family === candFamily,
-    )) {
-      const oracle = oracles.get(
-        `${rec.originalFont.toLowerCase()}|${cf.styleKey}`,
+  for (const p of planned) {
+    const oracle = oracles.get(`${p.originalFont.toLowerCase()}|${p.styleKey}`);
+    if (!oracle) continue; // unreachable (planner already required it), guards the type.
+
+    // resolve + verify the candidate bytes against the corpus hash (the join key must hold).
+    const candBytes = new Uint8Array(readFileSync(join(corpusDir, p.fileName)));
+    const candSha = await sha256Hex(candBytes);
+    if (candSha !== p.fileSha256) {
+      throw new Error(
+        `candidate ${p.fileName} sha ${candSha} != corpus ${p.fileSha256}`,
       );
-      if (!oracle) continue; // operator has no oracle face for this style; skip (reported below)
-
-      // resolve + verify the candidate bytes against the corpus hash (the join key must hold).
-      const candBytes = new Uint8Array(
-        readFileSync(join(corpusDir, cf.fileName)),
-      );
-      const candSha = await sha256Hex(candBytes);
-      if (candSha !== cf.fileSha256) {
-        throw new Error(
-          `candidate ${cf.fileName} sha ${candSha} != corpus ${cf.fileSha256}`,
-        );
-      }
-      const delta = advanceDelta(
-        oracle,
-        parse(candBytes, cf.fileName),
-        LATIN_PROSE_V1.strings,
-      );
-      if (!delta) continue;
-
-      // A real measurement must carry the real environment label, so require it the moment we would
-      // emit one (a 0-match dry run does not need it).
-      if (!oracleEnv) {
-        throw new Error(
-          'refusing to emit a measurement without --oracle-env "<label>" (the oracle environment)',
-        );
-      }
-
-      const m = toAnalyticMeasurement({
-        originalFont: rec.originalFont,
-        oracleEnv,
-        styleKey: cf.styleKey,
-        candidate: {
-          candidateFamily: candFamily,
-          candidateFaceId: cf.candidateFaceId,
-          fileSha256: cf.fileSha256,
-        },
-        advance: delta,
-        date,
-        testStringsRef: LATIN_PROSE_V1.id,
-      });
-      // validation (the integrity point of this layer): the measured candidate must resolve to ONE
-      // corpus face by BOTH keys together - candidateFaceId AND fileSha256 must name the same face,
-      // so the two keys can never drift apart in an emitted measurement.
-      if (
-        !corpus.some(
-          (c) =>
-            c.face.candidateFaceId === m.candidate.candidateFaceId &&
-            c.face.fileSha256 === m.candidate.fileSha256,
-        )
-      ) {
-        throw new Error(
-          `measured candidate ${m.candidate.candidateFaceId} / ${m.candidate.fileSha256} does not resolve to a single corpus face`,
-        );
-      }
-      measurements.push(m);
-      const key = slug(rec.originalFont);
-      (byFile.get(key) ?? byFile.set(key, []).get(key))?.push(m);
     }
+    const delta = advanceDelta(
+      oracle,
+      parse(candBytes, p.fileName),
+      LATIN_PROSE_V1.strings,
+    );
+    if (!delta) {
+      // an advance could not be computed (e.g. no hmtx) - a real skip, reported not swallowed.
+      runtimeSkips.push({
+        originalFont: p.originalFont,
+        candidateFamily: p.candidateFamily,
+        styleKey: p.styleKey,
+        reason: "unmeasurable",
+      });
+      continue;
+    }
+
+    // A real measurement must carry the real environment label, so require it the moment we emit one.
+    if (!oracleEnv) {
+      throw new Error(
+        'refusing to emit a measurement without --oracle-env "<label>" (the oracle environment)',
+      );
+    }
+
+    const m = toAnalyticMeasurement({
+      originalFont: p.originalFont,
+      oracleEnv,
+      styleKey: p.styleKey,
+      candidate: {
+        candidateFamily: p.candidateFamily,
+        candidateFaceId: p.candidateFaceId,
+        fileSha256: p.fileSha256,
+      },
+      advance: delta,
+      date,
+      testStringsRef: LATIN_PROSE_V1.id,
+    });
+    // validation (the integrity point of this layer): the measured candidate must resolve to ONE
+    // corpus face by BOTH keys together - candidateFaceId AND fileSha256 must name the same face.
+    if (
+      !corpus.some(
+        (c) =>
+          c.face.candidateFaceId === m.candidate.candidateFaceId &&
+          c.face.fileSha256 === m.candidate.fileSha256,
+      )
+    ) {
+      throw new Error(
+        `measured candidate ${m.candidate.candidateFaceId} / ${m.candidate.fileSha256} does not resolve to a single corpus face`,
+      );
+    }
+    measurements.push(m);
+    const key = slug(p.originalFont);
+    (byFile.get(key) ?? byFile.set(key, []).get(key))?.push(m);
   }
 
   for (const [key, ms] of byFile) {
@@ -161,14 +179,8 @@ async function main() {
   console.log(
     `measured ${measurements.length} candidate face(s) across ${byFile.size} proprietary target(s)`,
   );
-  if (!measurements.length) {
-    console.log(
-      "no measurements: check that the oracle dir holds licensed fonts whose family names",
-    );
-    console.log(
-      "match the registry originalFont values (e.g. Calibri, Cambria, Georgia).",
-    );
-  }
+  // Self-audit: always report what was skipped and why, so an evidence run is never silently partial.
+  console.log(formatSkipReport([...skipped, ...runtimeSkips]));
 }
 
 main().catch((e) => {
