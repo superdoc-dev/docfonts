@@ -16,6 +16,16 @@ export type Verdict =
 /** Public, derived gate status for an evidence record (NOT raw proof - the proof is a measurement). */
 export type GateStatus = "pass" | "not_run" | "fail";
 
+/**
+ * Normalized, renderer-neutral resolution action for a public record. Deliberately NOT a
+ * SuperDoc-internal action name - any document renderer (PDF generator, editor, ...) can map these.
+ */
+export type PolicyAction =
+  | "substitute"
+  | "category_fallback"
+  | "preserve_only"
+  | "customer_supplied";
+
 export interface AdvanceDelta {
   /** weighted-mean advance delta as a fraction (0 = identical advances). */
   meanDelta: number;

@@ -1,0 +1,12 @@
+---
+import type { Verdict } from "@docfonts/core";
+import { VERDICT_META } from "../lib/verdict";
+
+interface Props {
+  verdict: Verdict;
+}
+const { verdict } = Astro.props;
+const m = VERDICT_META[verdict];
+---
+
+<span class={`badge ${m.cls}`}><span class="g" aria-hidden="true">{m.glyph}</span>{m.label}</span>

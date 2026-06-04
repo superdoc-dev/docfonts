@@ -7,6 +7,7 @@
     "types": ["bun-types"],
     "strict": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "noEmit": true,
     "paths": {
       "@docfonts/registry": ["./packages/registry/src/index.ts"],

@@ -33,7 +33,20 @@ export type {
   MeasurementResult,
 } from "./types";
 
+import recordsData from "../data/registry/records.json";
+import { SEED_RECORDS } from "./seed";
 import type { EvidenceRecord } from "./types";
+
+/**
+ * The public evidence records. Prefers data/registry/records.json once scripts/import-research.ts
+ * populates it from corpus + measurements; until then it falls back to the compile-time-typed
+ * SEED_RECORDS so a fresh build reproduces the full site from saved source even when the committed
+ * records.json is still the empty placeholder.
+ */
+export function loadRecords(): EvidenceRecord[] {
+  const fromFile = recordsData as unknown as EvidenceRecord[];
+  return fromFile.length > 0 ? fromFile : SEED_RECORDS;
+}
 
 /** Evidence records whose originalFont matches `name`, case-insensitive. Pure. */
 export function findByOriginal(

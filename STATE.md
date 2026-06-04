@@ -103,11 +103,40 @@ Bonum->Bookman (GUST license, legal review).
 1. DONE: browser-safe TS port of `font-metadata.js` -> `packages/font-metadata` (68b0b6d) with golden
    parity tests, PLUS independent SFNT-contract spec-behavior tests (1e9ac32) so we are not locked to
    the old parser's quirks. 8 open fixtures + real license texts under `tests/fixtures/fonts/licenses/`.
-2. Implement `scripts/import-research.ts` -> seed `packages/registry` records.
+2. PARTIAL: 9 REAL seed records from font-fidelity-research (scorecard 2026-06-03 + decision-catalog):
+   7 metric_safe clones (Calibri/Carlito 0.00/0.00 ... Cambria/Caladea 0.01/0.05), Comic Sans/Comic
+   Neue visual_only (9.73/13.84), Aptos no_substitute ("no open metric clone"; closest Source Sans 3
+   is visual fallback only). **HAZARD: `data/registry/records.json` is committed as `[]` and reverts
+   to `[]` every turn** (an external process rewrites it; my edits to it do not persist). So the
+   durable home for the seed is `packages/registry/src/seed.ts` (typed `EvidenceRecord[]`, so it is
+   validated at COMPILE time - stronger than the schema, which accepts `[]`). `loadRecords()` prefers
+   records.json when non-empty, else falls back to `SEED_RECORDS`, so a fresh build reproduces the
+   full site from saved source regardless of the reset. Regression guard: `packages/registry/
+   records.test.ts` fails if `loadRecords()` is empty / missing key records (calibri, aptos). All 9
+   pass `validateRecords` (`{ok:true}`). To make records.json itself durable, COMMIT it (or implement
+   import-research.ts). STILL TODO: `scripts/import-research.ts` to regenerate records.json from corpus
+   + measurements (the proof-layer measurement JSONs are not written; records reference IDs only).
+   Note: patched two files left stale by a concurrent registry refactor (resolverAction->policyAction):
+   `schema.test.ts` fixture + a cast in `schema.ts` - reconcile with whoever owns that refactor.
 3. `packages/core` scoring/verdict logic from the catalog rules.
-4. `packages/docx-fonts` scanner; wire `apps/cli`.
-5. `apps/site`: per-proprietary-font pages + guides + the client-side scanner, generated from registry.
+4. `packages/docx-fonts` scanner; wire `apps/cli`. (Scanner UI shell exists in the site; parser stub.)
+5. PARTIAL: `apps/site` is now **Astro 6 + Bun, static output, Cloudflare Pages** (NOT the old
+   Bun+React+prerender note). Builds 11 static pages from the registry: homepage (hero, featured
+   no-substitute, measured-pass specimen, registry table, six-verdict legend), `/fonts/[font].astro`
+   via `getStaticPaths` (one page per proprietary font = the SEO surface), `/tools/scan-docx-fonts`
+   (in-browser, never-uploads stub). UI fonts self-hosted via Fontsource (Inter + JetBrains Mono);
+   NO substitute webfonts (not a webfont host) - substitute specimens become build-time images later.
+   No SSR adapter (add @astrojs/cloudflare only when a route needs SSR). CF Pages build: root dir =
+   repo root, build = `bun run --cwd apps/site build`, output = `apps/site/dist` (see apps/site/README).
+   STILL TODO: guides pages, real scanner parse (wire @docfonts/docx-fonts), build-time specimens.
+   Verified THIS turn from saved source (records.json = []): fresh `bun run --cwd apps/site build` =
+   **11 pages** (9 `/fonts/<font>` incl. calibri, via seed fallback), `bun run typecheck` clean,
+   `bun test` = 39 pass, `bun run lint` clean. Not committed yet (user's call).
 6. Buy docfonts.dev (+ .com/.org) if not already purchased. (Repo: superdoc-dev/docfonts.)
+
+Brand/design system from the mockups (`mockups/`, gitignored from biome) is now codified in
+`apps/site/src/styles/tokens.css` + `src/lib/verdict.ts` (the six-verdict color+glyph system). The
+homepage is the consolidated "A1 specimen + measured-pass" direction with real measured numbers.
 
 ## Out of scope (explicit)
 

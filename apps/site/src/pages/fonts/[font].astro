@@ -1,0 +1,256 @@
+---
+import type { EvidenceRecord } from "@docfonts/registry";
+import { loadRecords } from "@docfonts/registry";
+import FaceGrid from "../../components/FaceGrid.astro";
+import VerdictBadge from "../../components/VerdictBadge.astro";
+import Base from "../../layouts/Base.astro";
+import { VERDICT_META, pct } from "../../lib/verdict";
+
+// One canonical static page per PROPRIETARY font (the SEO surface). People search the proprietary
+// name, so the title carries it. No split /fonts and /pairs - avoid keyword cannibalization.
+export function getStaticPaths() {
+  return loadRecords().map((r) => ({ params: { font: r.evidenceId }, props: { record: r } }));
+}
+
+interface Props {
+  record: EvidenceRecord;
+}
+const { record } = Astro.props;
+const m = VERDICT_META[record.verdict];
+const sub = record.candidate?.candidateFamily ?? null;
+const title = sub
+  ? `${record.originalFont} open substitute: ${sub} (${m.label}) | docfonts`
+  : `${record.originalFont}: no open metric substitute | docfonts`;
+const description = sub
+  ? `Measured: ${sub} as an open substitute for ${record.originalFont}. Verdict ${m.label}, with advance deltas, face coverage, and license provenance.`
+  : `Measured: no open metric clone for ${record.originalFont}. The honest no, with method and date.`;
+
+const gateRows: [string, string][] = [
+  ["static", record.gates.static],
+  ["metric", record.gates.metric],
+  ["layout", record.gates.layout],
+  ["ship", record.gates.ship],
+];
+---
+
+<Base title={title} description={description}>
+  <section class="head">
+    <a class="back" href="/#registry">&larr; registry</a>
+    <div class="eyebrow">{record.candidate ? "Measured substitute" : "Measured result"}</div>
+    <h1>{record.originalFont}</h1>
+    <div class="lead">
+      {
+        sub ? (
+          <Fragment>
+            Open substitute: <b>{sub}</b>
+          </Fragment>
+        ) : (
+          "No open metric clone."
+        )
+      }
+      <VerdictBadge verdict={record.verdict} />
+    </div>
+    {record.notes && <p class="notes">{record.notes}</p>}
+  </section>
+
+  <section>
+    <div class="lbl">The measurement</div>
+    <div class="facts">
+      <div class="fact">
+        <div class="k">advance &Delta; (mean / max)</div>
+        <div class="v mono">
+          {record.advance ? `${pct(record.advance.meanDelta)} / ${pct(record.advance.maxDelta)}` : "-"}
+        </div>
+      </div>
+      <div class="fact">
+        <div class="k">face coverage</div>
+        <div class="v"><FaceGrid faces={record.faces} muted={record.verdict !== "metric_safe"} /></div>
+      </div>
+      <div class="fact">
+        <div class="k">license</div>
+        <div class="v mono">{record.candidateLicense ?? "-"}</div>
+      </div>
+      <div class="fact">
+        <div class="k">measured</div>
+        <div class="v mono">{record.measuredDate ?? "-"} · analytic-hmtx</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="lbl">Gates</div>
+    <div class="gates">
+      {
+        gateRows.map(([name, status]) => (
+          <div class={`gate g-${status}`}>
+            <span class="gn">{name}</span>
+            <span class="gs">{status.replace("_", " ")}</span>
+          </div>
+        ))
+      }
+    </div>
+    <p class="fineprint">
+      Gates are derived public status, not raw proof. A <b>metric</b> pass is advance-verified; a{" "}
+      <b>ship</b> pass additionally requires a live SuperDoc-vs-Word layout proof.
+    </p>
+  </section>
+
+  <section>
+    <div class="lbl">Provenance</div>
+    <dl class="prov">
+      {
+        record.candidateLicenseSource && (
+          <Fragment>
+            <dt>license source</dt>
+            <dd>{record.candidateLicenseSource}</dd>
+          </Fragment>
+        )
+      }
+      <dt>measurement refs</dt>
+      <dd>{record.measurementRefs.join(", ")}</dd>
+      <dt>export rule</dt>
+      <dd>{record.exportRule}</dd>
+    </dl>
+    <p class="fineprint">
+      No proprietary font binaries or raw proprietary metric tables are stored. Measurements record
+      the oracle environment as a label and reproduce against your own licensed fonts.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding: 40px 0 8px;
+  }
+  .back {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink2);
+    text-decoration: none;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: 18px;
+  }
+  h1 {
+    font-size: clamp(32px, 6vw, 46px);
+    letter-spacing: -0.03em;
+    margin: 8px 0 0;
+  }
+  .lead {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 18px;
+    margin-top: 14px;
+  }
+  .notes {
+    color: var(--ink2);
+    max-width: 70ch;
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .fact {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .fact .k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink3);
+  }
+  .fact .v {
+    margin-top: 8px;
+    font-size: 16px;
+  }
+  .fact .v.mono {
+    font-family: var(--mono);
+    font-size: 14px;
+  }
+
+  .gates {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .gate {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 14px;
+    background: var(--surface);
+    font-family: var(--mono);
+    font-size: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+  .gate .gn {
+    color: var(--ink2);
+  }
+  .gate .gs {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .g-pass .gs {
+    color: var(--v-safe);
+  }
+  .g-fail .gs {
+    color: var(--v-clay);
+  }
+  .g-not_run .gs {
+    color: var(--ink3);
+  }
+
+  .prov {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 8px 18px;
+    font-size: 13.5px;
+  }
+  .prov dt {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    align-self: baseline;
+  }
+  .prov dd {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 520px) {
+    .prov {
+      grid-template-columns: 1fr;
+      gap: 2px 0;
+    }
+    .prov dd {
+      margin-bottom: 10px;
+    }
+  }
+  .fineprint {
+    font-size: 12px;
+    color: var(--ink3);
+    margin-top: 14px;
+    max-width: 72ch;
+    line-height: 1.55;
+  }
+</style>

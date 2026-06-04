@@ -1,6 +1,6 @@
 /**
  * @docfonts/registry artifact schemas. Three layers, kept strictly separate:
- *   - CorpusManifest   = PROVENANCE (which open candidate files exist, from where, under what license)
+ *   - CorpusManifest    = PROVENANCE (which open candidate files exist, from where, under what license)
  *   - MeasurementResult = PROOF (the measured numbers + raw layout detail; one type, many kinds)
  *   - EvidenceRecord    = the PUBLIC VERDICT (derived status only; points at proof by ID)
  *
@@ -11,6 +11,7 @@ import type {
   AdvanceDelta,
   FaceCoverage,
   GateStatus,
+  PolicyAction,
   Verdict,
 } from "@docfonts/core";
 import type { FontFaceMetadata, StyleKey } from "@docfonts/font-metadata";
@@ -18,7 +19,7 @@ import type { FontFaceMetadata, StyleKey } from "@docfonts/font-metadata";
 // --- stable artifact IDs (file paths can change; these do not) ---
 export type CorpusId = string; // e.g. "google-fonts-2026-06-04"
 export type CandidateFaceId = string; // a specific open face, e.g. "carlito#bold" (+ sha-derived)
-export type MeasurementId = string; // e.g. "calibri__carlito#analytic#2026-06-03"
+export type MeasurementId = string; // e.g. "calibri__carlito#analytic_advance#2026-06-03"
 export type EvidenceId = string; // e.g. "calibri"
 
 // ===========================================================================
@@ -75,7 +76,8 @@ interface MeasurementBase {
   originalFont: string;
   /** the oracle environment, e.g. "Windows 11 M365 Word 2026-06" - label only. */
   originalOracleEnv: string;
-  candidate: CandidateRef;
+  /** the single candidate measured. Null/absent for negative or multi-candidate (bakeoff) results. */
+  candidate?: CandidateRef | null;
   methodVersion: string;
   measuredDate: string; // YYYY-MM-DD
   testStringsRef?: string; // named test-string set
@@ -85,6 +87,7 @@ interface MeasurementBase {
 /** Analytic advance comparison from hmtx (no rendering). */
 export interface AnalyticAdvanceMeasurement extends MeasurementBase {
   kind: "analytic_advance";
+  candidate: CandidateRef; // single-pair measurement always names its candidate
   advance: AdvanceDelta;
   perFace?: Partial<Record<StyleKey, AdvanceDelta>>;
 }
@@ -92,6 +95,7 @@ export interface AnalyticAdvanceMeasurement extends MeasurementBase {
 /** Browser / canvas measureText comparison. */
 export interface BrowserCanvasMeasurement extends MeasurementBase {
   kind: "browser_canvas";
+  candidate: CandidateRef;
   advance: AdvanceDelta;
   sizePx?: number;
 }
@@ -99,6 +103,7 @@ export interface BrowserCanvasMeasurement extends MeasurementBase {
 /** Live Word-vs-SuperDoc layout proof. Raw proof detail lives HERE, not on the public record. */
 export interface LiveLayoutMeasurement extends MeasurementBase {
   kind: "live_layout";
+  candidate: CandidateRef;
   proof: LayoutProof;
 }
 
@@ -111,11 +116,24 @@ export interface FaceAggregateMeasurement extends MeasurementBase {
   components?: MeasurementId[];
 }
 
+/** A bakeoff: many candidates ranked for one original. The conclusion may still be "no substitute". */
+export interface CandidateScore {
+  candidate: CandidateRef;
+  advance: AdvanceDelta;
+  faces?: FaceCoverage;
+}
+export interface TopCandidatesMeasurement extends MeasurementBase {
+  kind: "top_candidates";
+  /** ranked best-first; empty (or all failing) is a valid "no open substitute found" result. */
+  candidates: CandidateScore[];
+}
+
 export type MeasurementResult =
   | AnalyticAdvanceMeasurement
   | BrowserCanvasMeasurement
   | LiveLayoutMeasurement
-  | FaceAggregateMeasurement;
+  | FaceAggregateMeasurement
+  | TopCandidatesMeasurement;
 
 export type MeasurementKind = MeasurementResult["kind"];
 
@@ -151,12 +169,13 @@ export interface EvidenceRecord {
   faces: FaceCoverage;
   /** public advance summary; the full proof lives in the referenced measurements. */
   advance?: AdvanceDelta;
-  candidateLicense?: string;
+  candidateLicense?: string | null;
   candidateLicenseSource?: string;
   gates: Gates;
   /** proof behind this verdict, by MeasurementId (analytic + layout + ...). */
   measurementRefs: MeasurementId[];
-  resolverAction?: string; // e.g. "bundled_substitute" | "preserve_only" | "category_fallback"
+  /** normalized, renderer-neutral action (see @docfonts/core PolicyAction). */
+  policyAction?: PolicyAction;
   confidence?: string; // e.g. "R" | "high" | "medium"
   exportRule: "preserve_original_name";
   measuredDate?: string;

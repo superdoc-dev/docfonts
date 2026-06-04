@@ -21,7 +21,7 @@ const valid: EvidenceRecord = {
   candidateLicense: "OFL-1.1",
   gates: { static: "pass", metric: "pass", layout: "pass", ship: "pass" },
   measurementRefs: ["calibri__carlito#analytic#2026-06-03"],
-  resolverAction: "bundled_substitute",
+  policyAction: "substitute",
   exportRule: "preserve_original_name",
 };
 
