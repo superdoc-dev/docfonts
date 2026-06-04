@@ -100,9 +100,9 @@ Bonum->Bookman (GUST license, legal review).
 
 ## Next steps (build on top, in order)
 
-1. DONE (commit 68b0b6d): browser-safe TS port of `font-metadata.js` -> `packages/font-metadata`,
-   with golden parity tests vs the JS parser (8 open fixtures + license texts). Follow-up: add
-   independent spec-behavior tests (not only parity) so we are not locked to old quirks forever.
+1. DONE: browser-safe TS port of `font-metadata.js` -> `packages/font-metadata` (68b0b6d) with golden
+   parity tests, PLUS independent SFNT-contract spec-behavior tests (1e9ac32) so we are not locked to
+   the old parser's quirks. 8 open fixtures + real license texts under `tests/fixtures/fonts/licenses/`.
 2. Implement `scripts/import-research.ts` -> seed `packages/registry` records.
 3. `packages/core` scoring/verdict logic from the catalog rules.
 4. `packages/docx-fonts` scanner; wire `apps/cli`.
