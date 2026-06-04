@@ -114,9 +114,23 @@ Bonum->Bookman (GUST license, legal review).
    not layout; Comic Sans visual_only; Aptos no_substitute. Schema hardened: `PolicyAction`
    (renamed from resolverAction, renderer-neutral), nullable `candidate`, `top_candidates` bakeoff
    kind, stricter `validateRecords` (dup IDs, candidate shape, verdict<->candidate, ref resolution,
-   layout-gate<->proof). STILL TODO (step 3.2): `scripts/import-research.ts` to GENERATE records.json
-   + the proof-layer measurement JSONs (incl. the `face_aggregate` proofs the seed forward-references)
-   from corpus + measurements; then the site switches from `loadSeedRecords()` to `loadRecords()`.
+   layout-gate<->proof).
+2b. IMPORTER DONE (branch `caio-pizzol/registry-importer`, stacked on site-scaffold). `scripts/
+   import-research.ts` GENERATES `data/registry/records.json` (17 records) + `data/measurements/*.json`
+   (20 measurements) deterministically from the research artifacts; `--check` proves byte-reproducibility.
+   Separation of concerns (the key design): MECHANICAL fields (gates from STATUS.csv, advance/license/
+   candidate from the apryse summary, else the curated scorecard for fonts apryse lacks) are pulled from
+   STRUCTURED columns - NEVER inferred from note prose (a prose-regex earlier mis-verdicted Consolas).
+   EDITORIAL verdicts for judgment-call rows live in `data/registry/verdicts.json` (verdict-only:
+   aptos=no_substitute, consolas/lucida=cell_width_only, comic/verdana/tahoma/trebuchet/candara/
+   constantia/corbel=visual_only); `metric_safe` is the ONLY structurally-derived verdict. A row is
+   emitted only if metric_safe OR (curated verdict AND a structured advance) - else skipped+logged
+   (Calibri Light, Bacasime/Caprasimo, Helvetica, symbol/CJK/math = 7 skipped). Generated data is
+   biome-ignored (the importer owns its format). records.test.ts validates the generated registry
+   against the loaded measurement index (dangling ref = build fail). STILL TODO: switch the SITE from
+   `loadSeedRecords()` to `loadRecords()` (apps/site = other worker's domain; coordinate) and then
+   retire `seed.ts`; wire the corpus layer (per-file sha256 + parsed facts) so candidate.fileSha256 +
+   license provenance resolve end-to-end.
 3. `packages/core` scoring/verdict logic from the catalog rules.
 4. `packages/docx-fonts` scanner; wire `apps/cli`. (Scanner UI shell exists in the site; parser stub.)
 5. PARTIAL: `apps/site` is now **Astro 6 + Bun, static output, Cloudflare Pages** (NOT the old

@@ -51,9 +51,9 @@ export function loadRecords(): EvidenceRecord[] {
 }
 
 /**
- * The INTERIM research/bootstrap seed (see ./seed). NOT canonical - it lets the site render real
- * measured rows before scripts/import-research.ts materializes the registry. Callers opt in
- * explicitly (so the temporary dependency is visible); it is not a silent fallback of loadRecords().
+ * @deprecated The bootstrap seed (see ./seed). Superseded by `loadRecords()` now that
+ * scripts/import-research.ts generates the canonical registry; the site no longer consumes this.
+ * Retained as a no-op bridge until a dedicated cleanup PR removes seed.ts. Do not use in new code.
  */
 export function loadSeedRecords(): EvidenceRecord[] {
   return SEED_RECORDS;

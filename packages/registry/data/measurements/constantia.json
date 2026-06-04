@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "top_candidates",
+    "measurementId": "constantia#top_candidates#2026-06-03",
+    "originalFont": "Constantia",
+    "originalOracleEnv": "hmtx analytic (no oracle render)",
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-03",
+    "candidates": [
+      {
+        "candidate": {
+          "candidateFamily": "Caladea"
+        },
+        "advance": {
+          "meanDelta": 0.03603,
+          "maxDelta": 0.14167
+        }
+      }
+    ],
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
+  }
+]

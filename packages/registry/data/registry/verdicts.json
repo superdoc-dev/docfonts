@@ -1,0 +1,48 @@
+{
+  "_doc": "Curated EDITORIAL verdicts (and, where established, the public candidate) for rows whose taxonomy/choice is a human judgment, not a structured fact. STATUS.csv lumps these under 'visual_only'; metric_safe rows are NOT here (derived structurally from verified_shipped / layout_proven_all_faces, candidate from STATUS). This file owns ONLY the verdict + optional candidate; the importer attaches gates/advance/provenance mechanically from structured sources, and ONLY for the named candidate - it never anoints a substitute by closest advance. A row WITH a candidate is emitted only if a structured advance exists for THAT candidate; a row WITHOUT a candidate publishes candidate:null and shows the closest measured fonts only in a top_candidates measurement.",
+  "verdicts": {
+    "aptos": {
+      "verdict": "no_substitute",
+      "rationale": "No open metric clone; the closest open font reflows. Customer-supplied first, else a reported visual fallback."
+    },
+    "consolas": {
+      "verdict": "cell_width_only",
+      "candidate": "Inconsolata SemiExpanded",
+      "rationale": "Monospace cell-width match only (single advance ratio), not shape-proven; no italic face."
+    },
+    "lucida-console": {
+      "verdict": "cell_width_only",
+      "candidate": "Cousine",
+      "rationale": "Monospace cell-width match only; not shape/code-font proven."
+    },
+    "comic-sans-ms": {
+      "verdict": "visual_only",
+      "candidate": "Comic Neue",
+      "rationale": "Category-correct visual fallback (the established open Comic Sans alternative); advance too far for metric fidelity."
+    },
+    "verdana": {
+      "verdict": "visual_only",
+      "rationale": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
+    },
+    "tahoma": {
+      "verdict": "visual_only",
+      "rationale": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
+    },
+    "trebuchet-ms": {
+      "verdict": "visual_only",
+      "rationale": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
+    },
+    "candara": {
+      "verdict": "visual_only",
+      "rationale": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
+    },
+    "constantia": {
+      "verdict": "visual_only",
+      "rationale": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
+    },
+    "corbel": {
+      "verdict": "visual_only",
+      "rationale": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
+    }
+  }
+}

@@ -1,7 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.7/schema.json",
   "files": {
-    "includes": ["**", "!mockups", "!**/*.astro", "!**/dist", "!**/.astro"]
+    "includes": [
+      "**",
+      "!mockups",
+      "!**/*.astro",
+      "!**/dist",
+      "!**/.astro",
+      "!packages/registry/data/registry/records.json",
+      "!packages/registry/data/measurements"
+    ]
   },
   "linter": {
     "enabled": true

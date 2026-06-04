@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "top_candidates",
+    "measurementId": "trebuchet-ms#top_candidates#2026-06-03",
+    "originalFont": "Trebuchet MS",
+    "originalOracleEnv": "hmtx analytic (no oracle render)",
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-03",
+    "candidates": [
+      {
+        "candidate": {
+          "candidateFamily": "Fira Sans"
+        },
+        "advance": {
+          "meanDelta": 0.01424,
+          "maxDelta": 0.05218
+        }
+      }
+    ],
+    "notes": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
+  }
+]
