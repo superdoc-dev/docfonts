@@ -5,9 +5,12 @@
  * step; it is tooling, run with private oracles - it is never run in CI and commits no proprietary
  * binaries or raw oracle tables, only deltas + method + date + an oracle-env label + the candidate hash.
  *
- * Run:  bun scripts/measure-advances.ts <oracle-dir> <corpus-source-dir> [out-dir] [date]
+ * Run:  bun scripts/measure-advances.ts <oracle-dir> <corpus-source-dir> --oracle-env "<label>" [out-dir] [date]
  *   <oracle-dir>        directory of YOUR licensed proprietary fonts (e.g. Calibri.ttf). Never committed.
  *   <corpus-source-dir> directory holding the open candidate TTFs named in the corpus manifest.
+ *   --oracle-env        REQUIRED to emit: the exact oracle environment, recorded verbatim into every
+ *                       measurement (e.g. "Windows 11 26H1, M365 Word 16.0.x, 2026-06"). No default -
+ *                       real measurements must carry the real environment from the first run.
  *   [out-dir]           defaults to packages/registry/data/measurements
  *
  * Scope (first slice): measures the CURATED known pairs (loadRecords originalFont -> candidate family)
@@ -27,6 +30,7 @@ import {
   loadRecords,
 } from "@docfonts/registry";
 import { advanceDelta, LATIN_PROSE_V1 } from "./measure/advance-delta";
+import { toAnalyticMeasurement } from "./measure/measurement";
 
 const slug = (s: string) =>
   s
@@ -41,10 +45,18 @@ function parse(bytes: Uint8Array, label: string): ParsedFace {
 }
 
 async function main() {
-  const [, , oracleDir, corpusDir, outDir, dateArg] = process.argv;
+  // Pull the --oracle-env flag (value may appear anywhere); the rest are positional.
+  let oracleEnv: string | undefined;
+  const positional: string[] = [];
+  const args = process.argv.slice(2);
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--oracle-env") oracleEnv = args[++i];
+    else positional.push(args[i]);
+  }
+  const [oracleDir, corpusDir, outDir, dateArg] = positional;
   if (!oracleDir || !corpusDir) {
     throw new Error(
-      "usage: bun scripts/measure-advances.ts <oracle-dir> <corpus-source-dir> [out-dir] [date]",
+      'usage: bun scripts/measure-advances.ts <oracle-dir> <corpus-source-dir> --oracle-env "<label>" [out-dir] [date]',
     );
   }
   const date = dateArg ?? new Date().toISOString().slice(0, 10);
@@ -99,21 +111,27 @@ async function main() {
       );
       if (!delta) continue;
 
-      const m: AnalyticAdvanceMeasurement = {
-        kind: "analytic_advance",
-        measurementId: `${slug(rec.originalFont)}_${cf.styleKey}__${cf.candidateFaceId}#analytic_advance#${date}`,
+      // A real measurement must carry the real environment label, so require it the moment we would
+      // emit one (a 0-match dry run does not need it).
+      if (!oracleEnv) {
+        throw new Error(
+          'refusing to emit a measurement without --oracle-env "<label>" (the oracle environment)',
+        );
+      }
+
+      const m = toAnalyticMeasurement({
         originalFont: rec.originalFont,
-        originalOracleEnv: "operator-supplied licensed oracle (analytic-hmtx)",
+        oracleEnv,
+        styleKey: cf.styleKey,
         candidate: {
           candidateFamily: candFamily,
           candidateFaceId: cf.candidateFaceId,
           fileSha256: cf.fileSha256,
         },
-        methodVersion: "analytic-hmtx-v1",
-        measuredDate: date,
-        testStringsRef: LATIN_PROSE_V1.id,
         advance: delta,
-      };
+        date,
+        testStringsRef: LATIN_PROSE_V1.id,
+      });
       // validation (the integrity point of this layer): the measured candidate must resolve to ONE
       // corpus face by BOTH keys together - candidateFaceId AND fileSha256 must name the same face,
       // so the two keys can never drift apart in an emitted measurement.
