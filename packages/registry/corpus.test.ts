@@ -23,11 +23,26 @@ describe("loadCorpus (open-font corpus manifests)", () => {
   const manifests = loadCorpus();
   const faces = corpusFaces(manifests);
 
-  test("is present and non-trivial (the current ship-set: 5 families, 20 faces)", () => {
-    expect(manifests.length).toBeGreaterThanOrEqual(1);
-    const families = manifests.flatMap((m) => m.families);
-    expect(families.length).toBe(5);
-    expect(faces.length).toBe(20);
+  test("ship-set (5 families/20 faces) + future-direct candidates (Liberation Sans Narrow, 4 faces)", () => {
+    const ship = manifests.find(
+      (m) => m.corpusId === "current-ship-set-2026-06-03",
+    );
+    const future = manifests.find(
+      (m) => m.corpusId === "future-direct-candidates-2026-06-03",
+    );
+    expect(ship?.families.length).toBe(5);
+    expect(future?.families.map((f) => f.family)).toEqual([
+      "Liberation Sans Narrow",
+    ]);
+    const lsn = future?.families[0];
+    expect(lsn?.faces.map((f) => f.styleKey).sort()).toEqual([
+      "bold",
+      "boldItalic",
+      "italic",
+      "regular",
+    ]);
+    expect(lsn?.license).toBe("GPLv2-with-font-exception");
+    expect(faces.length).toBe(24);
   });
 
   test("every face fileSha256 is well-formed and globally unique (dedup by hash)", () => {

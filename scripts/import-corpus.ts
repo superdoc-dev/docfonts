@@ -19,11 +19,13 @@ import type {
   CorpusFamily,
   CorpusManifest,
 } from "@docfonts/registry";
+import { futureDirectCandidatesSource } from "./corpus-sources/future-direct-candidates";
 import { shipSetSource } from "./corpus-sources/ship-set";
 import type { CorpusSource } from "./corpus-sources/types";
 
-/** default input path per source, used when the caller omits it. */
-const DEFAULT_SHIP_SET = join(
+/** default input path per source, used when the caller omits it. The future-direct candidates live
+ * inside the same dated ship-set packet, so they share the default packet root. */
+const DEFAULT_PACKET = join(
   import.meta.dir,
   "..",
   "..",
@@ -34,7 +36,12 @@ const DEFAULT_SHIP_SET = join(
 
 /** registry of source adapters by id. New sources slot in here. */
 const SOURCES: Record<string, (inputPath?: string) => CorpusSource> = {
-  "current-ship-set": (p) => shipSetSource(p ?? DEFAULT_SHIP_SET),
+  "current-ship-set": (p) => shipSetSource(p ?? DEFAULT_PACKET),
+  // Static four-face future candidates only. Gelasio (variable) is deferred until variable instancing.
+  "future-direct-candidates": (p) =>
+    futureDirectCandidatesSource(p ?? DEFAULT_PACKET, [
+      "Liberation Sans Narrow",
+    ]),
 };
 
 /** logical-font names we must NEVER ingest as corpus candidates (the corpus is open fonts only). */
