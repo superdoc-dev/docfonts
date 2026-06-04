@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
-    "@docfonts/core": "workspace:*"
+    "@docfonts/core": "workspace:*",
+    "@docfonts/font-metadata": "workspace:*"
   }
 }

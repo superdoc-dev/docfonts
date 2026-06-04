@@ -13,6 +13,9 @@ export type Verdict =
   | "preserve_only"
   | "no_substitute";
 
+/** Public, derived gate status for an evidence record (NOT raw proof - the proof is a measurement). */
+export type GateStatus = "pass" | "not_run" | "fail";
+
 export interface AdvanceDelta {
   /** weighted-mean advance delta as a fraction (0 = identical advances). */
   meanDelta: number;

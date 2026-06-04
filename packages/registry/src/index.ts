@@ -1,34 +1,53 @@
 /**
- * @docfonts/registry - canonical evidence records + query helpers. The SOURCE OF TRUTH.
+ * @docfonts/registry - the source of truth for docfonts evidence, plus the corpus + measurement
+ * provenance schemas. Three artifact layers live in ./types; ./schema validates the public records.
  *
- * Boundary: may import @docfonts/core (types/verdicts). Must NOT parse fonts or DOCX. Records are
- * imported one-way from font-fidelity-research via scripts/import-research.ts; never hand-edited
- * from folklore, and nothing is metric-safe without a measurement.
+ * Boundary: composes parsed facts (@docfonts/font-metadata, TYPE-only) and verdicts (@docfonts/core).
+ * It does NOT parse fonts or DOCX, and does NOT score - it stores results and answers queries. The
+ * corpus / measurements / records live as versioned JSON under ./data, produced by
+ * scripts/import-research.ts. Query helpers here are pure and take the loaded records as input.
  */
-import type { AdvanceDelta, FaceCoverage, Verdict } from "@docfonts/core";
 
-export interface EvidenceRecord {
-  /** logical proprietary font name; preserved for export (the substitute is render-only). */
-  originalFont: string;
-  /** open substitute family, or null when no open substitute was found. */
-  candidate: string | null;
-  candidateVersion?: string;
-  candidateSourceUrl?: string;
-  candidateSha256?: string;
-  license?: string;
-  faces: FaceCoverage;
-  advance?: AdvanceDelta;
-  measurementMethod?: string;
-  measuredDate?: string;
-  /** the oracle environment the proprietary original was measured in (e.g. Word build / OS). */
-  oracleEnv?: string;
-  verdict: Verdict;
-}
+export {
+  EVIDENCE_RECORDS_SCHEMA,
+  type ValidationResult,
+  validateRecords,
+} from "./schema";
+export type {
+  AnalyticAdvanceMeasurement,
+  BrowserCanvasMeasurement,
+  CandidateFaceId,
+  CandidateRef,
+  CorpusFace,
+  CorpusFamily,
+  CorpusId,
+  CorpusManifest,
+  EvidenceId,
+  EvidenceRecord,
+  FaceAggregateMeasurement,
+  Gates,
+  LayoutProof,
+  LiveLayoutMeasurement,
+  MeasurementId,
+  MeasurementKind,
+  MeasurementResult,
+} from "./types";
 
-/** Seeded by scripts/import-research.ts. Empty until the first import. */
-export const records: EvidenceRecord[] = [];
+import type { EvidenceRecord } from "./types";
 
-export function findByOriginal(name: string): EvidenceRecord[] {
+/** Evidence records whose originalFont matches `name`, case-insensitive. Pure. */
+export function findByOriginal(
+  records: readonly EvidenceRecord[],
+  name: string,
+): EvidenceRecord[] {
   const key = name.toLowerCase();
   return records.filter((r) => r.originalFont.toLowerCase() === key);
+}
+
+/** Evidence records carrying a given verdict. Pure. */
+export function withVerdict(
+  records: readonly EvidenceRecord[],
+  verdict: EvidenceRecord["verdict"],
+): EvidenceRecord[] {
+  return records.filter((r) => r.verdict === verdict);
 }

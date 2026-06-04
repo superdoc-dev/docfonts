@@ -47,6 +47,7 @@
       "version": "0.0.1",
       "dependencies": {
         "@docfonts/core": "workspace:*",
+        "@docfonts/font-metadata": "workspace:*",
       },
     },
   },
