@@ -46,6 +46,18 @@ document-fidelity substitution registry) was found.
   numbers with your OWN legally installed proprietary fonts. Never distribute proprietary binaries.
 - **v1 scope:** static registry + client-side scanner + CLI. NO API / MCP / DB / hosted font
   downloads. Start minimal; build on top as needed.
+- **Brand (full system in `brand.md`, generated 2026-06-04).** Endorsed product brand inheriting from
+  the SuperDoc master brand (`../brand.md`); sparse file - unset sections inherit. Archetype: **The
+  Metrologist** (calm measurement authority, skeptical spine; "instrumentation, not litigation").
+  Tagline **"Document font substitution, measured"** (anchored on *substitution* not *substitutes* so
+  the negative verdict stays in scope). Hero leads measured-vs-folklore, sharpened by the honest "no,"
+  Aptos as first featured verdict (scoped to method+date). Visual is its OWN system, not inherited:
+  warm specimen-sheet paper + ink, Calibration Teal `#0F766E` accent (NOT SuperDoc Blue), and the
+  verdict taxonomy as a semantic color system (metric-safe green / cell-width amber / no-substitute
+  clay). SuperDoc Blue reserved only for the "Built by SuperDoc" mark. Keeps Inter + JetBrains Mono
+  (open fonts, orbit kinship; mono for all measured values). Copy discipline: scope negatives to
+  method+date; describe the category (alias lists, configs, QA/distribution tools) by what it is, never
+  as "wrong."
 
 ## Scaffold (done 2026-06-04)
 
@@ -88,7 +100,9 @@ Bonum->Bookman (GUST license, legal review).
 
 ## Next steps (build on top, in order)
 
-1. Port `font-metadata.js` -> `packages/font-metadata` (TS); add unit tests vs known faces.
+1. DONE (commit 68b0b6d): browser-safe TS port of `font-metadata.js` -> `packages/font-metadata`,
+   with golden parity tests vs the JS parser (8 open fixtures + license texts). Follow-up: add
+   independent spec-behavior tests (not only parity) so we are not locked to old quirks forever.
 2. Implement `scripts/import-research.ts` -> seed `packages/registry` records.
 3. `packages/core` scoring/verdict logic from the catalog rules.
 4. `packages/docx-fonts` scanner; wire `apps/cli`.
