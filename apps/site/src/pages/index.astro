@@ -1,12 +1,12 @@
 ---
 import type { EvidenceRecord } from "@docfonts/registry";
-import { loadRecords } from "@docfonts/registry";
+import { loadSeedRecords } from "@docfonts/registry";
 import Base from "../layouts/Base.astro";
 import FaceGrid from "../components/FaceGrid.astro";
 import VerdictBadge from "../components/VerdictBadge.astro";
 import { VERDICT_META, VERDICT_ORDER, pct } from "../lib/verdict";
 
-const records = loadRecords();
+const records = loadSeedRecords();
 
 // Lead with the honest no.
 const featured = records.find((r) => r.verdict === "no_substitute");

@@ -1,34 +1,40 @@
 /**
- * Regression guard for the registry data. The schema accepts an empty array, so {ok:true} alone is
- * not enough - these tests assert the records are actually present and shaped right, which is what
- * makes the site build its /fonts/<font> pages. If records.json reverts to [] and the seed is also
- * missing, this goes red instead of silently building a 2-page site.
+ * Contract tests for the two record sources, kept distinct on purpose:
+ *   - loadRecords()     -> the CANONICAL generated registry (data/registry/records.json). Empty until
+ *                          scripts/import-research.ts runs. Empty is a valid state, NOT a build failure.
+ *   - loadSeedRecords() -> the INTERIM research seed the site renders from for now. Must be present,
+ *                          schema-valid, and factually shaped.
+ * We deliberately do NOT assert "empty records.json must fall back to the seed" - that silent fallback
+ * was removed; the seed is an explicit, temporary source, not the production contract.
  */
 import { describe, expect, test } from "bun:test";
 import {
   findByOriginal,
   loadRecords,
+  loadSeedRecords,
   validateRecords,
   withVerdict,
 } from "./src/index";
-import { SEED_RECORDS } from "./src/seed";
 
-describe("loadRecords", () => {
+describe("loadRecords (canonical generated registry)", () => {
   const records = loadRecords();
 
-  test("is non-empty (the empty-array reset must fail the build, not pass it)", () => {
+  test("is an array and is schema-valid (empty is allowed until the importer runs)", () => {
+    expect(Array.isArray(records)).toBe(true);
+    expect(validateRecords(records).ok).toBe(true);
+  });
+});
+
+describe("loadSeedRecords (interim research seed)", () => {
+  const records = loadSeedRecords();
+
+  test("is present and schema-valid", () => {
     expect(records.length).toBeGreaterThanOrEqual(9);
+    expect(validateRecords(records)).toEqual({ ok: true, errors: [] });
   });
 
-  test("validates against EVIDENCE_RECORDS_SCHEMA", () => {
-    const res = validateRecords(records);
-    expect(res.ok).toBe(true);
-    expect(res.errors).toEqual([]);
-  });
-
-  test("includes the pages the site must generate", () => {
+  test("includes the load-bearing example pages (a pass and the honest no)", () => {
     const ids = records.map((r) => r.evidenceId);
-    // /fonts/calibri and /fonts/aptos are load-bearing examples (a pass and the honest no).
     expect(ids).toContain("calibri");
     expect(ids).toContain("aptos");
   });
@@ -53,16 +59,20 @@ describe("loadRecords", () => {
     }
   });
 
+  test("a layout=pass gate is backed by a face_aggregate or live_layout proof ref", () => {
+    for (const r of records) {
+      if (r.gates.layout !== "pass") continue;
+      const backed = r.measurementRefs.some(
+        (ref) =>
+          ref.includes("#face_aggregate#") || ref.includes("#live_layout#"),
+      );
+      expect(backed).toBe(true);
+    }
+  });
+
   test("no_substitute records never carry a candidate", () => {
     for (const r of withVerdict(records, "no_substitute")) {
       expect(r.candidate ?? null).toBeNull();
     }
-  });
-});
-
-describe("SEED_RECORDS", () => {
-  test("is itself non-empty and schema-valid (the durable fallback source)", () => {
-    expect(SEED_RECORDS.length).toBeGreaterThanOrEqual(9);
-    expect(validateRecords(SEED_RECORDS).ok).toBe(true);
   });
 });
