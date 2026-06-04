@@ -61,14 +61,20 @@ export function advanceDelta(
   if (weightSum === 0) return null;
   const meanDelta = weighted / weightSum;
 
-  // maxDelta: worst single-glyph advance divergence across the Latin core.
+  // maxDelta: worst single-glyph advance divergence across the Latin core. Advances are normalized to
+  // em fractions (advance / unitsPerEm) before comparison - two fonts with different unitsPerEm (e.g.
+  // Cambria 2048 vs Caladea 1000) are otherwise compared in incompatible units and a metric-identical
+  // glyph reads as a ~2x divergence.
+  const oUpem = oracle.metadata.metrics.unitsPerEm;
+  const cUpem = candidate.metadata.metrics.unitsPerEm;
+  if (!oUpem || !cUpem) return null; // cannot normalize without both em sizes; do not publish a fake max.
   let maxDelta = 0;
   for (const cp of LATIN_CORE) {
     const og = oracle.gidForCodepoint(cp);
     const cg = candidate.gidForCodepoint(cp);
     if (og === 0 || cg === 0) continue; // skip glyphs a face does not cover
-    const o = oracle.advanceWidth(og);
-    const c = candidate.advanceWidth(cg);
+    const o = oracle.advanceWidth(og) / oUpem;
+    const c = candidate.advanceWidth(cg) / cUpem;
     if (o === 0) continue;
     const d = Math.abs(c - o) / o;
     if (d > maxDelta) maxDelta = d;

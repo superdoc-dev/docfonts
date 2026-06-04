@@ -55,6 +55,25 @@ describe("advanceDelta", () => {
     expect(ba?.meanDelta).toBeGreaterThan(0);
   });
 
+  test("normalizes by unitsPerEm: same em-metrics at different upem -> ~0 max (regression)", () => {
+    // Stub two faces with IDENTICAL em-relative advances but different unitsPerEm (2048 vs 1000),
+    // the Cambria-vs-Caladea situation. Without upem normalization, maxDelta would read ~51%.
+    const stub = (upem: number, advPerEm: number) =>
+      ({
+        metadata: { metrics: { unitsPerEm: upem } },
+        hasAdvance: true,
+        gidForCodepoint: (cp: number) => cp, // any nonzero gid
+        advanceWidth: () => advPerEm * upem, // same fraction of em in both faces
+        covers: () => true,
+      }) as unknown as Parameters<typeof advanceDelta>[0];
+    const a = stub(2048, 0.5);
+    const b = stub(1000, 0.5);
+    const d = advanceDelta(a, b, [{ text: "ll", weight: 1 }]);
+    expect(d).not.toBeNull();
+    expect(d?.maxDelta as number).toBeLessThan(0.0001);
+    expect(d?.meanDelta as number).toBeLessThan(0.0001);
+  });
+
   test("returns null when no test string can be measured", () => {
     expect(
       advanceDelta(carlito, carlito, [{ text: "", weight: 1 }]),

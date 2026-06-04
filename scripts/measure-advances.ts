@@ -31,6 +31,7 @@ import {
 } from "@docfonts/registry";
 import { advanceDelta, LATIN_PROSE_V1 } from "./measure/advance-delta";
 import { toAnalyticMeasurement } from "./measure/measurement";
+import { isOracleFontFile } from "./measure/oracle-files";
 import {
   formatSkipReport,
   planMeasurements,
@@ -73,11 +74,10 @@ async function main() {
   const corpus = corpusFaces(loadCorpus());
   const records = loadRecords();
 
-  // parse every oracle font in the private dir, keyed by (family, styleKey).
+  // parse every oracle font in the private dir, keyed by (family, styleKey). .ttc collections are
+  // included (Cambria ships as Cambria.ttc); the parser reads the collection's first face.
   const oracles = new Map<string, ParsedFace>();
-  for (const file of readdirSync(oracleDir).filter((f) =>
-    /\.(ttf|otf)$/i.test(f),
-  )) {
+  for (const file of readdirSync(oracleDir).filter(isOracleFontFile)) {
     const f = parse(new Uint8Array(readFileSync(join(oracleDir, file))), file);
     oracles.set(
       `${f.metadata.names.family.toLowerCase()}|${f.metadata.face.styleKey}`,
