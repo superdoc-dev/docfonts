@@ -103,34 +103,27 @@ Bonum->Bookman (GUST license, legal review).
 1. DONE: browser-safe TS port of `font-metadata.js` -> `packages/font-metadata` (68b0b6d) with golden
    parity tests, PLUS independent SFNT-contract spec-behavior tests (1e9ac32) so we are not locked to
    the old parser's quirks. 8 open fixtures + real license texts under `tests/fixtures/fonts/licenses/`.
-2. SCHEMA + INTERIM SEED (committed; `data/registry/records.json` stays the canonical generated
-   artifact and is EMPTY until the importer runs). Two record sources are kept explicit (e8ae777):
-   `loadRecords()` returns ONLY records.json (no silent fallback); `loadSeedRecords()` returns the
-   INTERIM research seed in `packages/registry/src/seed.ts` (typed `EvidenceRecord[]`, validated at
-   COMPILE time). The site consumes `loadSeedRecords()` BY NAME so the temporary dependency is visible.
-   The seed carries 9 records from font-fidelity-research with gates/notes corrected to match
-   `STATUS.csv`: 5 clones `verified_shipped` (ship=pass); Calibri/Georgia/Arial Narrow layout-proven
-   (layout=pass, each backed by a `face_aggregate` proof ref); Georgia/Arial Narrow ship=fail on LEGAL,
-   not layout; Comic Sans visual_only; Aptos no_substitute. Schema hardened: `PolicyAction`
-   (renamed from resolverAction, renderer-neutral), nullable `candidate`, `top_candidates` bakeoff
-   kind, stricter `validateRecords` (dup IDs, candidate shape, verdict<->candidate, ref resolution,
-   layout-gate<->proof).
-2b. IMPORTER DONE (branch `caio-pizzol/registry-importer`, stacked on site-scaffold). `scripts/
-   import-research.ts` GENERATES `data/registry/records.json` (17 records) + `data/measurements/*.json`
-   (20 measurements) deterministically from the research artifacts; `--check` proves byte-reproducibility.
-   Separation of concerns (the key design): MECHANICAL fields (gates from STATUS.csv, advance/license/
-   candidate from the apryse summary, else the curated scorecard for fonts apryse lacks) are pulled from
-   STRUCTURED columns - NEVER inferred from note prose (a prose-regex earlier mis-verdicted Consolas).
-   EDITORIAL verdicts for judgment-call rows live in `data/registry/verdicts.json` (verdict-only:
-   aptos=no_substitute, consolas/lucida=cell_width_only, comic/verdana/tahoma/trebuchet/candara/
-   constantia/corbel=visual_only); `metric_safe` is the ONLY structurally-derived verdict. A row is
-   emitted only if metric_safe OR (curated verdict AND a structured advance) - else skipped+logged
-   (Calibri Light, Bacasime/Caprasimo, Helvetica, symbol/CJK/math = 7 skipped). Generated data is
-   biome-ignored (the importer owns its format). records.test.ts validates the generated registry
-   against the loaded measurement index (dangling ref = build fail). STILL TODO: switch the SITE from
-   `loadSeedRecords()` to `loadRecords()` (apps/site = other worker's domain; coordinate) and then
-   retire `seed.ts`; wire the corpus layer (per-file sha256 + parsed facts) so candidate.fileSha256 +
-   license provenance resolve end-to-end.
+2. SCHEMA + GENERATED REGISTRY + SITE (all merged to `main`). The three artifact layers
+   (CorpusManifest / MeasurementResult / EvidenceRecord) live in `packages/registry/src/types.ts`;
+   `validateRecords` enforces invariants (dup IDs, candidate shape, verdict<->candidate, ref
+   resolution, layout-gate<->proof). `PolicyAction` is renderer-neutral; `candidate` is nullable;
+   `top_candidates` is a measurement kind.
+   - `scripts/import-research.ts` GENERATES `data/registry/records.json` (17 records) +
+     `data/measurements/*.json` (20 measurements) deterministically from the research sources;
+     `--check` proves byte-reproducibility; generated data is biome-ignored (the importer owns format).
+   - Separation of concerns (the key design): MECHANICAL fields (gates from STATUS.csv; advance/license
+     from the apryse summary, else the curated scorecard) come from STRUCTURED columns - NEVER inferred
+     from note prose (a prose-regex once mis-verdicted Consolas). EDITORIAL judgment (verdict + the
+     PUBLIC candidate for non-metric rows) lives in `data/registry/verdicts.json`; the importer attaches
+     numbers ONLY to the curated candidate and never anoints by closest advance. `metric_safe` is the
+     only structurally-derived verdict (candidate from STATUS). 10 rows publish a candidate (7 clones +
+     Consolas/Lucida cell-width + Comic Neue); 6 visual rows are candidate:null with the closest font in
+     a `top_candidates` measurement only. 7 rows skipped+logged (Calibri Light, Bacasime/Caprasimo,
+     Helvetica, symbol/CJK/math).
+   - The SITE reads `loadRecords()` (the generated registry); builds 19 static pages. The interim seed
+     (`seed.ts` / `loadSeedRecords()`) has been REMOVED.
+   - STILL TODO: the corpus layer (per-file sha256 + parsed facts + license-text sha256) so
+     candidate refs resolve to exact files, not just family names - the next registry-data increment.
 3. `packages/core` scoring/verdict logic from the catalog rules.
 4. `packages/docx-fonts` scanner; wire `apps/cli`. (Scanner UI shell exists in the site; parser stub.)
 5. PARTIAL: `apps/site` is now **Astro 6 + Bun, static output, Cloudflare Pages** (NOT the old
@@ -142,11 +135,10 @@ Bonum->Bookman (GUST license, legal review).
    No SSR adapter (add @astrojs/cloudflare only when a route needs SSR). CF Pages build: root dir =
    repo root, build = `bun run --cwd apps/site build`, output = `apps/site/dist` (see apps/site/README).
    STILL TODO: guides pages, real scanner parse (wire @docfonts/docx-fonts), build-time specimens.
-   COMMITTED on branch `caio-pizzol/site-scaffold` (commit 5e6fb4d) - NOT on main, NOT pushed.
-   Now git-reproducible: a detached fresh checkout of 5e6fb4d + `bun install` (no node_modules, no
-   untracked files) builds **11 pages** incl. all 9 `/fonts/<font>` even with records.json = [], because
-   the pages read the explicit `loadSeedRecords()` (NOT a fallback) from git alone = what Cloudflare
-   Pages sees. Gates: typecheck clean, `bun test` 39 pass, lint clean.
+   MERGED to `main` (PR #1 site scaffold, PR #2 importer + site switch). The pages read the generated
+   `loadRecords()`; a fresh checkout + `bun install` builds **19 pages** (homepage + scanner + 17
+   `/fonts/<font>`). CF Pages build: root = repo root, `bun run --cwd apps/site build`, output
+   `apps/site/dist`. Gates: typecheck clean, `bun test` passing, lint clean.
 6. Buy docfonts.dev (+ .com/.org) if not already purchased. (Repo: superdoc-dev/docfonts.)
 
 Brand/design system from the mockups (`mockups/`, gitignored from biome) is now codified in
