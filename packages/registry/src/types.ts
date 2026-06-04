@@ -162,6 +162,18 @@ export interface Gates {
   ship: GateStatus;
 }
 
+/**
+ * A named glyph-level advance divergence that qualifies a single face. Surfaces the honest exception
+ * behind a face whose advances match everywhere EXCEPT a specific codepoint (e.g. Caladea Bold Italic
+ * vs Cambria on U+0060). The full numbers live in the referenced measurement; this is the public name.
+ */
+export interface GlyphException {
+  styleKey: StyleKey;
+  codepoint: number; // the diverging glyph, e.g. 0x60 (grave accent)
+  advanceDelta: number; // fractional advance divergence at this glyph (0.231 = 23.1%)
+  note: string;
+}
+
 export interface EvidenceRecord {
   evidenceId: EvidenceId;
   /** logical proprietary font name; preserved for export (the substitute is render-only). */
@@ -170,6 +182,15 @@ export interface EvidenceRecord {
   candidate?: CandidateRef | null;
   verdict: Verdict;
   faces: FaceCoverage;
+  /**
+   * Per-face verdict, AUTHORITATIVE when present. Use when faces do not share one verdict - e.g. a
+   * substitute that is metric-safe for most faces but only visual on one. When any faceVerdict differs
+   * from the top-level `verdict`, the record is QUALIFIED: consumers must show the per-face breakdown,
+   * not the top-level verdict alone, which then reads as the dominant / substitute-recommendation call.
+   */
+  faceVerdicts?: Partial<Record<StyleKey, Verdict>>;
+  /** named glyph-level advance divergences that qualify a face (e.g. one codepoint reflows). */
+  glyphExceptions?: GlyphException[];
   /** public advance summary; the full proof lives in the referenced measurements. */
   advance?: AdvanceDelta;
   candidateLicense?: string | null;

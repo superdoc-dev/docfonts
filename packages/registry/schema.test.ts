@@ -25,6 +25,27 @@ const valid: EvidenceRecord = {
   exportRule: "preserve_original_name",
 };
 
+const faceScoped: EvidenceRecord = {
+  ...valid,
+  evidenceId: "cambria",
+  originalFont: "Cambria",
+  candidate: { candidateFamily: "Caladea" },
+  faceVerdicts: {
+    regular: "metric_safe",
+    bold: "metric_safe",
+    italic: "metric_safe",
+    boldItalic: "visual_only",
+  },
+  glyphExceptions: [
+    {
+      styleKey: "boldItalic",
+      codepoint: 0x60,
+      advanceDelta: 0.231,
+      note: "grave accent reflows",
+    },
+  ],
+};
+
 describe("validateRecords (public records.json contract)", () => {
   it("accepts a well-formed metric-safe record", () => {
     expect(validateRecords([valid])).toEqual({ ok: true, errors: [] });
@@ -64,6 +85,46 @@ describe("validateRecords (public records.json contract)", () => {
 
   it("rejects non-array input", () => {
     expect(validateRecords({}).ok).toBe(false);
+  });
+});
+
+describe("face-scoped evidence (faceVerdicts + glyphExceptions)", () => {
+  it("accepts valid per-face verdicts and a named glyph exception", () => {
+    expect(validateRecords([faceScoped])).toEqual({ ok: true, errors: [] });
+  });
+
+  it("rejects an unknown face style key in faceVerdicts", () => {
+    const bad = {
+      ...faceScoped,
+      faceVerdicts: { heavy: "metric_safe" },
+    } as unknown as EvidenceRecord;
+    const r = validateRecords([bad]);
+    expect(r.ok).toBe(false);
+    expect(
+      r.errors.some((e) => e.includes("faceVerdicts has unknown style key")),
+    ).toBe(true);
+  });
+
+  it("rejects an invalid verdict value in faceVerdicts", () => {
+    const bad = {
+      ...faceScoped,
+      faceVerdicts: { boldItalic: "almost" },
+    } as unknown as EvidenceRecord;
+    expect(validateRecords([bad]).ok).toBe(false);
+  });
+
+  it("rejects a glyph exception without a note", () => {
+    const bad = {
+      ...faceScoped,
+      glyphExceptions: [
+        { styleKey: "boldItalic", codepoint: 0x60, advanceDelta: 0.2 },
+      ],
+    } as unknown as EvidenceRecord;
+    const r = validateRecords([bad]);
+    expect(r.ok).toBe(false);
+    expect(
+      r.errors.some((e) => e.includes("note must be a non-empty string")),
+    ).toBe(true);
   });
 });
 

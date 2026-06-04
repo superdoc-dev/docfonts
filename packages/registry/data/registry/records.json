@@ -48,8 +48,8 @@
       "boldItalic": true
     },
     "advance": {
-      "meanDelta": 0.0001,
-      "maxDelta": 0.0005
+      "meanDelta": 0.000081,
+      "maxDelta": 0.0017842
     },
     "candidateLicense": "Apache-2.0",
     "candidateLicenseSource": "apryse fallback summary 2026-06-04",
@@ -60,13 +60,30 @@
       "ship": "pass"
     },
     "measurementRefs": [
-      "cambria__caladea#analytic_advance#2026-06-03"
+      "cambria_regular__caladea#regular#w400#d2f6cad3#analytic_advance#2026-06-04",
+      "cambria_bold__caladea#bold#w700#74eda4fc#analytic_advance#2026-06-04",
+      "cambria_italic__caladea#italic#w400#9c968bf6#analytic_advance#2026-06-04",
+      "cambria_boldItalic__caladea#boldItalic#w700#f47a35ad#analytic_advance#2026-06-04"
     ],
     "policyAction": "substitute",
-    "confidence": "R",
+    "confidence": "high",
     "exportRule": "preserve_original_name",
-    "measuredDate": "2026-06-03",
-    "notes": "shipped; advance+harness verified, individual T4 recommended"
+    "measuredDate": "2026-06-04",
+    "notes": "Caladea is the substitute. Faces regular/bold/italic are metric-safe; boldItalic is qualified - metric-safe except the grave accent (see glyphExceptions). faceVerdicts is authoritative; the top-level verdict is the substitute recommendation, not an all-faces-pass claim.",
+    "faceVerdicts": {
+      "regular": "metric_safe",
+      "bold": "metric_safe",
+      "italic": "metric_safe",
+      "boldItalic": "visual_only"
+    },
+    "glyphExceptions": [
+      {
+        "styleKey": "boldItalic",
+        "codepoint": 96,
+        "advanceDelta": 0.231,
+        "note": "Caladea Bold Italic grave accent (U+0060) advance diverges ~23% from Cambria; lines containing it reflow. All other glyphs, and the regular/bold/italic faces, are within the direct metric threshold."
+      }
+    ]
   },
   {
     "evidenceId": "arial",

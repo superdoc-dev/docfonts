@@ -1,0 +1,74 @@
+[
+  {
+    "kind": "analytic_advance",
+    "measurementId": "cambria_regular__caladea#regular#w400#d2f6cad3#analytic_advance#2026-06-04",
+    "originalFont": "Cambria",
+    "originalOracleEnv": "macOS 26.4.1; oracle font: Cambria from Microsoft Word 16.109.3 (app DFonts bundle, Cambria.ttc face 0 + Cambriab/i/z.ttf); analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Caladea",
+      "candidateFaceId": "caladea#regular#w400#d2f6cad3",
+      "fileSha256": "d2f6cad33f191e65b68bd74e6d4f7708080a41b32db635866109df3090265d91"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0.00008097925253388681,
+      "maxDelta": 0.0017841726618704349
+    }
+  },
+  {
+    "kind": "analytic_advance",
+    "measurementId": "cambria_bold__caladea#bold#w700#74eda4fc#analytic_advance#2026-06-04",
+    "originalFont": "Cambria",
+    "originalOracleEnv": "macOS 26.4.1; oracle font: Cambria from Microsoft Word 16.109.3 (app DFonts bundle, Cambria.ttc face 0 + Cambriab/i/z.ttf); analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Caladea",
+      "candidateFaceId": "caladea#bold#w700#74eda4fc",
+      "fileSha256": "74eda4fc5ffba0d8dc4aa76d41499f5ab76168d9ed6141c6417064c6244db9b6"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0.00023782522017441092,
+      "maxDelta": 0.0018485436893203849
+    }
+  },
+  {
+    "kind": "analytic_advance",
+    "measurementId": "cambria_italic__caladea#italic#w400#9c968bf6#analytic_advance#2026-06-04",
+    "originalFont": "Cambria",
+    "originalOracleEnv": "macOS 26.4.1; oracle font: Cambria from Microsoft Word 16.109.3 (app DFonts bundle, Cambria.ttc face 0 + Cambriab/i/z.ttf); analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Caladea",
+      "candidateFaceId": "caladea#italic#w400#9c968bf6",
+      "fileSha256": "9c968bf60ba1e851cdfea77c71e3540c57792f77482dd241acc29d1425569c4e"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0.00016406461332537346,
+      "maxDelta": 0.0018194945848376142
+    }
+  },
+  {
+    "kind": "analytic_advance",
+    "measurementId": "cambria_boldItalic__caladea#boldItalic#w700#f47a35ad#analytic_advance#2026-06-04",
+    "originalFont": "Cambria",
+    "originalOracleEnv": "macOS 26.4.1; oracle font: Cambria from Microsoft Word 16.109.3 (app DFonts bundle, Cambria.ttc face 0 + Cambriab/i/z.ttf); analytic-hmtx, no render; reproduced 2026-06-04",
+    "candidate": {
+      "candidateFamily": "Caladea",
+      "candidateFaceId": "caladea#boldItalic#w700#f47a35ad",
+      "fileSha256": "f47a35ad6cd0efa9914d93f9d03c93e30c55da43674bccfabac73b3c0d522c01"
+    },
+    "methodVersion": "analytic-hmtx-v1",
+    "measuredDate": "2026-06-04",
+    "testStringsRef": "latin-prose-v1",
+    "advance": {
+      "meanDelta": 0.0001777029412881339,
+      "maxDelta": 0.23107581227436827
+    }
+  }
+]
