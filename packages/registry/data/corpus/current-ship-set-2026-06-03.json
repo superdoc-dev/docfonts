@@ -1,0 +1,1226 @@
+{
+  "corpusId": "current-ship-set-2026-06-03",
+  "source": "SuperDoc current ship-set (LibreOffice app font resources + upstream, open fonts only)",
+  "sourceUrl": "https://www.libreoffice.org/ (app font resources); per-family license URL on each family",
+  "retrievedDate": "2026-06-03",
+  "families": [
+    {
+      "family": "Caladea",
+      "license": "Apache-2.0",
+      "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
+      "licenseTextSha256": "bc001a7f4917f4be71b85ae1ed9c7a246c47ee1c0de423d855101a2addcb26ab",
+      "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
+      "faces": [
+        {
+          "candidateFaceId": "caladea#regular#w400#d2f6cad3",
+          "family": "Caladea",
+          "styleKey": "regular",
+          "weight": 400,
+          "style": "normal",
+          "fileName": "Caladea-Regular.ttf",
+          "fileSha256": "d2f6cad33f191e65b68bd74e6d4f7708080a41b32db635866109df3090265d91",
+          "metadata": {
+            "fileSha256": "d2f6cad33f191e65b68bd74e6d4f7708080a41b32db635866109df3090265d91",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Caladea",
+              "subfamily": "Regular",
+              "fullName": "Caladea",
+              "postscriptName": "Caladea-Regular",
+              "typographicFamily": "Caladea",
+              "typographicSubfamily": "Regular"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": false,
+              "bold": false,
+              "styleKey": "regular"
+            },
+            "metrics": {
+              "unitsPerEm": 1000,
+              "hhea": {
+                "ascent": 950,
+                "descent": -222,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 778,
+                "descent": -222,
+                "lineGap": 172
+              },
+              "win": {
+                "ascent": 950,
+                "descent": 222
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "serif",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "caladea#bold#w700#74eda4fc",
+          "family": "Caladea",
+          "styleKey": "bold",
+          "weight": 700,
+          "style": "normal",
+          "fileName": "Caladea-Bold.ttf",
+          "fileSha256": "74eda4fc5ffba0d8dc4aa76d41499f5ab76168d9ed6141c6417064c6244db9b6",
+          "metadata": {
+            "fileSha256": "74eda4fc5ffba0d8dc4aa76d41499f5ab76168d9ed6141c6417064c6244db9b6",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Caladea",
+              "subfamily": "Bold",
+              "fullName": "Caladea Bold",
+              "postscriptName": "Caladea-Bold",
+              "typographicFamily": "Caladea",
+              "typographicSubfamily": "Bold"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": false,
+              "bold": true,
+              "styleKey": "bold"
+            },
+            "metrics": {
+              "unitsPerEm": 1000,
+              "hhea": {
+                "ascent": 950,
+                "descent": -222,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 778,
+                "descent": -222,
+                "lineGap": 172
+              },
+              "win": {
+                "ascent": 950,
+                "descent": 222
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "serif",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "caladea#italic#w400#9c968bf6",
+          "family": "Caladea",
+          "styleKey": "italic",
+          "weight": 400,
+          "style": "italic",
+          "fileName": "Caladea-Italic.ttf",
+          "fileSha256": "9c968bf60ba1e851cdfea77c71e3540c57792f77482dd241acc29d1425569c4e",
+          "metadata": {
+            "fileSha256": "9c968bf60ba1e851cdfea77c71e3540c57792f77482dd241acc29d1425569c4e",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Caladea",
+              "subfamily": "Italic",
+              "fullName": "Caladea Italic",
+              "postscriptName": "Caladea-Italic",
+              "typographicFamily": "Caladea",
+              "typographicSubfamily": "Italic"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": true,
+              "bold": false,
+              "styleKey": "italic"
+            },
+            "metrics": {
+              "unitsPerEm": 1000,
+              "hhea": {
+                "ascent": 950,
+                "descent": -222,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 778,
+                "descent": -222,
+                "lineGap": 172
+              },
+              "win": {
+                "ascent": 950,
+                "descent": 222
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "unknown",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "caladea#boldItalic#w700#f47a35ad",
+          "family": "Caladea",
+          "styleKey": "boldItalic",
+          "weight": 700,
+          "style": "italic",
+          "fileName": "Caladea-BoldItalic.ttf",
+          "fileSha256": "f47a35ad6cd0efa9914d93f9d03c93e30c55da43674bccfabac73b3c0d522c01",
+          "metadata": {
+            "fileSha256": "f47a35ad6cd0efa9914d93f9d03c93e30c55da43674bccfabac73b3c0d522c01",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Caladea",
+              "subfamily": "Bold Italic",
+              "fullName": "Caladea Bold Italic",
+              "postscriptName": "Caladea-BoldItalic",
+              "typographicFamily": "Caladea",
+              "typographicSubfamily": "Bold Italic"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": true,
+              "bold": true,
+              "styleKey": "boldItalic"
+            },
+            "metrics": {
+              "unitsPerEm": 1000,
+              "hhea": {
+                "ascent": 950,
+                "descent": -222,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 778,
+                "descent": -222,
+                "lineGap": 172
+              },
+              "win": {
+                "ascent": 950,
+                "descent": 222
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "serif",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "Carlito",
+      "license": "OFL-1.1",
+      "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
+      "licenseTextSha256": "6119382bc0a82723217ee623e1093f9f0d704d879f12df7cb45224f3bbd160ae",
+      "licenseUrl": "http://scripts.sil.org/OFL",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
+      "faces": [
+        {
+          "candidateFaceId": "carlito#regular#w400#b4ff23ba",
+          "family": "Carlito",
+          "styleKey": "regular",
+          "weight": 400,
+          "style": "normal",
+          "fileName": "Carlito-Regular.ttf",
+          "fileSha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131",
+          "metadata": {
+            "fileSha256": "b4ff23ba370cc95a3c349336b73f9c28514a1371210f89832efc85c4b1ea7131",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Carlito",
+              "subfamily": "Regular",
+              "fullName": "Carlito",
+              "postscriptName": "Carlito"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": false,
+              "bold": false,
+              "styleKey": "regular"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1536,
+                "descent": -512,
+                "lineGap": 452
+              },
+              "typo": {
+                "ascent": 1536,
+                "descent": -512,
+                "lineGap": 452
+              },
+              "win": {
+                "ascent": 1950,
+                "descent": 550
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 0.9941520467836257,
+              "missingLatinCore": [160]
+            },
+            "classification": {
+              "category": "sans",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "carlito#bold#w700#0f62ab34",
+          "family": "Carlito",
+          "styleKey": "bold",
+          "weight": 700,
+          "style": "normal",
+          "fileName": "Carlito-Bold.ttf",
+          "fileSha256": "0f62ab34ad5d079a0a28fac01bcf7c7a724a4db4d6cb99cab9cabff382fbb80f",
+          "metadata": {
+            "fileSha256": "0f62ab34ad5d079a0a28fac01bcf7c7a724a4db4d6cb99cab9cabff382fbb80f",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Carlito",
+              "subfamily": "Bold",
+              "fullName": "Carlito Bold",
+              "postscriptName": "Carlito-Bold"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": false,
+              "bold": true,
+              "styleKey": "bold"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1536,
+                "descent": -512,
+                "lineGap": 452
+              },
+              "typo": {
+                "ascent": 1536,
+                "descent": -512,
+                "lineGap": 452
+              },
+              "win": {
+                "ascent": 1950,
+                "descent": 550
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 0.9941520467836257,
+              "missingLatinCore": [160]
+            },
+            "classification": {
+              "category": "sans",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "carlito#italic#w400#718a0663",
+          "family": "Carlito",
+          "styleKey": "italic",
+          "weight": 400,
+          "style": "italic",
+          "fileName": "Carlito-Italic.ttf",
+          "fileSha256": "718a0663864d37a4868220a19b9668a5fe10a46197f6df367b4c2c30c04c026c",
+          "metadata": {
+            "fileSha256": "718a0663864d37a4868220a19b9668a5fe10a46197f6df367b4c2c30c04c026c",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Carlito",
+              "subfamily": "Italic",
+              "fullName": "Carlito Italic",
+              "postscriptName": "Carlito-Italic"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": true,
+              "bold": false,
+              "styleKey": "italic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1536,
+                "descent": -512,
+                "lineGap": 452
+              },
+              "typo": {
+                "ascent": 1536,
+                "descent": -512,
+                "lineGap": 452
+              },
+              "win": {
+                "ascent": 1950,
+                "descent": 550
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 0.9941520467836257,
+              "missingLatinCore": [160]
+            },
+            "classification": {
+              "category": "sans",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "carlito#boldItalic#w700#380764b6",
+          "family": "Carlito",
+          "styleKey": "boldItalic",
+          "weight": 700,
+          "style": "italic",
+          "fileName": "Carlito-BoldItalic.ttf",
+          "fileSha256": "380764b6898d7b73ceae6384b2958b196d2a0428962ef3adf138d27947228666",
+          "metadata": {
+            "fileSha256": "380764b6898d7b73ceae6384b2958b196d2a0428962ef3adf138d27947228666",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Carlito",
+              "subfamily": "Bold Italic",
+              "fullName": "Carlito Bold Italic",
+              "postscriptName": "Carlito-BoldItalic"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": true,
+              "bold": true,
+              "styleKey": "boldItalic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1536,
+                "descent": -512,
+                "lineGap": 452
+              },
+              "typo": {
+                "ascent": 1536,
+                "descent": -512,
+                "lineGap": 452
+              },
+              "win": {
+                "ascent": 1950,
+                "descent": 550
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 0.9941520467836257,
+              "missingLatinCore": [160]
+            },
+            "classification": {
+              "category": "sans",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "Liberation Mono",
+      "license": "OFL-1.1",
+      "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
+      "licenseTextSha256": "6119382bc0a82723217ee623e1093f9f0d704d879f12df7cb45224f3bbd160ae",
+      "licenseUrl": "http://scripts.sil.org/OFL",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
+      "faces": [
+        {
+          "candidateFaceId": "liberation-mono#regular#w400#f2b83c76",
+          "family": "Liberation Mono",
+          "styleKey": "regular",
+          "weight": 400,
+          "style": "normal",
+          "fileName": "LiberationMono-Regular.ttf",
+          "fileSha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+          "metadata": {
+            "fileSha256": "f2b83c763e8afd21709333370bed4774337fae82267937e2b5aea7e2fbd922c1",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Mono",
+              "subfamily": "Regular",
+              "fullName": "Liberation Mono",
+              "postscriptName": "LiberationMono"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": false,
+              "bold": false,
+              "styleKey": "regular"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1705,
+                "descent": -615,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 1255,
+                "descent": -386,
+                "lineGap": 0
+              },
+              "win": {
+                "ascent": 1705,
+                "descent": 615
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": true
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "mono",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "liberation-mono#bold#w700#bd62a067",
+          "family": "Liberation Mono",
+          "styleKey": "bold",
+          "weight": 700,
+          "style": "normal",
+          "fileName": "LiberationMono-Bold.ttf",
+          "fileSha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+          "metadata": {
+            "fileSha256": "bd62a0672d0b9b6710b01df434c80ad54fa5f0835207eb7b17b7a761463067bb",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Mono",
+              "subfamily": "Bold",
+              "fullName": "Liberation Mono Bold",
+              "postscriptName": "LiberationMono-Bold"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": false,
+              "bold": true,
+              "styleKey": "bold"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1705,
+                "descent": -615,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 1297,
+                "descent": -428,
+                "lineGap": 0
+              },
+              "win": {
+                "ascent": 1705,
+                "descent": 615
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": true
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "mono",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "liberation-mono#italic#w400#605c01c7",
+          "family": "Liberation Mono",
+          "styleKey": "italic",
+          "weight": 400,
+          "style": "italic",
+          "fileName": "LiberationMono-Italic.ttf",
+          "fileSha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+          "metadata": {
+            "fileSha256": "605c01c711b44480a7508d349dfbf3264e81fa43d69e61cfa7d10b86e764c4d1",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Mono",
+              "subfamily": "Italic",
+              "fullName": "Liberation Mono Italic",
+              "postscriptName": "LiberationMono-Italic"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": true,
+              "bold": false,
+              "styleKey": "italic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1705,
+                "descent": -615,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 1255,
+                "descent": -386,
+                "lineGap": 0
+              },
+              "win": {
+                "ascent": 1705,
+                "descent": 615
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": true
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "mono",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "liberation-mono#boldItalic#w700#79451f3c",
+          "family": "Liberation Mono",
+          "styleKey": "boldItalic",
+          "weight": 700,
+          "style": "italic",
+          "fileName": "LiberationMono-BoldItalic.ttf",
+          "fileSha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+          "metadata": {
+            "fileSha256": "79451f3c09fe25116098853b7a2ca6e2436220ccc11af022979adbcf195be130",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Mono",
+              "subfamily": "Bold Italic",
+              "fullName": "Liberation Mono Bold Italic",
+              "postscriptName": "LiberationMono-BoldItalic"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": true,
+              "bold": true,
+              "styleKey": "boldItalic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1705,
+                "descent": -615,
+                "lineGap": 0
+              },
+              "typo": {
+                "ascent": 1297,
+                "descent": -428,
+                "lineGap": 0
+              },
+              "win": {
+                "ascent": 1705,
+                "descent": 615
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": true
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "mono",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "Liberation Sans",
+      "license": "OFL-1.1",
+      "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
+      "licenseTextSha256": "6119382bc0a82723217ee623e1093f9f0d704d879f12df7cb45224f3bbd160ae",
+      "licenseUrl": "http://scripts.sil.org/OFL",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
+      "faces": [
+        {
+          "candidateFaceId": "liberation-sans#regular#w400#76d04c18",
+          "family": "Liberation Sans",
+          "styleKey": "regular",
+          "weight": 400,
+          "style": "normal",
+          "fileName": "LiberationSans-Regular.ttf",
+          "fileSha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+          "metadata": {
+            "fileSha256": "76d04c18ea243f426b7de1f3ad208e927008f961dc5945e5aad352d0dfde8ee8",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Sans",
+              "subfamily": "Regular",
+              "fullName": "Liberation Sans",
+              "postscriptName": "LiberationSans"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": false,
+              "bold": false,
+              "styleKey": "regular"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1854,
+                "descent": -434,
+                "lineGap": 67
+              },
+              "typo": {
+                "ascent": 1491,
+                "descent": -431,
+                "lineGap": 307
+              },
+              "win": {
+                "ascent": 1854,
+                "descent": 434
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "sans",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "liberation-sans#bold#w700#788abee4",
+          "family": "Liberation Sans",
+          "styleKey": "bold",
+          "weight": 700,
+          "style": "normal",
+          "fileName": "LiberationSans-Bold.ttf",
+          "fileSha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+          "metadata": {
+            "fileSha256": "788abee4c806d660e8aee46689dd8540cd4bb98da03dcc9d171ce3efd99a9173",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Sans",
+              "subfamily": "Bold",
+              "fullName": "Liberation Sans Bold",
+              "postscriptName": "LiberationSans-Bold"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": false,
+              "bold": true,
+              "styleKey": "bold"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1854,
+                "descent": -434,
+                "lineGap": 67
+              },
+              "typo": {
+                "ascent": 1491,
+                "descent": -431,
+                "lineGap": 307
+              },
+              "win": {
+                "ascent": 1854,
+                "descent": 434
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "sans",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "liberation-sans#italic#w400#e5bae5c4",
+          "family": "Liberation Sans",
+          "styleKey": "italic",
+          "weight": 400,
+          "style": "italic",
+          "fileName": "LiberationSans-Italic.ttf",
+          "fileSha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+          "metadata": {
+            "fileSha256": "e5bae5c4cde31f22142753855f4f8fb86da6ff39955ed3c0a11248b0d16948b0",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Sans",
+              "subfamily": "Italic",
+              "fullName": "Liberation Sans Italic",
+              "postscriptName": "LiberationSans-Italic"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": true,
+              "bold": false,
+              "styleKey": "italic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1854,
+                "descent": -434,
+                "lineGap": 67
+              },
+              "typo": {
+                "ascent": 1491,
+                "descent": -425,
+                "lineGap": 307
+              },
+              "win": {
+                "ascent": 1854,
+                "descent": 434
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "sans",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "liberation-sans#boldItalic#w700#698da70f",
+          "family": "Liberation Sans",
+          "styleKey": "boldItalic",
+          "weight": 700,
+          "style": "italic",
+          "fileName": "LiberationSans-BoldItalic.ttf",
+          "fileSha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+          "metadata": {
+            "fileSha256": "698da70fc191cc5f33ad4d6d3fe830fe4624b898ea2e3169955928b7c491f1ee",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Sans",
+              "subfamily": "Bold Italic",
+              "fullName": "Liberation Sans Bold Italic",
+              "postscriptName": "LiberationSans-BoldItalic"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": true,
+              "bold": true,
+              "styleKey": "boldItalic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1854,
+                "descent": -434,
+                "lineGap": 67
+              },
+              "typo": {
+                "ascent": 1491,
+                "descent": -431,
+                "lineGap": 307
+              },
+              "win": {
+                "ascent": 1854,
+                "descent": 434
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "sans",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "Liberation Serif",
+      "license": "OFL-1.1",
+      "licenseSource": "SuperDoc ship-set legal-review packet 2026-06-03",
+      "licenseTextSha256": "6119382bc0a82723217ee623e1093f9f0d704d879f12df7cb45224f3bbd160ae",
+      "licenseUrl": "http://scripts.sil.org/OFL",
+      "sourceUrl": "LibreOffice app font resources (https://www.libreoffice.org/)",
+      "faces": [
+        {
+          "candidateFaceId": "liberation-serif#regular#w400#058ea808",
+          "family": "Liberation Serif",
+          "styleKey": "regular",
+          "weight": 400,
+          "style": "normal",
+          "fileName": "LiberationSerif-Regular.ttf",
+          "fileSha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+          "metadata": {
+            "fileSha256": "058ea80864aef09a23f45cbec2bb5400bc3dfbdea01c3f10538a21fcb497fb74",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Serif",
+              "subfamily": "Regular",
+              "fullName": "Liberation Serif",
+              "postscriptName": "LiberationSerif"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": false,
+              "bold": false,
+              "styleKey": "regular"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1825,
+                "descent": -443,
+                "lineGap": 87
+              },
+              "typo": {
+                "ascent": 1420,
+                "descent": -442,
+                "lineGap": 307
+              },
+              "win": {
+                "ascent": 1825,
+                "descent": 443
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "serif",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "liberation-serif#bold#w700#d754ba42",
+          "family": "Liberation Serif",
+          "styleKey": "bold",
+          "weight": 700,
+          "style": "normal",
+          "fileName": "LiberationSerif-Bold.ttf",
+          "fileSha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+          "metadata": {
+            "fileSha256": "d754ba427cfe0bca54ae052384baa8f842da5bd6550ad4da024ac441e7a7d5ce",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Serif",
+              "subfamily": "Bold",
+              "fullName": "Liberation Serif Bold",
+              "postscriptName": "LiberationSerif-Bold"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": false,
+              "bold": true,
+              "styleKey": "bold"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1825,
+                "descent": -443,
+                "lineGap": 87
+              },
+              "typo": {
+                "ascent": 1387,
+                "descent": -442,
+                "lineGap": 307
+              },
+              "win": {
+                "ascent": 1825,
+                "descent": 443
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "serif",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "liberation-serif#italic#w400#0e3dea9f",
+          "family": "Liberation Serif",
+          "styleKey": "italic",
+          "weight": 400,
+          "style": "italic",
+          "fileName": "LiberationSerif-Italic.ttf",
+          "fileSha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+          "metadata": {
+            "fileSha256": "0e3dea9f8d613e006ccfa62201f33e265d19167bd0907725c3e145368b04fc2e",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Serif",
+              "subfamily": "Italic",
+              "fullName": "Liberation Serif Italic",
+              "postscriptName": "LiberationSerif-Italic"
+            },
+            "face": {
+              "weightClass": 400,
+              "widthClass": 5,
+              "italic": true,
+              "bold": false,
+              "styleKey": "italic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1825,
+                "descent": -443,
+                "lineGap": 87
+              },
+              "typo": {
+                "ascent": 1422,
+                "descent": -442,
+                "lineGap": 307
+              },
+              "win": {
+                "ascent": 1825,
+                "descent": 443
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "serif",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        },
+        {
+          "candidateFaceId": "liberation-serif#boldItalic#w700#f17db8af",
+          "family": "Liberation Serif",
+          "styleKey": "boldItalic",
+          "weight": 700,
+          "style": "italic",
+          "fileName": "LiberationSerif-BoldItalic.ttf",
+          "fileSha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+          "metadata": {
+            "fileSha256": "f17db8af71e24d2066b587546021d4f0b296be389512b658dec3c09affeb11a7",
+            "sfntVersion": "1.0",
+            "names": {
+              "family": "Liberation Serif",
+              "subfamily": "Bold Italic",
+              "fullName": "Liberation Serif Bold Italic",
+              "postscriptName": "LiberationSerif-BoldItalic"
+            },
+            "face": {
+              "weightClass": 700,
+              "widthClass": 5,
+              "italic": true,
+              "bold": true,
+              "styleKey": "boldItalic"
+            },
+            "metrics": {
+              "unitsPerEm": 2048,
+              "hhea": {
+                "ascent": 1825,
+                "descent": -443,
+                "lineGap": 87
+              },
+              "typo": {
+                "ascent": 1387,
+                "descent": -442,
+                "lineGap": 307
+              },
+              "win": {
+                "ascent": 1825,
+                "descent": 443
+              },
+              "useTypoMetrics": false,
+              "fixedPitch": false
+            },
+            "coverage": {
+              "cmapKind": "unicode",
+              "latinCoreRatio": 1,
+              "missingLatinCore": []
+            },
+            "classification": {
+              "category": "serif",
+              "condensed": false
+            },
+            "embedding": {
+              "fsTypeValue": 0,
+              "fsTypeSummary": "installable"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
