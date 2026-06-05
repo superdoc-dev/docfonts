@@ -669,5 +669,39 @@
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
     "notes": "Apple Helvetica (macOS) measured 0.000% against already-shipped Liberation Sans (same 2048 upem, all four faces). Resolver-alias candidate only: no new font, no new license, no layout proof. Mac / Apryse toolbar parity, not Windows-Word-native; ship fails until the resolver alias lands in SuperDoc."
+  },
+  {
+    "evidenceId": "calibri-light",
+    "originalFont": "Calibri Light",
+    "candidate": {
+      "candidateFamily": "Carlito"
+    },
+    "verdict": "visual_only",
+    "faces": {
+      "regular": false,
+      "bold": false,
+      "italic": false,
+      "boldItalic": false
+    },
+    "advance": {
+      "meanDelta": 0.0148,
+      "maxDelta": 0.066
+    },
+    "candidateLicense": "OFL-1.1",
+    "candidateLicenseSource": "apryse fallback summary 2026-06-04",
+    "gates": {
+      "static": "not_run",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "measurementRefs": [
+      "calibri-light__carlito#analytic_advance#2026-06-05"
+    ],
+    "policyAction": "category_fallback",
+    "confidence": "R",
+    "exportRule": "preserve_original_name",
+    "measuredDate": "2026-06-05",
+    "notes": "No open Calibri Light clone: Carlito has no Light face. Carlito Regular is the family-correct fallback (same Calibri letterforms, already shipped), but it reflows (advance max 6.6%) and renders heavier than Light (Regular weight 400 vs Light 300). Calibri Light is its own metric design, not a lighter Calibri (it diverges 6.6% from Calibri Regular too). Chosen editorially as the family fallback, not the mathematically closest open font; resolver weight policy unresolved."
   }
 ]
