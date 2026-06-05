@@ -18,6 +18,7 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import type { StyleKey } from "@docfonts/font-metadata";
 import type { DiscoveryFace, DiscoverySnapshot } from "@docfonts/registry";
 import type { CorpusSource, RawCorpusFace } from "./corpus-sources/types";
 import { buildManifest } from "./import-corpus";
@@ -26,7 +27,7 @@ import { buildManifest } from "./import-corpus";
  *  faces of this family" - a family can carry weights/variants we have not reviewed. */
 interface PromotionEntry {
   family: string;
-  faces: string[]; // styleKeys, e.g. ["regular"]
+  faces: StyleKey[]; // e.g. ["regular"]; typed so a typo'd styleKey fails to compile
 }
 
 // Allow-list: explicit families AND faces only. Static fonts only - variable fonts are REJECTED here
