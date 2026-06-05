@@ -18,12 +18,45 @@ interface Props {
 const { record } = Astro.props;
 const m = VERDICT_META[record.verdict];
 const sub = record.candidate?.candidateFamily ?? null;
-const title = sub
-  ? `${record.originalFont} open substitute: ${sub} (${m.label}) | docfonts`
-  : `${record.originalFont}: no open metric substitute | docfonts`;
-const description = sub
-  ? `Measured: ${sub} as an open substitute for ${record.originalFont}. Verdict ${m.label}, with advance deltas, face coverage, and license provenance.`
-  : `Measured: no open metric clone for ${record.originalFont}. The honest no, with method and date.`;
+
+// Headline copy branches by verdict, not just candidate presence: policy verdicts make NO measured
+// claim, so they must not say "measured: no open clone".
+const kind: "substitute" | "no_substitute" | "preserve_only" | "customer_supplied" = sub
+  ? "substitute"
+  : record.verdict === "preserve_only"
+    ? "preserve_only"
+    : record.verdict === "customer_supplied"
+      ? "customer_supplied"
+      : "no_substitute";
+
+const HEAD = {
+  substitute: {
+    eyebrow: "Measured substitute",
+    lead: null, // rendered with the substitute name below
+    title: `${record.originalFont} open substitute: ${sub} (${m.label}) | docfonts`,
+    description: `Measured: ${sub} as an open substitute for ${record.originalFont}. Verdict ${m.label}, with advance deltas, face coverage, and license provenance.`,
+  },
+  no_substitute: {
+    eyebrow: "Measured result",
+    lead: "No open metric clone.",
+    title: `${record.originalFont}: no open metric substitute | docfonts`,
+    description: `Measured: no open metric clone for ${record.originalFont}. The honest no, with method and date.`,
+  },
+  preserve_only: {
+    eyebrow: "Policy",
+    lead: "Preserve the original. Do not substitute.",
+    title: `${record.originalFont}: preserve the original font | docfonts`,
+    description: `${record.originalFont} should not be substituted - a stand-in would show wrong glyphs. Keep the original font name.`,
+  },
+  customer_supplied: {
+    eyebrow: "Policy",
+    lead: "Customer-supplied font required.",
+    title: `${record.originalFont}: customer-supplied font | docfonts`,
+    description: `No measured open substitute for ${record.originalFont}. Policy: use a customer-supplied font, else a reported visual/category fallback.`,
+  },
+}[kind];
+const title = HEAD.title;
+const description = HEAD.description;
 
 const gateRows: [string, string][] = [
   ["static", record.gates.static],
@@ -32,6 +65,7 @@ const gateRows: [string, string][] = [
   ["ship", record.gates.ship],
 ];
 
+const measured = record.measurementRefs.length > 0;
 const qualified = isQualified(record);
 const faceRows = record.faceVerdicts
   ? FACE_ORDER.filter((f) => record.faceVerdicts?.[f]).map((f) => ({
@@ -44,7 +78,7 @@ const faceRows = record.faceVerdicts
 <Base title={title} description={description}>
   <section class="head">
     <a class="back" href="/#registry">&larr; registry</a>
-    <div class="eyebrow">{record.candidate ? "Measured substitute" : "Measured result"}</div>
+    <div class="eyebrow">{HEAD.eyebrow}</div>
     <h1>{record.originalFont}</h1>
     <div class="lead">
       {
@@ -53,7 +87,7 @@ const faceRows = record.faceVerdicts
             Open substitute: <b>{sub}</b>
           </Fragment>
         ) : (
-          "No open metric clone."
+          HEAD.lead
         )
       }
       <VerdictBadge verdict={record.verdict} qualified={qualified} />
@@ -95,29 +129,44 @@ const faceRows = record.faceVerdicts
     )
   }
 
-  <section>
-    <div class="lbl">The measurement</div>
-    <div class="facts">
-      <div class="fact">
-        <div class="k">advance &Delta; (mean / max)</div>
-        <div class="v mono">
-          {record.advance ? `${pct(record.advance.meanDelta)} / ${pct(record.advance.maxDelta)}` : "-"}
+  {
+    measured ? (
+      <section>
+        <div class="lbl">The measurement</div>
+        <div class="facts">
+          <div class="fact">
+            <div class="k">advance &Delta; (mean / max)</div>
+            <div class="v mono">
+              {record.advance
+                ? `${pct(record.advance.meanDelta)} / ${pct(record.advance.maxDelta)}`
+                : "-"}
+            </div>
+          </div>
+          <div class="fact">
+            <div class="k">face coverage</div>
+            <div class="v">
+              <FaceGrid faces={record.faces} muted={record.verdict !== "metric_safe"} />
+            </div>
+          </div>
+          <div class="fact">
+            <div class="k">license</div>
+            <div class="v mono">{record.candidateLicense ?? "-"}</div>
+          </div>
+          <div class="fact">
+            <div class="k">measured</div>
+            <div class="v mono">{record.measuredDate ?? "-"} · analytic-hmtx</div>
+          </div>
         </div>
-      </div>
-      <div class="fact">
-        <div class="k">face coverage</div>
-        <div class="v"><FaceGrid faces={record.faces} muted={record.verdict !== "metric_safe"} /></div>
-      </div>
-      <div class="fact">
-        <div class="k">license</div>
-        <div class="v mono">{record.candidateLicense ?? "-"}</div>
-      </div>
-      <div class="fact">
-        <div class="k">measured</div>
-        <div class="v mono">{record.measuredDate ?? "-"} · analytic-hmtx</div>
-      </div>
-    </div>
-  </section>
+      </section>
+    ) : (
+      <section>
+        <div class="lbl">Policy</div>
+        <p class="notes">
+          This is a policy row, not a measured comparison. {description}
+        </p>
+      </section>
+    )
+  }
 
   <section>
     <div class="lbl">Gates</div>

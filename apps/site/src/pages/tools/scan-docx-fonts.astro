@@ -29,7 +29,7 @@ import Base from "../../layouts/Base.astro";
 <script>
   import { scanDocxFonts } from "@docfonts/docx-fonts";
   import { findByOriginal, loadRecords } from "@docfonts/registry";
-  import { VERDICT_META } from "../../lib/verdict";
+  import { VERDICT_META, noCandidateLabel } from "../../lib/verdict";
 
   const input = document.getElementById("file") as HTMLInputElement;
   const drop = document.getElementById("drop") as HTMLLabelElement;
@@ -59,7 +59,11 @@ import Base from "../../layouts/Base.astro";
     const verdictCell = rec
       ? badge(rec.verdict as keyof typeof VERDICT_META, isQualified(rec))
       : `<span class="unknown">not measured yet</span>`;
-    const subCell = rec ? (sub ? esc(sub) : "<span class='dash'>no open clone</span>") : "<span class='dash'>-</span>";
+    const subCell = rec
+      ? sub
+        ? esc(sub)
+        : `<span class='dash'>${esc(noCandidateLabel(rec.verdict))}</span>`
+      : "<span class='dash'>-</span>";
     return `<tr><td class="fam">${esc(name)}${role ? `<span class="role">${role}</span>` : ""}</td>
       <td class="sub">${subCell}</td><td>${verdictCell}</td></tr>`;
   }

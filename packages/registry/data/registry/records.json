@@ -603,7 +603,7 @@
     },
     "gates": {
       "static": "not_run",
-      "metric": "fail",
+      "metric": "not_run",
       "layout": "not_run",
       "ship": "fail"
     },

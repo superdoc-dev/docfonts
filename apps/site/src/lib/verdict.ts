@@ -74,6 +74,14 @@ export function pct(fraction: number): string {
   return `${(fraction * 100).toFixed(2)}%`;
 }
 
+/** Label for the "open substitute" cell when a record has no candidate - branches by verdict so a
+ * policy row never reads as a measured "no". */
+export function noCandidateLabel(verdict: Verdict): string {
+  if (verdict === "preserve_only") return "preserve original";
+  if (verdict === "customer_supplied") return "customer-supplied";
+  return "no open clone";
+}
+
 /** The four named faces, in display order. */
 export const FACE_ORDER: StyleKey[] = [
   "regular",
