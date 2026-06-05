@@ -32,10 +32,11 @@ function packedFiles(): string[] {
 describe("publish tarball hygiene", () => {
   const files = packedFiles();
 
-  test("ships only package.json and built dist/ files", () => {
+  test("ships only package.json, README, and built dist/ files", () => {
     expect(files.length).toBeGreaterThan(0);
+    const ALLOWED_TOP = new Set(["package.json", "README.md", "LICENSE"]);
     for (const f of files) {
-      const ok = f === "package.json" || f.startsWith("dist/");
+      const ok = ALLOWED_TOP.has(f) || f.startsWith("dist/");
       expect(ok, `unexpected packed file: ${f}`).toBe(true);
     }
     // and it really did ship the built entry + its types.
