@@ -10,12 +10,9 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "paths": {
-      "@docfonts/registry": ["./packages/registry/src/index.ts"],
-      "@docfonts/fallbacks": ["./packages/fallbacks/src/index.ts"],
-      "@docfonts/core": ["./packages/core/src/index.ts"],
-      "@docfonts/font-metadata": ["./packages/font-metadata/src/index.ts"],
-      "@docfonts/docx-fonts": ["./packages/docx-fonts/src/index.ts"]
+      "@docfonts/fallbacks": ["./packages/fallbacks/src/index.ts"]
     }
   },
+  "include": ["packages/fallbacks/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/dist"]
 }

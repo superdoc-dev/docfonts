@@ -1,16 +1,9 @@
 /**
- * `@docfonts/fallbacks` public types. SELF-CONTAINED on purpose: this package is the small runtime
- * artifact a renderer imports, so it carries its own copy of the verdict/policy vocabulary rather than
- * depending on `@docfonts/core` (which would force core to be published too).
- *
- * Drift guard: the shipped {@link SUBSTITUTION_EVIDENCE} is generated from the registry artifact and a
- * test asserts it stays byte-for-byte that artifact. These unions are checked against that data at
- * BUILD time - a verdict/action value the data uses but these unions lack fails to typecheck. They are
- * NOT proactively diffed against `@docfonts/core`, so a brand-new core verdict that no row uses yet
- * would not be flagged until it appears in the data; keep this file in step with core when core grows.
+ * Public types for `@docfonts/fallbacks`. The package is self-contained so consumers install one
+ * runtime dependency.
  */
 
-/** Fidelity verdict, best to worst. Mirror of `@docfonts/core` `Verdict`. */
+/** Fidelity verdict, best to worst. */
 export type Verdict =
   | "metric_safe" // advances within the DIRECT threshold (weighted-mean <= 0.5%, worst-case <= 1%)
   | "near_metric" // LIKELY band: weighted-mean <= 1%, worst-case <= 2.5% - near-exact, a few glyphs drift
@@ -20,7 +13,7 @@ export type Verdict =
   | "preserve_only" // keep the original name, do not substitute (e.g. math / symbol fonts)
   | "no_substitute"; // no open candidate qualifies
 
-/** Renderer-neutral resolution action. Mirror of `@docfonts/core` `PolicyAction`. */
+/** Renderer-neutral resolution action. */
 export type PolicyAction =
   | "substitute" // render the named physical candidate in place of the logical font
   | "category_fallback" // no clean candidate; a same-category open font with the right letterforms
@@ -65,12 +58,10 @@ export interface GlyphException {
 }
 
 /**
- * One logical font's substitution evidence: the renderer-facing fields of a docfonts EvidenceRecord.
- * Structurally identical to the docfonts registry's exported `SubstitutionEvidence`; the shipped
- * {@link SUBSTITUTION_EVIDENCE} is generated from that artifact, and a drift test enforces the match.
+ * One logical font's structured fallback evidence.
  */
 export interface SubstitutionEvidence {
-  /** docfonts EvidenceRecord id - the provenance pointer back to the source record, e.g. "cambria". */
+  /** docfonts evidence id, e.g. "cambria". */
   evidenceId: string;
   /** the proprietary family the document asks for, e.g. "Cambria". */
   logicalFamily: string;
@@ -87,7 +78,7 @@ export interface SubstitutionEvidence {
   gates: SubstituteGates;
   /** renderer-neutral action; `substitute` is what makes a consumer map the family. */
   policyAction: PolicyAction;
-  /** proof pointers back into docfonts, by MeasurementId. */
+  /** stable measurement ids behind the row. */
   measurementRefs: string[];
   /** SPDX id of the substitute's license. */
   candidateLicense?: string | null;
@@ -113,6 +104,6 @@ export interface FontFallback {
    * Cambria). Read `verdict` (and the row's `faceVerdicts`) for the precise tier.
    */
   faithful: boolean;
-  /** docfonts provenance pointer - the EvidenceRecord this came from. */
+  /** stable reviewed-evidence id. */
   evidenceId: string;
 }

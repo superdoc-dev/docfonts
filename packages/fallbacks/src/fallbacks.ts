@@ -1,17 +1,7 @@
 /**
- * The V1 ergonomic surface over {@link SUBSTITUTION_EVIDENCE}: a single recommendation lookup,
- * `getFallback`, and a renderer-safe batch map, `deriveFallbackMap`.
- *
- * The asset-availability split is deliberate. `getFallback` is the broad lookup - "what does docfonts
- * recommend for this family?" - and gating by what the consumer bundles is OPTIONAL, because the caller
- * inspects the single result. `deriveFallbackMap` is the map a renderer wires wholesale into its
- * resolver, so `hasFamily` is REQUIRED: a batch map must never silently include a substitute whose font
- * the consumer cannot load. That asymmetry is the whole safety contract - docfonts knows more
- * substitutes than any one renderer ships, and the render map only carries the ones it can actually use.
- *
- * Face-level routing (a Regular-only substitute like Baskerville -> Bacasime) is deliberately NOT here:
- * the consumer already owns face-aware absence handling and applies its own `hasFace` after the family
- * is chosen. The structured row (faces / faceVerdicts / glyphExceptions) is on SUBSTITUTION_EVIDENCE.
+ * Asset-aware fallback helpers. `getFallback` can inspect the raw recommendation; `deriveFallbackMap`
+ * requires `hasFamily` because a renderer map must not include fonts the consumer cannot load. Face
+ * routing stays consumer-owned; this package answers which family, not which face.
  */
 import { SUBSTITUTION_EVIDENCE } from "./data";
 import type {
@@ -44,8 +34,7 @@ const FAITHFUL_VERDICTS: ReadonlySet<Verdict> = new Set<Verdict>([
   "near_metric",
 ]);
 
-/** Actions that mean "render this physical family". preserve_only / customer_supplied deliberately do
- *  NOT substitute, so they never yield a fallback even if a row carried a physical family. */
+/** Actions that mean "render this physical family". */
 const RENDERABLE_ACTIONS: ReadonlySet<PolicyAction> = new Set<PolicyAction>([
   "substitute",
   "category_fallback",
@@ -70,11 +59,8 @@ function toFallback(
   row: SubstitutionEvidence,
   hasFamily: HasFamily | undefined,
 ): FontFallback | null {
-  // No recommended physical family (no_substitute / a candidate-less category row): nothing to render.
   if (row.physicalFamily === null) return null;
-  // preserve_only / customer_supplied mean "do not substitute" - never render their family.
   if (!RENDERABLE_ACTIONS.has(row.policyAction)) return null;
-  // The consumer does not ship this family: keep the row inert rather than route to an unloadable font.
   if (hasFamily && !hasFamily(row.physicalFamily)) return null;
   return {
     family: row.physicalFamily,
