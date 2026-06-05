@@ -16,7 +16,10 @@
  * google-fonts). That repo is not part of this public project; only the sanitized manifest is committed.
  *
  * Run:  bun run scripts/import-discovery.ts            write + validate
- *       bun run scripts/import-discovery.ts --check    verify committed == generated, no write (CI gate)
+ *       bun run scripts/import-discovery.ts --check    verify committed == generated, no write (LOCAL
+ *                                                      only - needs the sibling research corpus; CI
+ *                                                      validates the committed snapshot via the tests
+ *                                                      instead, since it has no access to that corpus)
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
