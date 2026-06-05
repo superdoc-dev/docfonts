@@ -22,7 +22,7 @@ regenerating from them would overclaim those rows. See that script's header for 
 product-process wording, cross-repo PR references, internal artifact filenames, and internal ticket
 IDs are removed or generalized. `scripts/research-sources.test.ts` fails the build if a disallowed
 marker (Slack/dashboard/SSO URLs, cross-repo `PR #` refs, `SD-`/`IT-` ticket IDs, etc.) reappears here
-or in the generated registry notes. Customer names and free-form internal prose still need human review.
+or in the committed registry notes. Customer names and free-form internal prose still need human review.
 
 **Snapshots, not a live feed.** Dates in the filenames are the measurement run, not the vendor date.
 Refreshing them is a manual, reviewed step.

@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.12
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun test
+      - run: bun run lint
+      - run: bun run build
+      # NOTE: import-research --check is intentionally NOT run here. records.json is hand-curated and
+      # is deliberately more honest than the coarse research snapshots can reproduce (see that
+      # script's header), so a --check gate would force overclaims. The public-repo hygiene test in
+      # `bun test` guards the vendored snapshots and registry notes instead.

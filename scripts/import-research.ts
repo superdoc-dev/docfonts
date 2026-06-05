@@ -332,7 +332,7 @@ function main() {
               italic: true,
               boldItalic: true,
             },
-            notes: "All four faces layout-proven vs Word (family-status.json).",
+            notes: "All four faces layout-proven vs Word.",
           } satisfies FaceAggregateMeasurement);
         }
       } else if (structural) {

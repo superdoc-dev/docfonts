@@ -1,9 +1,8 @@
 /**
  * Public-repo hygiene gate. This project ships to public GitHub, so the vendored research snapshots
- * and the generated registry must not leak internal-only references. dev/CLAUDE.md treats Linear IDs
- * as safe-to-include, but for this public evidence repo we keep them out entirely (a stricter choice).
- * This test catches the unambiguous leaks; customer names and free-form internal prose still need
- * human review.
+ * and committed registry must not leak internal-only references. For this public evidence repo, even
+ * internal ticket IDs stay out. This test catches the unambiguous leaks; customer names and free-form
+ * internal prose still need human review.
  */
 import { describe, expect, it } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
@@ -36,7 +35,7 @@ function violations(label: string, text: string): string[] {
   );
 }
 
-describe("public-repo hygiene (no internal markers in sources or generated registry)", () => {
+describe("public-repo hygiene (no internal markers in sources or committed registry)", () => {
   it("vendored research CSV sources are clean", () => {
     const v: string[] = [];
     for (const f of readdirSync(SOURCES).filter((f) => f.endsWith(".csv")))
@@ -49,7 +48,7 @@ describe("public-repo hygiene (no internal markers in sources or generated regis
     expect(v).toEqual([]);
   });
 
-  it("generated registry record notes are clean", () => {
+  it("committed registry record notes are clean", () => {
     const v: string[] = [];
     for (const r of JSON.parse(readFileSync(RECORDS, "utf8")) as {
       evidenceId: string;
