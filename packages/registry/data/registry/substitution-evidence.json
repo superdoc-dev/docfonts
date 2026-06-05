@@ -548,7 +548,7 @@
       "static": "not_run",
       "metric": "pass",
       "layout": "not_run",
-      "ship": "fail"
+      "ship": "pass"
     },
     "policyAction": "substitute",
     "measurementRefs": [
