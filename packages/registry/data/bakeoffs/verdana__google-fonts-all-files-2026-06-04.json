@@ -1,0 +1,352 @@
+{
+  "target": "Verdana",
+  "targetFace": {
+    "styleKey": "regular",
+    "weight": 400,
+    "italic": false
+  },
+  "targetCategory": "sans",
+  "oracleEnv": "Verdana (Microsoft Office for Mac DFonts), hmtx analytic",
+  "corpusSnapshotId": "google-fonts-all-files-2026-06-04",
+  "methodVersion": "analytic-hmtx-v1",
+  "testStringsRef": "latin-prose-v1",
+  "measuredDate": "2026-06-05",
+  "consideredFaces": 470,
+  "candidates": [
+    {
+      "family": "LINE Seed JP",
+      "fileSha256": "04a6c0077ddb8ba5af3638bd76b4600708dde7b38df047b40fbe6f3af358d3c3",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.017918,
+        "maxDelta": 0.845045
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Mingzat",
+      "fileSha256": "c1507a565a1d263c6473a2b36944d5244bfa5b6e6f6af023a3dc8c7234fedd05",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.019098,
+        "maxDelta": 0.630353
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "RocknRoll One",
+      "fileSha256": "dc0f5ff975851827f63f2c6bfed128ffbca14b6399a10fb5e1711215c0108526",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.019489,
+        "maxDelta": 0.370814
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Tsukimi Rounded",
+      "fileSha256": "4e7ca0c575bc8efd1bd027ed7b07666d7d59da2a98611b129d647da75eca3dd2",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.023667,
+        "maxDelta": 0.489455
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Capriola",
+      "fileSha256": "03bd906c00b8618af3b0844a45165b699e2fcccd589d29812b5c9f83afd49e75",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.024478,
+        "maxDelta": 0.47235
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Momo Trust Display",
+      "fileSha256": "f10dcc94ccc58c6a1c538d18f53008ac7d02a9e1e54b6b7cfd219a01d56ec0d3",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.025188,
+        "maxDelta": 0.473
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Armata",
+      "fileSha256": "ee4a6a0410bafc1d0b46bd4551e5360d4ef7603eea1a9c783d46e9569a936905",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.027162,
+        "maxDelta": 0.608295
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Duru Sans",
+      "fileSha256": "edd15a5596318ecc635484f7b4fcb34c6dcaa7be8f85c4d2e9273ad8db688ff0",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.028506,
+        "maxDelta": 0.610599
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Aldrich",
+      "fileSha256": "bcabd8e6db3e8cb59242e8dbdef30bfd9b25be600e2e8f506618008f99138d47",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.028574,
+        "maxDelta": 0.449309
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Nobile",
+      "fileSha256": "0926ef055e7637dd23eeb1717a45b6eef4e5c5c1bd99a9516d2770e587ae4524",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.028766,
+        "maxDelta": 0.362768
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Encode Sans Expanded",
+      "fileSha256": "1394caa3b6da26947b37d0200d02b7f77bf4d63ab4befca5b5f1deef0c53d284",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.030734,
+        "maxDelta": 0.397712
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Russo One",
+      "fileSha256": "bc0abcc660bd8b7ad3000ecb2898a27c58a29a50f7ec81652fa12e75148d09df",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.031029,
+        "maxDelta": 0.606759
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Paytone One",
+      "fileSha256": "1c07073b0b578199b54c7866d55e2b631d285e8aa4bb4fbc08809d980cd49b14",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.035274,
+        "maxDelta": 0.468089
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Montserrat Alternates",
+      "fileSha256": "3b7c563f2087888279fdb7c21cc57b073ba1931dbe413e1202485b46ebfb7ead",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.035523,
+        "maxDelta": 0.533144
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Mitr",
+      "fileSha256": "847340933424d473bff6d011bc08543a2a2d2a670985a93e3431e3ac8926068f",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.03569,
+        "maxDelta": 0.552963
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Poppins",
+      "fileSha256": "90373e7d838d32468438fc3e152dca0bdb12edcab99ea639f158790b1ba1fd05",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.036298,
+        "maxDelta": 0.600467
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Encode Sans Expanded",
+      "fileSha256": "525f758bf7d5e5634e459e63d4a8575ca585e2eeed4bec26e2d3e925a266c6ee",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.037586,
+        "maxDelta": 0.434047
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Zalando Sans SemiExpanded",
+      "fileSha256": "d4ef6e1d652da0590b7d0cceb5b4d5a1a063b4927be99f52dcb7a679eb3ae92b",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.037774,
+        "maxDelta": 0.421
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Sarpanch",
+      "fileSha256": "9f1ab5f1ba96df5a968c5f7f02bbb560b1af1bdd92bba8a33ef09384cc41b7be",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.038301,
+        "maxDelta": 0.495708
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Sora",
+      "fileSha256": "84ff7096ae3ec6c8be47d906d1a0ba4de7f2ce78c615275c77301964a316e16c",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.039535,
+        "maxDelta": 0.528111
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Mitr",
+      "fileSha256": "3763923ca8d860f9c06f483f663cd3d8d94e9ed8c2f35a7ce35bb6b13e1219fd",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.039582,
+        "maxDelta": 0.583164
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Prompt",
+      "fileSha256": "6a42451be692eba473c639f4bcdc6c6d9160a3d632319a64287e3ed1fae15d6b",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.039644,
+        "maxDelta": 0.556424
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Fahkwang",
+      "fileSha256": "050aba7762b61b85f3392423adbe221b71c854312ccb548709c4bc61e4518741",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.039782,
+        "maxDelta": 0.535346
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "M PLUS 1p",
+      "fileSha256": "28b2f52a40ae988064810b71d67e127df75a16e08d7df4e192d1006e4075394f",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.039919,
+        "maxDelta": 0.513954
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Tsukimi Rounded",
+      "fileSha256": "15f8a35fba85cda8513f99b3cb334fcaa4762833c7dae65500bed281bb8d9c74",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.04106,
+        "maxDelta": 0.489455
+      },
+      "tier": "visual"
+    }
+  ],
+  "rejected": [
+    {
+      "reason": "category_mismatch",
+      "count": 1069
+    },
+    {
+      "reason": "coverage_below_threshold",
+      "count": 58
+    }
+  ]
+}
