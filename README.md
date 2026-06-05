@@ -1,7 +1,6 @@
 # docfonts
 
-[![CI](https://github.com/superdoc-dev/docfonts/actions/workflows/ci.yml/badge.svg)](https://github.com/superdoc-dev/docfonts/actions/workflows/ci.yml)
-[![Release](https://github.com/superdoc-dev/docfonts/actions/workflows/release.yml/badge.svg)](https://github.com/superdoc-dev/docfonts/actions/workflows/release.yml)
+[![npm version](https://img.shields.io/npm/v/@docfonts/fallbacks.svg)](https://www.npmjs.com/package/@docfonts/fallbacks)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 > Document font substitution, measured.
