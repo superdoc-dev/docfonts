@@ -4,7 +4,7 @@ import { loadRecords } from "@docfonts/registry";
 import Base from "../layouts/Base.astro";
 import FaceGrid from "../components/FaceGrid.astro";
 import VerdictBadge from "../components/VerdictBadge.astro";
-import { VERDICT_META, VERDICT_ORDER, isQualified, pct } from "../lib/verdict";
+import { VERDICT_META, VERDICT_ORDER, isQualified, noCandidateLabel, pct } from "../lib/verdict";
 
 const records = loadRecords();
 
@@ -120,7 +120,7 @@ function advText(r: EvidenceRecord): string | null {
                   <a href={`/fonts/${r.evidenceId}`}>{r.originalFont}</a>
                 </td>
                 <td class={r.candidate ? "sub" : "sub na"}>
-                  {r.candidate ? r.candidate.candidateFamily : "no open metric clone"}
+                  {r.candidate ? r.candidate.candidateFamily : noCandidateLabel(r.verdict)}
                 </td>
                 <td class={advText(r) ? "num" : "num na"}>
                   {advText(r) ? (

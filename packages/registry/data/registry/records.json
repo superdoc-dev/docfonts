@@ -589,5 +589,51 @@
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
     "notes": "Monospace cell-width match only; not shape/code-font proven."
+  },
+  {
+    "evidenceId": "aptos-display",
+    "originalFont": "Aptos Display",
+    "candidate": null,
+    "verdict": "customer_supplied",
+    "faces": {
+      "regular": false,
+      "bold": false,
+      "italic": false,
+      "boldItalic": false
+    },
+    "gates": {
+      "static": "not_run",
+      "metric": "not_run",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "measurementRefs": [],
+    "policyAction": "customer_supplied",
+    "exportRule": "preserve_original_name",
+    "measuredDate": "2026-06-04",
+    "notes": "Display weight of Aptos; no known open clone (Aptos itself has none). Not separately advance-measured here (oracle not local), so the verdict is the policy default - customer-supplied first, else a reported visual/category fallback - rather than a measured no_substitute. See /fonts/aptos for the measured no."
+  },
+  {
+    "evidenceId": "cambria-math",
+    "originalFont": "Cambria Math",
+    "candidate": null,
+    "verdict": "preserve_only",
+    "faces": {
+      "regular": false,
+      "bold": false,
+      "italic": false,
+      "boldItalic": false
+    },
+    "gates": {
+      "static": "not_run",
+      "metric": "not_run",
+      "layout": "not_run",
+      "ship": "not_run"
+    },
+    "measurementRefs": [],
+    "policyAction": "preserve_only",
+    "exportRule": "preserve_original_name",
+    "measuredDate": "2026-06-04",
+    "notes": "Math font (OMML). Never substitute: a non-math font would show wrong glyphs and break equation layout. Preserve the logical name; math handling is a separate concern."
   }
 ]
