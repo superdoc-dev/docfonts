@@ -44,20 +44,13 @@ describe("loadCorpus (open-font corpus manifests)", () => {
       "regular",
     ]);
     expect(lsn?.license).toBe("GPLv2-with-font-exception");
-    expect(faces.length).toBe(29); // 20 ship-set + 4 LSN + 4 Gelasio instances + 1 promoted (Viga)
+    expect(faces.length).toBe(30); // 20 ship-set + 4 LSN + 4 Gelasio + 2 promoted (Viga, Bacasime)
   });
 
-  test("a promoted candidate is reviewed: sha matches discovery + license text is hashed", () => {
+  test("promoted candidates are reviewed: sha matches discovery + license text is hashed", () => {
     const promoted = manifests.find(
       (m) => m.corpusId === "promoted-google-fonts-2026-06-05",
     );
-    const viga = promoted?.families.find((f) => f.family === "Viga");
-    expect(viga).toBeTruthy();
-    expect(viga?.license).toBe("OFL-1.1");
-    // the reviewed tier's promise: an exact, hashed license text (discovery never carries this).
-    expect(viga?.licenseTextSha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(viga?.faces).toHaveLength(1);
-    // the promoted face is the SAME bytes the discovery snapshot points at (verified at import).
     const discovery = JSON.parse(
       readFileSync(
         join(
@@ -69,10 +62,24 @@ describe("loadCorpus (open-font corpus manifests)", () => {
         "utf8",
       ),
     ) as { faces: { family: string; styleKey: string; fileSha256: string }[] };
-    const disc = discovery.faces.find(
-      (f) => f.family === "Viga" && f.styleKey === "regular",
-    );
-    expect(viga?.faces[0].fileSha256).toBe(disc?.fileSha256);
+    // Every promoted family carries an exact, hashed license text (discovery never does), is a single
+    // explicitly-allow-listed face, and is the SAME bytes the discovery snapshot points at.
+    for (const family of ["Viga", "Bacasime Antique"]) {
+      const fam = promoted?.families.find((f) => f.family === family);
+      expect(fam, family).toBeTruthy();
+      expect(fam?.license).toBe("OFL-1.1");
+      expect(fam?.licenseTextSha256).toMatch(/^[0-9a-f]{64}$/);
+      expect(fam?.faces).toHaveLength(1);
+      const disc = discovery.faces.find(
+        (f) => f.family === family && f.styleKey === "regular",
+      );
+      expect(fam?.faces[0].fileSha256).toBe(disc?.fileSha256);
+      // Provenance must point at the pinned reviewed bytes, never the mutable /main/ ref: the
+      // sourceUrl carries the snapshot's 40-char sourceCommit (see promote-candidates.ts).
+      expect(fam?.sourceUrl).toContain("/google/fonts/tree/");
+      expect(fam?.sourceUrl).not.toContain("/tree/main");
+      expect(fam?.sourceUrl).toMatch(/\/tree\/[0-9a-f]{40}\//);
+    }
   });
 
   test("Gelasio instances carry full variable-instance provenance (instancedFrom)", () => {
