@@ -635,5 +635,39 @@
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-04",
     "notes": "Math font (OMML). Never substitute: a non-math font would show wrong glyphs and break equation layout. Preserve the logical name; math handling is a separate concern."
+  },
+  {
+    "evidenceId": "helvetica",
+    "originalFont": "Helvetica",
+    "candidate": {
+      "candidateFamily": "Liberation Sans"
+    },
+    "verdict": "metric_safe",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0
+    },
+    "candidateLicense": "OFL-1.1",
+    "candidateLicenseSource": "apryse fallback summary 2026-06-04",
+    "gates": {
+      "static": "not_run",
+      "metric": "pass",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "measurementRefs": [
+      "helvetica__liberation-sans#analytic_advance#2026-06-03"
+    ],
+    "policyAction": "substitute",
+    "confidence": "R",
+    "exportRule": "preserve_original_name",
+    "measuredDate": "2026-06-03",
+    "notes": "Apple Helvetica (macOS) measured 0.000% against already-shipped Liberation Sans (same 2048 upem, all four faces). Resolver-alias candidate only: no new font, no new license, no layout proof. Mac / Apryse toolbar parity, not Windows-Word-native; ship fails until the resolver alias lands in SuperDoc."
   }
 ]
