@@ -15,11 +15,17 @@
  * Source: the research repo's google-fonts-latin-all-files/corpus.json (see data/sources.json ->
  * google-fonts). That repo is not part of this public project; only the sanitized manifest is committed.
  *
- * Run:  bun run scripts/import-discovery.ts            write + validate
- *       bun run scripts/import-discovery.ts --check    verify committed == generated, no write (LOCAL
- *                                                      only - needs the sibling research corpus; CI
- *                                                      validates the committed snapshot via the tests
- *                                                      instead, since it has no access to that corpus)
+ * TWO-STEP, and this is only STEP 1. This writes the BOOTSTRAP snapshot (acquisition: local_bootstrap,
+ * mutable /main/ rawUrls). The committed snapshot is the PINNED result, so before committing you MUST
+ * then run:  bun run scripts/pin-discovery.ts --commit <sha>  (re-fetches + sha-verifies every face and
+ * repins the rawUrls to that commit, acquisition: git_pinned). Running this importer ALONE regenerates
+ * an unpinned snapshot that will NOT match the committed pinned one - that divergence is expected.
+ *
+ * Run:  bun run scripts/import-discovery.ts            write the bootstrap snapshot (step 1 of 2)
+ *       bun run scripts/import-discovery.ts --check    compare bootstrap output vs committed. A committed
+ *                                                      snapshot that has been pinned (git_pinned)
+ *                                                      INTENTIONALLY differs - this --check is only
+ *                                                      meaningful before the pin step. CI does not run it.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -167,9 +173,9 @@ function build(): DiscoverySnapshot {
     snapshotId: SNAPSHOT_ID,
     sourceId: SOURCE_ID,
     sourceUrl: src.upstreamUrl,
-    // Bootstrap path: this snapshot is mapped from a pre-downloaded local research corpus, not a fresh
-    // pinned acquisition, so sourceCommit is intentionally absent. Direct git-clone acquisition is the
-    // next step (see data/sources.json).
+    // Step 1 (bootstrap): mapped from a pre-downloaded local research corpus, so sourceCommit is absent
+    // and rawUrls are on /main/. pin-discovery.ts (step 2) re-fetches + verifies + repins to a commit
+    // (acquisition: git_pinned). The COMMITTED snapshot is the pinned result, not this bootstrap one.
     acquisition: "local_bootstrap",
     retrievedDate: RETRIEVED_DATE,
     faceCount: faces.length,
@@ -194,7 +200,7 @@ function main() {
     const current = existsSync(OUT) ? readFileSync(OUT, "utf8") : "";
     if (current !== json) {
       console.error(
-        "[discovery] --check: snapshot is out of sync. Run the importer and commit.",
+        "[discovery] --check: bootstrap output differs from the committed snapshot. If the committed one is pinned (git_pinned), this is EXPECTED - re-run import then pin-discovery.ts --commit <sha>. Otherwise regenerate + commit.",
       );
       process.exit(1);
     }
