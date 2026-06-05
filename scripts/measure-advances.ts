@@ -76,8 +76,11 @@ async function main() {
   const records = loadRecords();
 
   // parse every oracle font in the private dir, keyed by (family, styleKey). .ttc collections are
-  // enumerated face by face (Helvetica.ttc carries regular/bold/oblique/bold-oblique), so every
-  // packaged face is a usable oracle - not just face 0.
+  // enumerated face by face (Helvetica.ttc carries regular/bold/oblique/bold-oblique plus Light
+  // variants), so every packaged RIBBI face is a usable oracle - not just face 0. Non-canonical
+  // weights ("other", e.g. Light/Black) are skipped: they are never a four-face target and must not
+  // shadow the canonical face. A genuine duplicate of a canonical slot fails loudly rather than
+  // silently picking last-wins, which would measure the wrong face.
   const oracles = new Map<string, ParsedFace>();
   for (const file of readdirSync(oracleDir).filter(isOracleFontFile)) {
     const bytes = new Uint8Array(readFileSync(join(oracleDir, file)));
@@ -85,10 +88,15 @@ async function main() {
       const r = parseFontFace(bytes, { faceIndex: i });
       if (!r.ok)
         throw new Error(`parse failed (${file} face ${i}): ${r.error}`);
-      oracles.set(
-        `${r.face.metadata.names.family.toLowerCase()}|${r.face.metadata.face.styleKey}`,
-        r.face,
-      );
+      const { styleKey } = r.face.metadata.face;
+      if (styleKey === "other") continue; // non-canonical weight/width: not a four-face target
+      const key = `${r.face.metadata.names.family.toLowerCase()}|${styleKey}`;
+      if (oracles.has(key)) {
+        throw new Error(
+          `duplicate oracle face for ${key} (${file} face ${i}): two faces claim the same canonical slot`,
+        );
+      }
+      oracles.set(key, r.face);
     }
   }
 

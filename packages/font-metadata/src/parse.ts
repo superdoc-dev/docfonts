@@ -314,14 +314,20 @@ function styleKeyOf(
   italic: boolean,
   weightClass: number | null,
 ): StyleKey {
-  if (bold && italic) return "boldItalic";
-  if (bold) return "bold";
-  if (italic) return "italic";
-  // a non-bold, non-italic face whose weight is not ~regular (Light/Medium/Black) is "other",
-  // not the canonical regular face used in the four-face substitution model.
-  if (weightClass != null && (weightClass < 350 || weightClass > 550))
-    return "other";
-  return "regular";
+  // styleKey is the canonical four-face SUBSTITUTION SLOT, not raw RIBBI bits. A face earns a slot
+  // only when its weight matches that slot's canonical weight (~400 upright/italic, ~700 bold);
+  // otherwise (Light/Medium/Black/Thin uprights, obliques, and bolds) it is "other" and never claims
+  // a slot. Without this, a collection's Light Oblique (italic bit, weight 300) would shadow the true
+  // Oblique under the same family|styleKey key and get measured in its place. Null weight = trust the
+  // RIBBI bits (no OS/2 weight to judge by).
+  const regularWeight =
+    weightClass == null || (weightClass >= 350 && weightClass <= 550);
+  const boldWeight =
+    weightClass == null || (weightClass >= 600 && weightClass <= 800);
+  if (bold && italic) return boldWeight ? "boldItalic" : "other";
+  if (bold) return boldWeight ? "bold" : "other";
+  if (italic) return regularWeight ? "italic" : "other";
+  return regularWeight ? "regular" : "other";
 }
 
 // --- representative Latin text coverage probe -----------------------------

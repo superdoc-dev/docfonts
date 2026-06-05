@@ -47,6 +47,27 @@ describe(".ttc multi-face parsing", () => {
   });
 });
 
+describe("styleKey is the canonical substitution slot, not raw RIBBI bits", () => {
+  // A collection where face 0 is the canonical Italic (weight 400) and face 1 is a Light Italic
+  // (italic bit set, weight 300). styleKey must keep the Light face OUT of the "italic" slot, or a
+  // measurement run would key both faces as `family|italic` and silently measure the Light one.
+  const ttc = new Uint8Array(
+    readFileSync(join(FIX, "CarlitoItalicWeightCollection.ttc")),
+  );
+
+  it("a non-canonical weight does not claim a RIBBI slot, even with the italic bit set", () => {
+    const f0 = parseFontFace(ttc, { faceIndex: 0 });
+    const f1 = parseFontFace(ttc, { faceIndex: 1 });
+    expect(f0.ok && f0.face.metadata.face.weightClass).toBe(400);
+    expect(f0.ok && f0.face.metadata.face.italic).toBe(true);
+    expect(f0.ok && f0.face.metadata.face.styleKey).toBe("italic");
+    // Light Italic: italic bit is set, but weight 300 is non-canonical -> "other", not "italic".
+    expect(f1.ok && f1.face.metadata.face.weightClass).toBe(300);
+    expect(f1.ok && f1.face.metadata.face.italic).toBe(true);
+    expect(f1.ok && f1.face.metadata.face.styleKey).toBe("other");
+  });
+});
+
 const FONT_DIR = join(
   import.meta.dir,
   "..",
