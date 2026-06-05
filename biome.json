@@ -9,6 +9,7 @@
       "!**/.astro",
       "!packages/registry/data/registry/records.json",
       "!packages/registry/data/registry/substitution-evidence.json",
+      "!packages/fallbacks/src/data.ts",
       "!packages/registry/data/measurements",
       "!packages/registry/data/discovery",
       "!packages/registry/data/bakeoffs"

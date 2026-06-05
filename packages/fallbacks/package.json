@@ -1,0 +1,29 @@
+{
+  "name": "@docfonts/fallbacks",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Measured open-font fallbacks for proprietary document fonts.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "gen": "bun run ../../scripts/gen-fallbacks-data.ts",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
