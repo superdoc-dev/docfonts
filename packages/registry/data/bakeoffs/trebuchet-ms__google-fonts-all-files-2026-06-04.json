@@ -1,0 +1,352 @@
+{
+  "target": "Trebuchet MS",
+  "targetFace": {
+    "styleKey": "regular",
+    "weight": 400,
+    "italic": false
+  },
+  "targetCategory": "sans",
+  "oracleEnv": "Trebuchet MS (macOS Supplemental), hmtx analytic",
+  "corpusSnapshotId": "google-fonts-all-files-2026-06-04",
+  "methodVersion": "analytic-hmtx-v1",
+  "testStringsRef": "latin-prose-v1",
+  "measuredDate": "2026-06-05",
+  "consideredFaces": 470,
+  "candidates": [
+    {
+      "family": "Ruda",
+      "fileSha256": "acc6e412c74545f934bed8564f8650f113d46d220f0f3a94484e6a6558cb40f0",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.010595,
+        "maxDelta": 0.591926
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "IBM Plex Sans Arabic",
+      "fileSha256": "b8363ab9f733dfa4f8e96b8b2102c24b5cf4110fb96d1d3d9a9412f6fb49cf74",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.011202,
+        "maxDelta": 0.601362
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "IBM Plex Sans Thai",
+      "fileSha256": "46ba1b7365cc2c583914f23914cce46e836a72662e34f6e3029b15aaa10b792e",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.011202,
+        "maxDelta": 0.601362
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "IBM Plex Sans Hebrew",
+      "fileSha256": "15b5d6b20f5b4007f2d709ff786266ff62ba9b13ba4e5ac4d23f37d554d68534",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.011202,
+        "maxDelta": 0.601362
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "IBM Plex Sans Devanagari",
+      "fileSha256": "a112f36f92ecb6967ee82c643547986462d1ddcff22c20ad024cb0915ddd2bee",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.011202,
+        "maxDelta": 0.601362
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "IBM Plex Sans Thai Looped",
+      "fileSha256": "0219cd6e21c9bb226378fa60ebd73e2550b1adb245fec821c817e2b1efcb1f04",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.011202,
+        "maxDelta": 0.601362
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Marmelad",
+      "fileSha256": "aadcea7a972d84294ab5399b99654506559d328e03169a2351854c7046b77fc6",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.011928,
+        "maxDelta": 1.151489
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Geom",
+      "fileSha256": "4509ad62e97c2e07c7fbc51180caba092b66fb2967e4de7dcba149ab3beb3b15",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.01276,
+        "maxDelta": 0.778691
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Fira Sans",
+      "fileSha256": "cbc1842cbed8c1d1146ba7c9db97d8f28c9bedfd25f41c5b0e1259ca48622328",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.013819,
+        "maxDelta": 0.462857
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Alef",
+      "fileSha256": "a32adcc953ac356906901778460083dc207d4560cb586fd9ea24ec5b186969ed",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.014242,
+        "maxDelta": 0.707447
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Instrument Sans",
+      "fileSha256": "b24f1812584816958afcf22e22d08e44318c5e51651e25d2438efdde389b33b1",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.014364,
+        "maxDelta": 0.719489
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "K2D",
+      "fileSha256": "bfab1193b93b9200455119c968f0ccac24b68d2408d26a8123a4c3c01fb11821",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.015606,
+        "maxDelta": 0.737532
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Maven Pro",
+      "fileSha256": "bc994ed80baaec6ea61d7cb631f49466a1deb29d4363138021a96931f9faae9a",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.0163,
+        "maxDelta": 0.582391
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Akatab",
+      "fileSha256": "e0ce76da55ce20a8ae5159efcca7cfe9ab01749d8338d6a8c47b7415c166aa52",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.016371,
+        "maxDelta": 0.648318
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Tirra",
+      "fileSha256": "1142a9e6507967d48d9526e67561d1ac3802296f187a1739abba4cdbf202b74c",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.016371,
+        "maxDelta": 0.648318
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Gantari",
+      "fileSha256": "16b83edd620efd401c7855ebb96694718c29f55f4198913dfad4791591796e71",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.016437,
+        "maxDelta": 0.586408
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Fira Sans",
+      "fileSha256": "c29556a2719bf613ef3d5e070e40d903a8965d9c081beca1375dc1e6e0f93c23",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.016586,
+        "maxDelta": 0.462857
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Niramit",
+      "fileSha256": "3d081b3dd75de218493d2d7b8aa2079beaaa841ecf92015b870519e1f239fa56",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.017397,
+        "maxDelta": 0.666723
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Estedad",
+      "fileSha256": "6e745beeeb0cae5eea7f38d3132597089548a622d87997b58944e5b1edfec5a1",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.017584,
+        "maxDelta": 1.155789
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "K2D",
+      "fileSha256": "0ea9a92a4d005f69a6cf53b1eaed244f70817a477dcd66bc06fef1f4d9821795",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.01873,
+        "maxDelta": 0.734809
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Metrophobic",
+      "fileSha256": "34e4ac3257307c28e6dd14f5d77bb296211f0ddd217607228a5375416ed8ac58",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.019069,
+        "maxDelta": 0.74386
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Istok Web",
+      "fileSha256": "a13c4e6cba8f6d24abf96542d9028cea47411ac65c01e6f85349d7405dee53c6",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.019295,
+        "maxDelta": 0.478585
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Bai Jamjuree",
+      "fileSha256": "72b5a30cb78966823eb326c09b9004b0d03b4bddcdfcfd1b8cdbffb6c414547d",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.019412,
+        "maxDelta": 0.748426
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Chakra Petch",
+      "fileSha256": "d480f4f97405fac3600652e2e14fd0b14339031c0af4da11582994878f04d919",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.019872,
+        "maxDelta": 0.710298
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Exo 2",
+      "fileSha256": "205a448676a2586f9c57c25f3d5c58ca8db7e6cf5edf7506783a010c6fe2bfb5",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.020154,
+        "maxDelta": 0.612255
+      },
+      "tier": "visual"
+    }
+  ],
+  "rejected": [
+    {
+      "reason": "category_mismatch",
+      "count": 1069
+    },
+    {
+      "reason": "coverage_below_threshold",
+      "count": 58
+    }
+  ]
+}
