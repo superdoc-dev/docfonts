@@ -1,12 +1,18 @@
 #!/usr/bin/env bun
 /**
- * import-research.ts - GENERATE the canonical registry from font-fidelity-research artifacts.
+ * import-research.ts - HISTORICAL bootstrap tooling. NOT the authoritative generator.
  *
- * This is where data/registry/records.json stops being empty and the public registry becomes real.
- * A deterministic generator into the @docfonts/registry schema - NOT a CSV copier, NOT a hand seed.
- * Re-running reproduces byte-identical output from the same sources.
+ * This script seeded the original registry from font-fidelity-research artifacts. It is kept for
+ * reference and as the starting point for a future reproducible pipeline, but it NO LONGER owns
+ * data/registry/records.json. The committed registry is now the HAND-CURATED source of truth: rows
+ * have been added and edited directly (e.g. Aptos Display, Cambria Math, Helvetica), and the
+ * structured sources live in a sibling repo that is not vendored here. So re-running this importer
+ * does NOT reproduce the committed registry - it would drop every hand-maintained row and is missing
+ * those sources. It runs as a DRY RUN by default; --write is gated and loudly warns. To make this a
+ * true generator again, see the "make registry generation reproducible" follow-up (vendor the
+ * sources, wire the hand-maintained rows, design the generated-vs-runner measurement boundary).
  *
- * SEPARATION OF CONCERNS (the architectural point):
+ * SEPARATION OF CONCERNS (the original design, retained for reference):
  *   - MECHANICAL (this script): gates, advance deltas, license, measurement refs - all pulled from
  *     STRUCTURED columns, never inferred from note prose.
  *   - EDITORIAL (data/registry/verdicts.json): the public verdict AND the public candidate for rows
@@ -25,20 +31,17 @@
  *   - curated-proprietary scorecard  per-candidate advance/license (for a specific curated candidate,
  *                                    and for fonts absent from the apryse summary).
  *
- * OUTPUT (committed):
+ * OUTPUT (was committed; now hand-curated and NOT owned by this script):
  *   - data/registry/records.json     EvidenceRecord[]
  *   - data/measurements/<font>.json  MeasurementResult[] (analytic_advance / face_aggregate / top_candidates)
  *
- * Run:  bun run scripts/import-research.ts            write + validate (non-zero exit on any error)
- *       bun run scripts/import-research.ts --check    generate in memory, diff vs committed, no write
+ * Run:  bun run scripts/import-research.ts            DRY RUN: report what it would generate, write nothing
+ *       bun run scripts/import-research.ts --check    informational diff vs committed (committed is hand-
+ *                                                     curated and intentionally diverges; never an error)
+ *       bun run scripts/import-research.ts --write    apply (NOT recommended: drops hand-maintained rows).
+ *                                                     Even then it never deletes runner *.measured.json files.
  */
-import {
-  existsSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type {
   GateStatus,
@@ -217,6 +220,7 @@ function measuredForCandidate(
 
 function main() {
   const check = process.argv.includes("--check");
+  const write = process.argv.includes("--write");
   for (const p of [STATUS_CSV, APRYSE_CSV, SCORECARD_CSV]) {
     if (!existsSync(p)) {
       console.error(
@@ -432,34 +436,48 @@ function main() {
     byFont.set(k, [...(byFont.get(k) ?? []), m]);
   }
 
+  const withCand = records.filter((r) => r.candidate).length;
+  const summary = `${records.length} records (${withCand} with a published candidate) + ${measurements.length} measurements (${byFont.size} files)`;
+
   if (check) {
+    // Informational only. The committed registry is HAND-CURATED and intentionally diverges from this
+    // importer (it carries rows the importer cannot generate). Divergence is expected, never an error.
     const current = existsSync(recordsPath)
       ? readFileSync(recordsPath, "utf8")
       : "";
-    if (current !== recordsJson) {
-      console.error(
-        "[import] --check: records.json is stale; run the importer.",
-      );
-      process.exit(1);
-    }
-    console.log("[import] --check: records.json is up to date.");
+    console.log(
+      current === recordsJson
+        ? "[import] --check: importer output matches the committed registry."
+        : "[import] --check: importer output diverges from the committed (hand-curated) registry - expected; this importer is not authoritative.",
+    );
     return;
   }
 
+  if (!write) {
+    console.log(
+      `[import] DRY RUN: would generate ${summary}. Nothing written.\n` +
+        "  This importer is historical and NOT authoritative - records.json is hand-curated.\n" +
+        "  Re-run with --write to apply anyway (drops hand-maintained rows; not recommended).",
+    );
+    return;
+  }
+
+  // --write: apply. This is destructive and does NOT reproduce the committed registry.
+  console.warn(
+    "[import] --write: regenerating from sources. This DROPS hand-maintained rows (e.g. Helvetica,\n" +
+      "  Aptos Display, Cambria Math). Restore them by hand or revert if this was not intended.",
+  );
   writeFileSync(recordsPath, recordsJson);
   const measDir = join(REGISTRY_DATA, "measurements");
-  for (const f of readdirSync(measDir))
-    if (f.endsWith(".json")) rmSync(join(measDir, f)); // delete stale, don't truncate
+  // Safety guard: only overwrite the measurement files this run produces. NEVER blanket-delete the
+  // directory - that would wipe runner *.measured.json artifacts and hand-maintained measurement files.
   for (const [k, ms] of byFont)
     writeFileSync(
       join(measDir, `${k}.json`),
       `${JSON.stringify(ms, null, 2)}\n`,
     );
 
-  const withCand = records.filter((r) => r.candidate).length;
-  console.log(
-    `[import] wrote ${records.length} records (${withCand} with a published candidate) + ${measurements.length} measurements (${byFont.size} files).`,
-  );
+  console.log(`[import] wrote ${summary}.`);
   if (skipped.length)
     console.log(
       `[import] skipped ${skipped.length} (logged, never guessed):\n  - ${skipped.join("\n  - ")}`,
