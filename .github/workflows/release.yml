@@ -28,4 +28,10 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: bunx semantic-release@24 ${{ inputs.dry_run && '--dry-run' || '' }}
+          ANTHROPIC_API_KEY_RELEASE_NOTES: ${{ secrets.ANTHROPIC_API_KEY_RELEASE_NOTES }}
+        run: >
+          npx --yes
+          --package semantic-release@24
+          --package @semantic-release/github@12.0.8
+          --package semantic-release-ai-notes@0.3.0
+          semantic-release ${{ inputs.dry_run && '--dry-run' || '' }}
