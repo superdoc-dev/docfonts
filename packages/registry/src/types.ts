@@ -14,7 +14,11 @@ import type {
   PolicyAction,
   Verdict,
 } from "@docfonts/core";
-import type { FontFaceMetadata, StyleKey } from "@docfonts/font-metadata";
+import type {
+  FontCategory,
+  FontFaceMetadata,
+  StyleKey,
+} from "@docfonts/font-metadata";
 
 // --- stable artifact IDs (file paths can change; these do not) ---
 export type CorpusId = string; // e.g. "google-fonts-2026-06-04"
@@ -78,6 +82,74 @@ export interface CorpusManifest {
   sourceUrl: string;
   retrievedDate: string; // YYYY-MM-DD
   families: CorpusFamily[];
+}
+
+// ===========================================================================
+// Layer 0 - Discovery: the SEARCH SPACE (broad inventory of open fonts we can
+// compare against). DELIBERATELY distinct from the reviewed CorpusManifest above:
+// "in the discovery snapshot" means only "this open font exists and is comparable",
+// NOT "reviewed enough to publish". Provenance here is source-derived and lighter
+// (license inferred from the source layout, commit pinned when available); it never
+// carries a licenseTextSha256 and never feeds a verdict directly. A candidate is
+// promoted into CorpusManifest (license-text-hashed, exact provenance) only after
+// review. No font binaries are ever committed - faces are pointers (sha + re-fetch URL).
+// ===========================================================================
+
+/** A known open-font SOURCE in the source registry (data/sources.json). */
+export interface FontSource {
+  sourceId: string; // stable id, e.g. "google-fonts"
+  name: string; // human-readable, e.g. "Google Fonts"
+  type: "git" | "release" | "package" | "local-artifact";
+  upstreamUrl: string; // canonical upstream, e.g. "https://github.com/google/fonts"
+  /** discovery = comparable only; reviewed = vetted for evidence; authoritative = trusted to ingest directly. */
+  trust: "discovery" | "reviewed" | "authoritative";
+  /** how license is established for this source, e.g. "inferred from repo directory (ofl/apache/ufl)". */
+  licensePolicy: string;
+  retrieval: string; // how files are obtained, e.g. "raw.githubusercontent.com main branch"
+  notes?: string; // public-safe notes
+}
+
+/** One face in a discovery snapshot. Shares the face FACTS with CorpusFace but carries
+ *  source-derived (lighter) provenance and no parsed-from-bytes guarantee. */
+export interface DiscoveryFace {
+  fileSha256: string; // hex64, durable identity + re-fetch integrity check
+  family: string;
+  styleKey: StyleKey;
+  weight: number; // default usWeightClass (variable fonts: the default instance)
+  width: number; // usWidthClass
+  italic: boolean;
+  isVariable: boolean; // flagged explicitly; static facts describe the DEFAULT instance
+  axes?: string[]; // variable axis tags, e.g. ["wght","wdth"]
+  category: FontCategory; // sans | serif | mono | script | display | symbol | unknown
+  latinCoverage: number; // 0..1
+  fileName: string;
+  repoPath: string; // path within the source (public), e.g. "ofl/roboto/Roboto[wght].ttf"
+  rawUrl: string; // public re-fetch URL (the recipe; no binary committed)
+  license: string; // inferred license id
+  licenseBasis: string; // HOW it was inferred, e.g. "google/fonts ofl directory"
+}
+
+/** A discovery snapshot: a broad inventory of open faces. */
+export interface DiscoverySnapshot {
+  snapshotId: string; // e.g. "google-fonts-all-files-2026-06-04"
+  sourceId: string; // FK into data/sources.json
+  sourceUrl: string; // public upstream
+  sourceCommit?: string; // pinned commit/tree sha when available (absent = unpinned, e.g. bootstrap)
+  retrievedDate: string; // YYYY-MM-DD
+  /**
+   * how THIS snapshot's faces were obtained. "local_bootstrap" = mapped from an existing local corpus
+   * (no fresh acquisition / pinned commit) - the bootstrap path used to validate the schema; the
+   * long-term path acquires the source directly (git clone at a pinned commit, release, or package).
+   */
+  acquisition:
+    | "local_bootstrap"
+    | "git_clone"
+    | "release_download"
+    | "package_resolve";
+  faceCount: number;
+  /** duplicate fileSha256s collapsed during import, REPORTED not hidden (empty when none). */
+  duplicates: { fileSha256: string; count: number }[];
+  faces: DiscoveryFace[];
 }
 
 // ===========================================================================
