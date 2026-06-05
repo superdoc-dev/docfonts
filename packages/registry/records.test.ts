@@ -42,7 +42,7 @@ describe("loadRecords (canonical hand-curated registry)", () => {
     expect(records.length).toBeGreaterThanOrEqual(7);
   });
 
-  test("validates against the schema AND the generated measurement set (no dangling refs)", () => {
+  test("validates against the schema AND the committed measurement set (no dangling refs)", () => {
     const res = validateRecords(records, { measurements: measurementIndex() });
     expect(res.errors).toEqual([]);
     expect(res.ok).toBe(true);
