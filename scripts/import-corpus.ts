@@ -69,7 +69,9 @@ const slug = (s: string) =>
 const STYLE_ORDER = ["regular", "bold", "italic", "boldItalic", "other"];
 
 /** Source-agnostic pipeline: normalized faces -> validated CorpusManifest. */
-async function buildManifest(src: CorpusSource): Promise<CorpusManifest> {
+export async function buildManifest(
+  src: CorpusSource,
+): Promise<CorpusManifest> {
   const byFamily = new Map<string, CorpusFamily>();
   const seenSha = new Set<string>();
 
@@ -175,7 +177,9 @@ async function main() {
   );
 }
 
-main().catch((e) => {
-  console.error(e instanceof Error ? e.message : e);
-  process.exit(1);
-});
+if (import.meta.main) {
+  main().catch((e) => {
+    console.error(e instanceof Error ? e.message : e);
+    process.exit(1);
+  });
+}

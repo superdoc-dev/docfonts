@@ -5,6 +5,8 @@
  * faces, license provenance present, parsed metadata attached, and NO proprietary family ingested.
  */
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { corpusFaces, loadCorpus } from "./src/index";
 
 const HEX64 = /^[0-9a-f]{64}$/;
@@ -42,7 +44,35 @@ describe("loadCorpus (open-font corpus manifests)", () => {
       "regular",
     ]);
     expect(lsn?.license).toBe("GPLv2-with-font-exception");
-    expect(faces.length).toBe(28); // 20 ship-set + 4 LSN + 4 Gelasio instances
+    expect(faces.length).toBe(29); // 20 ship-set + 4 LSN + 4 Gelasio instances + 1 promoted (Viga)
+  });
+
+  test("a promoted candidate is reviewed: sha matches discovery + license text is hashed", () => {
+    const promoted = manifests.find(
+      (m) => m.corpusId === "promoted-google-fonts-2026-06-05",
+    );
+    const viga = promoted?.families.find((f) => f.family === "Viga");
+    expect(viga).toBeTruthy();
+    expect(viga?.license).toBe("OFL-1.1");
+    // the reviewed tier's promise: an exact, hashed license text (discovery never carries this).
+    expect(viga?.licenseTextSha256).toMatch(/^[0-9a-f]{64}$/);
+    expect(viga?.faces).toHaveLength(1);
+    // the promoted face is the SAME bytes the discovery snapshot points at (verified at import).
+    const discovery = JSON.parse(
+      readFileSync(
+        join(
+          import.meta.dir,
+          "data",
+          "discovery",
+          "google-fonts-all-files-2026-06-04.json",
+        ),
+        "utf8",
+      ),
+    ) as { faces: { family: string; styleKey: string; fileSha256: string }[] };
+    const disc = discovery.faces.find(
+      (f) => f.family === "Viga" && f.styleKey === "regular",
+    );
+    expect(viga?.faces[0].fileSha256).toBe(disc?.fileSha256);
   });
 
   test("Gelasio instances carry full variable-instance provenance (instancedFrom)", () => {
