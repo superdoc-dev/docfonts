@@ -1,9 +1,8 @@
 /**
- * Conventional Commits, enforced on commit-msg by lefthook. The scope is deliberate in this monorepo:
- * semantic-release is NOT path-aware, so the commit SCOPE is how a change signals which package it
- * affects. Release-producing scopes are `fallbacks` and `registry` (the latter only when it changes the
- * exported substitution evidence); `docs`, `site`, `discovery`, `bakeoff`, `corpus`, `ci`, and `chore`
- * are non-release. See .releaserc.json.
+ * Conventional Commits, enforced on commit-msg by lefthook. Uses the default config-conventional rules
+ * (feat / fix / chore / docs / refactor / test / ci / ...). Releases are computed by semantic-release
+ * from these commits with the default commit convention; the release workflow is manual, so scope is a
+ * readability aid, not a release filter.
  */
 module.exports = {
   extends: ["@commitlint/config-conventional"],
