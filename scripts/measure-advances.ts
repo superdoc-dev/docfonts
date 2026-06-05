@@ -19,6 +19,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  countFaces,
   type ParsedFace,
   parseFontFace,
   sha256Hex,
@@ -75,14 +76,28 @@ async function main() {
   const records = loadRecords();
 
   // parse every oracle font in the private dir, keyed by (family, styleKey). .ttc collections are
-  // included (Cambria ships as Cambria.ttc); the parser reads the collection's first face.
+  // enumerated face by face (Helvetica.ttc carries regular/bold/oblique/bold-oblique plus Light
+  // variants), so every packaged RIBBI face is a usable oracle - not just face 0. Non-canonical
+  // weights ("other", e.g. Light/Black) are skipped: they are never a four-face target and must not
+  // shadow the canonical face. A genuine duplicate of a canonical slot fails loudly rather than
+  // silently picking last-wins, which would measure the wrong face.
   const oracles = new Map<string, ParsedFace>();
   for (const file of readdirSync(oracleDir).filter(isOracleFontFile)) {
-    const f = parse(new Uint8Array(readFileSync(join(oracleDir, file))), file);
-    oracles.set(
-      `${f.metadata.names.family.toLowerCase()}|${f.metadata.face.styleKey}`,
-      f,
-    );
+    const bytes = new Uint8Array(readFileSync(join(oracleDir, file)));
+    for (let i = 0; i < countFaces(bytes); i++) {
+      const r = parseFontFace(bytes, { faceIndex: i });
+      if (!r.ok)
+        throw new Error(`parse failed (${file} face ${i}): ${r.error}`);
+      const { styleKey } = r.face.metadata.face;
+      if (styleKey === "other") continue; // non-canonical weight/width: not a four-face target
+      const key = `${r.face.metadata.names.family.toLowerCase()}|${styleKey}`;
+      if (oracles.has(key)) {
+        throw new Error(
+          `duplicate oracle face for ${key} (${file} face ${i}): two faces claim the same canonical slot`,
+        );
+      }
+      oracles.set(key, r.face);
+    }
   }
 
   // Decide what to measure and what to skip BEFORE reading candidate bytes, so the run self-audits.

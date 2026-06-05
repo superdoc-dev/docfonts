@@ -28,7 +28,7 @@ export type CmapKind = "unicode" | "symbol" | "none";
 export interface FontFaceMetadata {
   fileSha256: string;
   sfntVersion: string;
-  /** index of the parsed face within a .ttc collection (only the first face is parsed today). */
+  /** index of the parsed face within a .ttc collection (see ParseOptions.faceIndex). Undefined for single-face files. */
   collectionIndex?: number;
   names: {
     family: string;
@@ -90,6 +90,8 @@ export type ParseResult =
 export interface ParseOptions {
   /** caller-computed sha256 of the file bytes (the corpus join key). See {@link sha256Hex}. */
   fileSha256?: string;
+  /** which face of a .ttc collection to parse (default 0). For a single-face .ttf/.otf only 0 is valid; a nonzero index is a parse error. */
+  faceIndex?: number;
 }
 
 export interface CoverageResult {

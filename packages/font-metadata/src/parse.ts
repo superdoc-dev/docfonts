@@ -36,14 +36,31 @@ const utf16be = (b: Uint8Array, o: number, len: number): string => {
 
 type TableRec = { offset: number; length: number };
 
-function tableDirectory(b: Uint8Array, d: DataView) {
+/** Number of faces in a font file: numFonts for a .ttc collection, else 1. */
+export function countFaces(bytes: Uint8Array): number {
+  if (bytes.length < 12 || tag(bytes, 0) !== "ttcf") return 1;
+  const d = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  return u32(d, 8); // ttc header: numFonts
+}
+
+function tableDirectory(b: Uint8Array, d: DataView, faceIndex: number) {
   let sfntOffset = 0;
   let collection = false;
   let collectionIndex: number | undefined;
   if (tag(b, 0) === "ttcf") {
     collection = true;
-    sfntOffset = u32(d, 12); // first face's table directory
-    collectionIndex = 0;
+    const numFonts = u32(d, 8);
+    if (faceIndex < 0 || faceIndex >= numFonts) {
+      throw new RangeError(
+        `faceIndex ${faceIndex} out of range (collection has ${numFonts} faces)`,
+      );
+    }
+    sfntOffset = u32(d, 12 + faceIndex * 4); // this face's table directory
+    collectionIndex = faceIndex;
+  } else if (faceIndex !== 0) {
+    throw new RangeError(
+      `faceIndex ${faceIndex} on a single-face font (only 0 is valid)`,
+    );
   }
   const numTables = u16(d, sfntOffset + 4);
   const byTag: Record<string, TableRec> = {};
@@ -297,14 +314,20 @@ function styleKeyOf(
   italic: boolean,
   weightClass: number | null,
 ): StyleKey {
-  if (bold && italic) return "boldItalic";
-  if (bold) return "bold";
-  if (italic) return "italic";
-  // a non-bold, non-italic face whose weight is not ~regular (Light/Medium/Black) is "other",
-  // not the canonical regular face used in the four-face substitution model.
-  if (weightClass != null && (weightClass < 350 || weightClass > 550))
-    return "other";
-  return "regular";
+  // styleKey is the canonical four-face SUBSTITUTION SLOT, not raw RIBBI bits. A face earns a slot
+  // only when its weight matches that slot's canonical weight (~400 upright/italic, ~700 bold);
+  // otherwise (Light/Medium/Black/Thin uprights, obliques, and bolds) it is "other" and never claims
+  // a slot. Without this, a collection's Light Oblique (italic bit, weight 300) would shadow the true
+  // Oblique under the same family|styleKey key and get measured in its place. Null weight = trust the
+  // RIBBI bits (no OS/2 weight to judge by).
+  const regularWeight =
+    weightClass == null || (weightClass >= 350 && weightClass <= 550);
+  const boldWeight =
+    weightClass == null || (weightClass >= 600 && weightClass <= 800);
+  if (bold && italic) return boldWeight ? "boldItalic" : "other";
+  if (bold) return boldWeight ? "bold" : "other";
+  if (italic) return regularWeight ? "italic" : "other";
+  return regularWeight ? "regular" : "other";
 }
 
 // --- representative Latin text coverage probe -----------------------------
@@ -340,6 +363,7 @@ export function parseFontFace(
     const { byTag, collection, collectionIndex, sfntOffset } = tableDirectory(
       bytes,
       d,
+      options.faceIndex ?? 0,
     );
     const headT = byTag.head;
     const os2T = byTag["OS/2"];
