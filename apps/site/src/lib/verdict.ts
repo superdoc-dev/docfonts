@@ -2,7 +2,7 @@ import type { Verdict } from "@docfonts/core";
 import type { StyleKey } from "@docfonts/font-metadata";
 
 /**
- * Presentation metadata for the six verdicts. The taxonomy lives in @docfonts/core; this is the
+ * Presentation metadata for the verdict taxonomy. The taxonomy lives in @docfonts/core; this is the
  * one place the site maps each verdict to a label, a non-color glyph, a CSS class, and a definition.
  * Color is load-bearing, so the glyph carries the same information for anyone who cannot use hue.
  */

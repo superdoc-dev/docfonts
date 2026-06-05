@@ -70,10 +70,24 @@ describe("loadRecords (canonical generated registry)", () => {
     expect(consolas?.verdict).toBe("cell_width_only");
   });
 
-  test("every metric_safe record has a candidate and an in-threshold advance", () => {
+  test("every metric_safe record has a candidate and a direct-threshold advance (mean<=0.5%, max<=1%)", () => {
     for (const r of withVerdict(records, "metric_safe")) {
       expect(r.candidate?.candidateFamily).toBeTruthy();
       expect(r.advance?.meanDelta ?? 1).toBeLessThanOrEqual(0.005);
+      expect(r.advance?.maxDelta ?? 1).toBeLessThanOrEqual(0.01);
+    }
+  });
+
+  test("every near_metric record's advance is inside the likely band (mean<=1%, max<=2.5%, over direct)", () => {
+    for (const r of withVerdict(records, "near_metric")) {
+      expect(r.candidate?.candidateFamily).toBeTruthy();
+      const mean = r.advance?.meanDelta ?? 1;
+      const max = r.advance?.maxDelta ?? 1;
+      // within the likely band...
+      expect(mean).toBeLessThanOrEqual(0.01);
+      expect(max).toBeLessThanOrEqual(0.025);
+      // ...and genuinely a near-miss, not silently within the direct (metric_safe) band.
+      expect(max).toBeGreaterThan(0.01);
     }
   });
 
