@@ -170,8 +170,13 @@ export interface BakeoffCandidate {
   category: FontCategory;
   latinCoverage: number;
   advance: AdvanceDelta; // mean/max advance delta vs the oracle
-  /** direct = metric_safe band (mean<=0.5%, max<=1%); likely = near_metric band (mean<=1%, max<=2.5%); else visual. */
-  tier: "direct" | "likely" | "visual";
+  /**
+   * Maps to the registry verdict bands. For a PROPORTIONAL target: direct = metric_safe band
+   * (mean<=0.5%, max<=1%), likely = near_metric band (mean<=1%, max<=2.5%), else visual. For a
+   * MONOSPACE target, a close advance match is `cell_width`, never direct/likely: every mono font
+   * shares one cell width, so matching advances proves cell width, NOT glyph shape (= cell_width_only).
+   */
+  tier: "direct" | "likely" | "cell_width" | "visual";
 }
 
 /** An honest negative: candidates excluded from the ranking, by reason. */

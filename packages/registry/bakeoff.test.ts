@@ -33,7 +33,7 @@ const CATEGORIES = new Set([
   "symbol",
   "unknown",
 ]);
-const TIERS = new Set(["direct", "likely", "visual"]);
+const TIERS = new Set(["direct", "likely", "cell_width", "visual"]);
 const STYLE_KEYS = new Set([
   "regular",
   "bold",
@@ -42,12 +42,16 @@ const STYLE_KEYS = new Set([
   "other",
 ]);
 /** the tier a candidate's advance SHOULD map to (mirrors scripts/bakeoff.ts -> the registry bands). */
-const expectedTier = (mean: number, max: number) =>
-  mean <= 0.005 && max <= 0.01
+const expectedTier = (mean: number, max: number, category: string) => {
+  // monospace advance match = cell width only, never a metric clone.
+  if (category === "mono")
+    return mean <= 0.01 && max <= 0.025 ? "cell_width" : "visual";
+  return mean <= 0.005 && max <= 0.01
     ? "direct"
     : mean <= 0.01 && max <= 0.025
       ? "likely"
       : "visual";
+};
 
 describe("bakeoff results", () => {
   it("at least the seeded targets are present", () => {
@@ -87,7 +91,11 @@ describe("bakeoff results", () => {
           prev = c.advance.meanDelta;
           // tier must follow honestly from the measured advance (no inflated "direct"/"likely").
           expect(c.tier).toBe(
-            expectedTier(c.advance.meanDelta, c.advance.maxDelta),
+            expectedTier(
+              c.advance.meanDelta,
+              c.advance.maxDelta,
+              r.targetCategory,
+            ),
           );
         }
       });
