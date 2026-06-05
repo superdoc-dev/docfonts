@@ -1,47 +1,44 @@
 /**
- * Asset-aware fallback helpers. `getFallback` can inspect the raw recommendation; `deriveFallbackMap`
- * requires `hasFamily` because a renderer map must not include fonts the consumer cannot load. Face
- * routing stays consumer-owned; this package answers which family, not which face.
+ * Fallback lookups over the reviewed evidence. Three intents:
+ *   - getRenderableFallback - "I need a family to render now" (asset-gated, returns a family or null).
+ *   - getFallbackDecision   - "I need diagnostics / UI / reporting" (the full honest outcome).
+ *   - createFallbackMap      - "I need a resolver map" (asset-gated, render-only rows).
+ * Face routing stays consumer-owned: these answer which family, not which face.
  */
-import { SUBSTITUTION_EVIDENCE } from "./data";
+import { SUBSTITUTION_EVIDENCE } from "./data.js";
 import type {
+  FallbackDecision,
   FontFallback,
-  PolicyAction,
   SubstitutionEvidence,
   Verdict,
-} from "./types";
+} from "./types.js";
 
 /** Reports whether the consumer can actually render (i.e. bundles the asset for) a physical family. */
-export type HasFamily = (family: string) => boolean;
+export type CanRenderFamily = (family: string) => boolean;
 
-/** Options for {@link getFallback}. `hasFamily` is OPTIONAL here - omit it to get the raw recommendation. */
-export interface FallbackOptions {
-  /**
-   * When given, a row whose `physicalFamily` is not available resolves to null - the row stays inert
-   * until the consumer bundles it. When omitted, every row with a physical family is considered present.
-   */
-  hasFamily?: HasFamily;
+/** Options for {@link getRenderableFallback} and {@link createFallbackMap}: a render map must be asset-safe. */
+export interface RenderableFallbackOptions {
+  canRenderFamily: CanRenderFamily;
 }
 
-/** Options for {@link deriveFallbackMap}. `hasFamily` is REQUIRED - a render map must be asset-safe. */
-export interface FallbackMapOptions {
-  hasFamily: HasFamily;
+/** Options for {@link getFallbackDecision}. `canRenderFamily` is optional - omit it for the raw decision. */
+export interface FallbackDecisionOptions {
+  canRenderFamily?: CanRenderFamily;
 }
 
-/** The two metric-grade bands. A substitution in either is line-break faithful; everything else is not. */
-const FAITHFUL_VERDICTS: ReadonlySet<Verdict> = new Set<Verdict>([
+/**
+ * Verdicts whose advances preserve line breaks: the proportional metric-grade bands, plus
+ * cell_width_only (a monospace whose cell width - and therefore every advance - matches). Glyph shapes
+ * may still differ (read `verdict`); line breaks do not move.
+ */
+const LINE_BREAK_SAFE_VERDICTS: ReadonlySet<Verdict> = new Set<Verdict>([
   "metric_safe",
   "near_metric",
-]);
-
-/** Actions that mean "render this physical family". */
-const RENDERABLE_ACTIONS: ReadonlySet<PolicyAction> = new Set<PolicyAction>([
-  "substitute",
-  "category_fallback",
+  "cell_width_only",
 ]);
 
 /** Normalize a family name to a lookup key: trim, strip surrounding quotes, lowercase (CSS-name safe). */
-function normalizeFamily(name: string): string {
+export function normalizeFamilyName(name: string): string {
   return name
     .trim()
     .replace(/^['"]+|['"]+$/g, "")
@@ -51,51 +48,90 @@ function normalizeFamily(name: string): string {
 
 /** Evidence rows indexed by normalized logical family, built once. */
 const BY_LOGICAL: ReadonlyMap<string, SubstitutionEvidence> = new Map(
-  SUBSTITUTION_EVIDENCE.map((row) => [normalizeFamily(row.logicalFamily), row]),
+  SUBSTITUTION_EVIDENCE.map((row) => [
+    normalizeFamilyName(row.logicalFamily),
+    row,
+  ]),
 );
 
-/** Project a row to a FontFallback, or null when it offers nothing the consumer can render. */
-function toFallback(
+/** Build the FontFallback for a row known to carry a renderable physical family. */
+function buildFallback(
   row: SubstitutionEvidence,
-  hasFamily: HasFamily | undefined,
-): FontFallback | null {
-  if (row.physicalFamily === null) return null;
-  if (!RENDERABLE_ACTIONS.has(row.policyAction)) return null;
-  if (hasFamily && !hasFamily(row.physicalFamily)) return null;
+  physicalFamily: string,
+): FontFallback {
   return {
-    family: row.physicalFamily,
-    action: row.policyAction,
+    substituteFamily: physicalFamily,
+    policyAction: row.policyAction,
     verdict: row.verdict,
-    faithful: FAITHFUL_VERDICTS.has(row.verdict),
+    lineBreakSafe: LINE_BREAK_SAFE_VERDICTS.has(row.verdict),
     evidenceId: row.evidenceId,
   };
 }
 
+/** Decide a single row against the consumer's asset availability. Pure. */
+function decideRow(
+  row: SubstitutionEvidence,
+  canRenderFamily: CanRenderFamily | undefined,
+): FallbackDecision {
+  const { policyAction, physicalFamily, verdict, evidenceId } = row;
+  // Deliberate non-substitution policies first: nothing renders in the original's place.
+  if (policyAction === "preserve_only")
+    return { kind: "preserve_only", evidenceId };
+  if (policyAction === "customer_supplied")
+    return { kind: "customer_supplied", evidenceId };
+  // substitute / category_fallback with no named open family: docfonts knows the font but recommends
+  // no renderable family - distinct from the `no_substitute` verdict (read the row for that nuance).
+  if (physicalFamily === null)
+    return { kind: "no_recommended_fallback", evidenceId };
+  // Named substitute the consumer does not bundle: surfaced so a UI can say which font to add.
+  if (canRenderFamily && !canRenderFamily(physicalFamily))
+    return {
+      kind: "asset_missing",
+      substituteFamily: physicalFamily,
+      verdict,
+      evidenceId,
+    };
+  return { kind: "fallback", fallback: buildFallback(row, physicalFamily) };
+}
+
 /**
- * The open fallback for a requested font family, or null when docfonts has no row, the row recommends
- * no substitute, or the consumer does not ship the physical family. Case- and quote-insensitive.
+ * The full, honest outcome for a requested family: a discriminated union (see {@link FallbackDecision}).
+ * Distinguishes an unknown font from a measured "no open substitute", a substitute you do not bundle,
+ * and the deliberate non-substitution policies. Case- and quote-insensitive.
  */
-export function getFallback(
-  logicalFamily: string,
-  options: FallbackOptions = {},
+export function getFallbackDecision(
+  family: string,
+  options: FallbackDecisionOptions = {},
+): FallbackDecision {
+  const row = BY_LOGICAL.get(normalizeFamilyName(family));
+  return row ? decideRow(row, options.canRenderFamily) : { kind: "unknown" };
+}
+
+/**
+ * The open family to render for a requested font, or null when there is nothing the consumer can render
+ * (no row, no open substitute, a deliberate non-substitution policy, or a substitute it does not
+ * bundle). For the reasons behind a null - to report them in a UI - use {@link getFallbackDecision}.
+ */
+export function getRenderableFallback(
+  family: string,
+  options: RenderableFallbackOptions,
 ): FontFallback | null {
-  const row = BY_LOGICAL.get(normalizeFamily(logicalFamily));
-  return row ? toFallback(row, options.hasFamily) : null;
+  const decision = getFallbackDecision(family, options);
+  return decision.kind === "fallback" ? decision.fallback : null;
 }
 
 /**
  * The renderer's substitute map: every fallback the consumer can actually render, keyed by the
- * normalized (lowercased) logical family. `hasFamily` is REQUIRED - rows whose physical family the
- * consumer does not bundle are excluded, so the map is safe to wire straight into a resolver. The keys
- * are exactly the families it should remap. For the un-gated single recommendation, use {@link getFallback}.
+ * normalized (lowercased) logical family - normalize lookups with {@link normalizeFamilyName}. Only
+ * `kind: "fallback"` rows are included, so the map is safe to wire straight into a resolver.
  */
-export function deriveFallbackMap(
-  options: FallbackMapOptions,
+export function createFallbackMap(
+  options: RenderableFallbackOptions,
 ): Record<string, FontFallback> {
   const out: Record<string, FontFallback> = {};
   for (const [key, row] of BY_LOGICAL) {
-    const fallback = toFallback(row, options.hasFamily);
-    if (fallback) out[key] = fallback;
+    const decision = decideRow(row, options.canRenderFamily);
+    if (decision.kind === "fallback") out[key] = decision.fallback;
   }
   return out;
 }

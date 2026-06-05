@@ -2,22 +2,25 @@
  * Runtime fallback evidence and asset-aware lookup helpers. No font parser, research data, or runtime
  * dependency.
  */
-export { SUBSTITUTION_EVIDENCE } from "./data";
+export { SUBSTITUTION_EVIDENCE } from "./data.js";
 export {
-  deriveFallbackMap,
-  type FallbackMapOptions,
-  type FallbackOptions,
-  getFallback,
-  type HasFamily,
-} from "./fallbacks";
+  type CanRenderFamily,
+  createFallbackMap,
+  type FallbackDecisionOptions,
+  getFallbackDecision,
+  getRenderableFallback,
+  normalizeFamilyName,
+  type RenderableFallbackOptions,
+} from "./fallbacks.js";
 export type {
   AdvanceDelta,
   FaceCoverage,
   FaceSlot,
+  FallbackDecision,
   FontFallback,
   GlyphException,
   PolicyAction,
   SubstituteGates,
   SubstitutionEvidence,
   Verdict,
-} from "./types";
+} from "./types.js";

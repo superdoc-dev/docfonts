@@ -58,7 +58,8 @@ export interface GlyphException {
 }
 
 /**
- * One logical font's structured fallback evidence.
+ * One logical font's structured fallback evidence. The raw rows are exported as
+ * {@link SUBSTITUTION_EVIDENCE} for reporting; the helpers project the renderer-relevant fields.
  */
 export interface SubstitutionEvidence {
   /** docfonts evidence id, e.g. "cambria". */
@@ -86,24 +87,49 @@ export interface SubstitutionEvidence {
 }
 
 /**
- * The ergonomic result of {@link getFallback}: the single decision a renderer needs to act on - which
- * physical family to render, how it was chosen, and whether it is metric-faithful. The full structured
- * row stays available via {@link SUBSTITUTION_EVIDENCE} for richer reporting.
+ * A resolved fallback: which open family to render, how it was chosen, and how faithful it is. The full
+ * structured row stays available via {@link SUBSTITUTION_EVIDENCE} for richer reporting.
  */
 export interface FontFallback {
-  /** the physical family to render in place of the requested font. */
-  family: string;
-  /** how it was chosen: a metric substitute vs a same-category visual fallback. */
-  action: PolicyAction;
+  /** the open family to render in place of the requested font. */
+  substituteFamily: string;
+  /**
+   * What a renderer should DO, independent of fidelity: `substitute` = render the named open family;
+   * `category_fallback` = render a lower-fidelity same-category family. NOT a quality claim - a
+   * `substitute` can still be top-level `visual_only` (e.g. Cambria). Read `verdict` for fidelity.
+   */
+  policyAction: PolicyAction;
   /** the worst-face fidelity verdict behind the choice. */
   verdict: Verdict;
   /**
-   * Coarse "good enough for line-break fidelity" flag: true for the metric-grade bands (verdict
-   * metric_safe or near_metric), false otherwise. NOT a claim of a perfect/exact clone - near_metric
-   * drifts a few glyphs, and a row can roll up to a worse top-level verdict because of one face (see
-   * Cambria). Read `verdict` (and the row's `faceVerdicts`) for the precise tier.
+   * Coarse "advances preserve line breaks" flag: true for metric_safe, near_metric, or monospace
+   * cell_width_only (cell width, and so every advance, matches). NOT a claim of a perfect/exact clone -
+   * near_metric drifts a few glyphs, cell_width_only keeps the advances but not the glyph shapes, and a
+   * row can roll up to a worse top-level verdict because of one face (see Cambria). Read `verdict` (and
+   * the row's `faceVerdicts`) for the precise tier.
    */
-  faithful: boolean;
-  /** stable reviewed-evidence id. */
+  lineBreakSafe: boolean;
+  /** stable reviewed-evidence id; look the full row up in {@link SUBSTITUTION_EVIDENCE}. */
   evidenceId: string;
 }
+
+/**
+ * The full, honest outcome of a fallback lookup. A discriminated union so a consumer can tell apart
+ * cases that a bare `FontFallback | null` collapses: docfonts has never heard of the font (`unknown`)
+ * vs knows it but recommends no renderable family (`no_recommended_fallback`), the substitute exists
+ * but the consumer does not bundle it (`asset_missing`), and the deliberate non-substitution policies
+ * (`preserve_only`, `customer_supplied`). `evidenceId` on the terminal kinds points back into
+ * {@link SUBSTITUTION_EVIDENCE} for the full row (verdict, faces, ...).
+ */
+export type FallbackDecision =
+  | { kind: "fallback"; fallback: FontFallback }
+  | {
+      kind: "asset_missing";
+      substituteFamily: string;
+      verdict: Verdict;
+      evidenceId: string;
+    }
+  | { kind: "no_recommended_fallback"; evidenceId: string }
+  | { kind: "customer_supplied"; evidenceId: string }
+  | { kind: "preserve_only"; evidenceId: string }
+  | { kind: "unknown" };

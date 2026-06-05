@@ -1,5 +1,5 @@
 // Generated from reviewed docfonts evidence. Do not edit by hand.
-import type { SubstitutionEvidence } from "./types";
+import type { SubstitutionEvidence } from "./types.js";
 
 export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   {
