@@ -153,6 +153,47 @@ export interface DiscoverySnapshot {
 }
 
 // ===========================================================================
+// Layer 0.5 - BakeoffResult: a COMPARISON JOB (one proprietary oracle vs a
+// discovery snapshot). This is DISCOVERY output - ranked candidates + honest
+// negatives - NOT a verdict. A bakeoff NEVER mutates records.json; promotion of a
+// candidate into the reviewed corpus and then a published verdict stays a separate,
+// reviewed step (coarse "best match" automation has overclaimed before). Public-safe:
+// candidates are sha + license + deltas, never bytes; the oracle is a label, not a path.
+// ===========================================================================
+
+/** A scored open candidate in a bakeoff. `tier` maps to the registry verdict bands. */
+export interface BakeoffCandidate {
+  family: string;
+  fileSha256: string;
+  license: string;
+  styleKey: StyleKey;
+  category: FontCategory;
+  latinCoverage: number;
+  advance: AdvanceDelta; // mean/max advance delta vs the oracle
+  /** direct = metric_safe band (mean<=0.5%, max<=1%); likely = near_metric band (mean<=1%, max<=2.5%); else visual. */
+  tier: "direct" | "likely" | "visual";
+}
+
+/** An honest negative: candidates excluded from the ranking, by reason. */
+export interface BakeoffRejection {
+  reason: string; // e.g. "category_mismatch" | "coverage_below_threshold" | "unmeasurable"
+  count: number;
+}
+
+export interface BakeoffResult {
+  target: string; // the proprietary font compared against, e.g. "Comic Sans MS"
+  targetCategory: FontCategory;
+  oracleEnv: string; // labeled oracle (no path, no bytes), e.g. "Comic Sans MS (macOS Supplemental)"
+  corpusSnapshotId: string; // the discovery snapshot that was searched
+  methodVersion: string; // e.g. "analytic-hmtx-v1"
+  testStringsRef: string; // e.g. "latin-prose-v1"
+  measuredDate: string; // YYYY-MM-DD
+  consideredFaces: number; // candidates actually measured (after the category/style filter)
+  candidates: BakeoffCandidate[]; // ranked best-first by mean advance delta (top N)
+  rejected: BakeoffRejection[]; // honest negatives, by reason
+}
+
+// ===========================================================================
 // Layer 2 - MeasurementResult: the proof (one type, discriminated by kind)
 // ===========================================================================
 

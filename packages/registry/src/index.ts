@@ -17,6 +17,9 @@ export {
 } from "./schema";
 export type {
   AnalyticAdvanceMeasurement,
+  BakeoffCandidate,
+  BakeoffRejection,
+  BakeoffResult,
   BrowserCanvasMeasurement,
   CandidateFaceId,
   CandidateRef,

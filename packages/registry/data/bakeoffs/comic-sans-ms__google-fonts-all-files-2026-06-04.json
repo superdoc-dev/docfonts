@@ -1,0 +1,347 @@
+{
+  "target": "Comic Sans MS",
+  "targetCategory": "script",
+  "oracleEnv": "Comic Sans MS (macOS Supplemental), hmtx analytic",
+  "corpusSnapshotId": "google-fonts-all-files-2026-06-04",
+  "methodVersion": "analytic-hmtx-v1",
+  "testStringsRef": "latin-prose-v1",
+  "measuredDate": "2026-06-05",
+  "consideredFaces": 213,
+  "candidates": [
+    {
+      "family": "Chilanka",
+      "fileSha256": "c6ce47d1a8d387310469c8e355351ff2bd4106030c2a45f1cef0c93215075ed7",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.015526,
+        "maxDelta": 0.811238
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Cedarville Cursive",
+      "fileSha256": "5f86d71d08a68605d5912b9bcb639a060ce9c0debd7e0b715f5e268d4a4bc317",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.016007,
+        "maxDelta": 0.912773
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Klee One",
+      "fileSha256": "bf4063f030cc2ae6adf0a11424a1888e5c0eb4438f1f6d02f52294af868e9b3a",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.023865,
+        "maxDelta": 0.942547
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Iansui",
+      "fileSha256": "6e6340d80d618a42b48ade9370c34fa37a8210750c6fbc8efe65f23716538a2b",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.023865,
+        "maxDelta": 0.942547
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "LXGW WenKai TC",
+      "fileSha256": "4fcc5aec11cbbf737b0cfab7b63796f7f280087a7a656b2f13342cd5e5318d95",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.024034,
+        "maxDelta": 0.942547
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Architects Daughter",
+      "fileSha256": "6159718a08898e34bc1cb7354086141a5f9a70b73e54dbec27ead0d59a697359",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.027091,
+        "maxDelta": 0.722967
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Walter Turncoat",
+      "fileSha256": "ab7e9ca31710733211c5a938d2c851c84c0d21f6af4486f32bc6d374281b2da0",
+      "license": "Apache-2.0",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.029908,
+        "maxDelta": 1.281938
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Give You Glory",
+      "fileSha256": "fb71f9a46a3234c2d98dbbe44e711f65654368031c57b927bf7679a46e278c80",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.034899,
+        "maxDelta": 0.815265
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Playpen Sans",
+      "fileSha256": "e083f9da8be210e08ea982ab510894641aab37590e70620d6db73f8de881ec4a",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.036943,
+        "maxDelta": 0.704481
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Playpen Sans Arabic",
+      "fileSha256": "31122f11b6aa8a36a283f95797663a575afffbe2d52b69e496f3a2440942a226",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.036943,
+        "maxDelta": 0.704481
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Playpen Sans Hebrew",
+      "fileSha256": "0ec8a95033c5a01e1799c60b49ab76d9922a68f715a081fc1f5587e4d2bb5b69",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.036943,
+        "maxDelta": 0.704481
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Playpen Sans Deva",
+      "fileSha256": "741156a0ea70b12b150625cd715c34f0a921db5f7dd2bceb37043e59764ae3ea",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.036943,
+        "maxDelta": 0.704481
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Playpen Sans Thai",
+      "fileSha256": "14ac51adb087ad8d0395e4b6c0a976d33421ecbc5fe3e3506415505da95f47ef",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.036943,
+        "maxDelta": 0.704481
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Over the Rainbow",
+      "fileSha256": "62a232ccaa3f1a0b575947a88d1355c5e4c55f5e0ce65307ab91ea958915c3d3",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.039804,
+        "maxDelta": 1.066581
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "WindSong",
+      "fileSha256": "44bea4f8cdb818e9df6eef5334c63915acb7f1877b239debb373277d16b0aac2",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.042729,
+        "maxDelta": 1.789326
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "WindSong",
+      "fileSha256": "df3525097cb0273f610b87da52399879f87dcce0cbddee08c3e52395108079aa",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.042729,
+        "maxDelta": 1.789326
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Nothing You Could Do",
+      "fileSha256": "1daf8cf79076bf59c5a9117b5efd6ecea35e57a05ef127fe4f95b072b8a5245d",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.042937,
+        "maxDelta": 0.75817
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "The Girl Next Door",
+      "fileSha256": "35329e71258e48398643f1f94175aa0c9a8d18bd179918d9ac4f3d497b6557a1",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.045355,
+        "maxDelta": 0.805183
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Coming Soon",
+      "fileSha256": "cf81388f587ff6122de1a705d1070b8f00abccdba66108509908b5d10715068c",
+      "license": "Apache-2.0",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.04687,
+        "maxDelta": 0.630189
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Mali",
+      "fileSha256": "e3212f0f9be130743d32a4f174b7d79628daa5db0d72ca4c63c799ae465597bb",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.04748,
+        "maxDelta": 0.855434
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Delius Swash Caps",
+      "fileSha256": "04c102448007265b8a0672590900919d35dfd26c624e543c8c3bfbab9535b642",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.04916,
+        "maxDelta": 0.510541
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Gloria Hallelujah",
+      "fileSha256": "eb59f2762ce8785a292bebb2af3b3e6aa21454913d791f5f25441d1d57ead9fc",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.051392,
+        "maxDelta": 0.72677
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Amita",
+      "fileSha256": "551369ea6a8caeaa9d2dc31719564ba2379a445d16e6994bc7adbf9446a2b63d",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.053264,
+        "maxDelta": 0.672752
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Mali",
+      "fileSha256": "aa3320845e281de05d7076aed9be5a09df4bf11e6c46165027a0b57a0c8f5dc9",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.053874,
+        "maxDelta": 0.855434
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Courgette",
+      "fileSha256": "099739d22e66ee2b80656bba63847f9ed419ad7e3969ba2c1d3c437c0d08f3e3",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "script",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.05403,
+        "maxDelta": 0.755647
+      },
+      "tier": "visual"
+    }
+  ],
+  "rejected": [
+    {
+      "reason": "category_mismatch",
+      "count": 1349
+    },
+    {
+      "reason": "coverage_below_threshold",
+      "count": 35
+    }
+  ]
+}

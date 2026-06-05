@@ -9,7 +9,8 @@
       "!**/.astro",
       "!packages/registry/data/registry/records.json",
       "!packages/registry/data/measurements",
-      "!packages/registry/data/discovery"
+      "!packages/registry/data/discovery",
+      "!packages/registry/data/bakeoffs"
     ]
   },
   "linter": {

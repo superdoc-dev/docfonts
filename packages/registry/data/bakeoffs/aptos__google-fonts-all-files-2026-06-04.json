@@ -1,0 +1,347 @@
+{
+  "target": "Aptos",
+  "targetCategory": "sans",
+  "oracleEnv": "Aptos (Microsoft Office for Mac DFonts), hmtx analytic",
+  "corpusSnapshotId": "google-fonts-all-files-2026-06-04",
+  "methodVersion": "analytic-hmtx-v1",
+  "testStringsRef": "latin-prose-v1",
+  "measuredDate": "2026-06-05",
+  "consideredFaces": 470,
+  "candidates": [
+    {
+      "family": "Encode Sans Semi Condensed",
+      "fileSha256": "5b68f1f10caf92d76281a14ff5b058fa7a5cc81a90956751b2da353f913dcc64",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.004467,
+        "maxDelta": 0.878445
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Barlow",
+      "fileSha256": "95aa02c7c43096e0dd44d787ba6216864a67157e402adab59b35572e0c1577ea",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.00528,
+        "maxDelta": 0.742914
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Actor",
+      "fileSha256": "a7cf62975a5ecaa8a3be2e2913ffb4a335831315478b93bec722ad982308ea38",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.006736,
+        "maxDelta": 0.71651
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Philosopher",
+      "fileSha256": "e1cba0b5003b5694f1d6cc0fbe629f78362ad38a9ffd4d0cb7abfd9698a575ed",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.007384,
+        "maxDelta": 0.687091
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "El Messiri",
+      "fileSha256": "5d58d5259d2accccba39cffe12e1226e88b6afc5150e3605eb2a9c2fe06ccab0",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.007384,
+        "maxDelta": 0.687091
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Teachers",
+      "fileSha256": "b59c8c0c5b1990935916d3fc414f87d0116f1bc0be355382968454e5d4b8e015",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.007826,
+        "maxDelta": 0.595262
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Inria Sans",
+      "fileSha256": "e213607deb9cf56875540839a1d97944b2bf9ba49f0a510ef368f1d87848d327",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.00862,
+        "maxDelta": 0.750427
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Tajawal",
+      "fileSha256": "1ff8bd943a261c9dd7906bdb1993cab87b6d925a7fb5f848cdb51ed301531090",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.009138,
+        "maxDelta": 0.637522
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Athiti",
+      "fileSha256": "666f5474258cbffd537b494e2d6a441ee849778e2175a4e222d4d625c6efe0e5",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.009552,
+        "maxDelta": 0.576042
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Sofia Sans",
+      "fileSha256": "a3e1019b8867e21b75d26a7b59d4eb2c81d1acf6b69b9ae6cedca269fb68e291",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.010752,
+        "maxDelta": 0.608832
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Hind Siliguri",
+      "fileSha256": "45071a7da902a74877f432722f525d00502d61aef71fca4cab3da8a23156c33d",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.011964,
+        "maxDelta": 0.418858
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Anek Telugu",
+      "fileSha256": "25981968a8a3faab975993a54eec455829214390821037fb3a4d6c447d2e1179",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.012047,
+        "maxDelta": 0.460814
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Mukta",
+      "fileSha256": "4db18bd8f19582607e8a6af0c4bf158b4b3378b426e42ad39d444d216c70074c",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.012771,
+        "maxDelta": 0.615773
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Mukta Vaani",
+      "fileSha256": "5b19b8efcb0a042e7edeec14befaa3a653e27b48aae8db6c572346deae020990",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.012771,
+        "maxDelta": 0.615773
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Anek Devanagari",
+      "fileSha256": "b88cf0ff5705599b2f16fce4ba9ce2029f76106dd24f0419976c417d89f20888",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.012798,
+        "maxDelta": 0.460814
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Cabin",
+      "fileSha256": "a16576e6cec01cf994c46838ed1c17ffdb62cf6da8430edfbcb011f57dd62457",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.013126,
+        "maxDelta": 0.537602
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Almarai",
+      "fileSha256": "5b5cad33c8e5922083728d271cdcda91f96ba291f1307eccc4f4ef732dc19622",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.01331,
+        "maxDelta": 0.674277
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Anek Malayalam",
+      "fileSha256": "319ccd3dc61afce2a5f2e5f3ce16f555c1f385390e80d12af7b9d017dd4993fe",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.013539,
+        "maxDelta": 0.460814
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Anek Kannada",
+      "fileSha256": "6808783ecb95edd948c928ff394953256eed78bdb71dd1fd96eccaa4da05a330",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.013539,
+        "maxDelta": 0.460814
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Zain",
+      "fileSha256": "2a2b8af3804039c7f500c43f581a4145012728bc3109ef15d48371700f5e1f63",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.013575,
+        "maxDelta": 0.608071
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Anek Latin",
+      "fileSha256": "ef7077abf2166add6ab6a64b4a4a4407859bf4f9e5b9058b51ac01ada136b295",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.013968,
+        "maxDelta": 0.460814
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Anek Odia",
+      "fileSha256": "673bb6e51b71af1de1f11f9a547a3a58c50a6fa32d480958e1ef0f06980ca45f",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.013968,
+        "maxDelta": 0.460814
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Gudea",
+      "fileSha256": "a4b5410090a821ea17021627312babdf3d8db0271217fd8c4d9f629ef0a2d90b",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.014134,
+        "maxDelta": 0.969231
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Tuffy",
+      "fileSha256": "e4818f18c471c4a6a7f1d5f80c7a0ef0fd7b95b63364fd48f15768c449d8f958",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 0.9941520467836257,
+      "advance": {
+        "meanDelta": 0.015081,
+        "maxDelta": 0.815951
+      },
+      "tier": "visual"
+    },
+    {
+      "family": "Jost",
+      "fileSha256": "6343b70971000b04c5d401c96ae08ce371086135e999d5e1e1413039c0213076",
+      "license": "OFL-1.1",
+      "styleKey": "regular",
+      "category": "sans",
+      "latinCoverage": 1,
+      "advance": {
+        "meanDelta": 0.015309,
+        "maxDelta": 0.708446
+      },
+      "tier": "visual"
+    }
+  ],
+  "rejected": [
+    {
+      "reason": "category_mismatch",
+      "count": 1069
+    },
+    {
+      "reason": "coverage_below_threshold",
+      "count": 58
+    }
+  ]
+}
