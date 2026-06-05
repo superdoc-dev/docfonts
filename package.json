@@ -13,11 +13,17 @@
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "test": "bun test"
+    "test": "bun test",
+    "check": "bun run typecheck && bun test && bun run lint && bun run build",
+    "check:fast": "bun run typecheck && bun run lint",
+    "prepare": "if [ -z \"$CI\" ]; then bunx lefthook install; fi"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.7",
+    "@biomejs/biome": "2.4.16",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "bun-types": "^1.3.10",
+    "lefthook": "^2.1.9",
     "typescript": "^5.6.0"
   }
 }

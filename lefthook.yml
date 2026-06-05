@@ -1,0 +1,14 @@
+# Git hooks, managed by lefthook (installed by the root `prepare` script, skipped in CI).
+# Pre-commit stays fast and NON-mutating - typecheck + Biome lint only (no auto-format, which would
+# restage files mid-commit). CI remains the real gate (it also runs tests + build). For heavier local
+# protection, move `bun run check` to pre-push rather than slowing every commit.
+pre-commit:
+  parallel: true
+  commands:
+    quality:
+      run: bun run check:fast
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bunx commitlint --edit {1}

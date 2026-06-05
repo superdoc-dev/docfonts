@@ -1,0 +1,37 @@
+# Release @docfonts/fallbacks to npm via semantic-release. Minimal skeleton - add on top as needed.
+#
+# NOT ARMED: manual dispatch only, DRY RUN by default, never publishes on push. Before a real publish:
+#   1. Confirm the package license + copyright holder (manifest says MIT; no LICENSE file yet).
+#   2. Add an NPM_TOKEN secret with publish rights to the @docfonts scope.
+#   3. Publish the first version (0.1.0) intentionally; semantic-release derives later versions from
+#      commits, so always dry-run first and read the planned version.
+# Releases ONLY packages/fallbacks (see .releaserc.json: pkgRoot + the `fallbacks-v*` tag namespace).
+name: release-fallbacks
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (compute version + notes, publish nothing)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.12
+      - run: bun install --frozen-lockfile
+      - run: bun run --filter @docfonts/fallbacks build
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: bunx semantic-release@24 ${{ inputs.dry_run && '--dry-run' || '' }}
