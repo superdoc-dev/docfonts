@@ -1,5 +1,10 @@
 {
   "target": "Aptos",
+  "targetFace": {
+    "styleKey": "regular",
+    "weight": 400,
+    "italic": false
+  },
   "targetCategory": "sans",
   "oracleEnv": "Aptos (Microsoft Office for Mac DFonts), hmtx analytic",
   "corpusSnapshotId": "google-fonts-all-files-2026-06-04",

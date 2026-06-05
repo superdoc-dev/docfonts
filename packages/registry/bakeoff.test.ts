@@ -34,6 +34,13 @@ const CATEGORIES = new Set([
   "unknown",
 ]);
 const TIERS = new Set(["direct", "likely", "visual"]);
+const STYLE_KEYS = new Set([
+  "regular",
+  "bold",
+  "italic",
+  "boldItalic",
+  "other",
+]);
 /** the tier a candidate's advance SHOULD map to (mirrors scripts/bakeoff.ts -> the registry bands). */
 const expectedTier = (mean: number, max: number) =>
   mean <= 0.005 && max <= 0.01
@@ -60,13 +67,21 @@ describe("bakeoff results", () => {
         expect(r.consideredFaces).toBeGreaterThan(0);
       });
 
-      it("candidates are ranked best-first, tier-correct, in the target category", () => {
+      it("is face-scoped: records the exact oracle face measured", () => {
+        expect(r.targetFace).toBeTruthy();
+        expect(STYLE_KEYS.has(r.targetFace.styleKey)).toBe(true);
+        expect(Number.isFinite(r.targetFace.weight)).toBe(true);
+        expect(typeof r.targetFace.italic).toBe("boolean");
+      });
+
+      it("candidates are ranked best-first, tier-correct, same face + category", () => {
         let prev = -1;
         for (const c of r.candidates) {
           expect(c.fileSha256).toMatch(/^[0-9a-f]{64}$/);
           expect(c.license).toBeTruthy();
           expect(c.family).toBeTruthy();
           expect(TIERS.has(c.tier)).toBe(true);
+          expect(c.styleKey).toBe(r.targetFace.styleKey); // same face as the oracle
           expect(c.category).toBe(r.targetCategory); // category-filtered
           expect(c.advance.meanDelta).toBeGreaterThanOrEqual(prev); // ascending by mean
           prev = c.advance.meanDelta;

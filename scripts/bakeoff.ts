@@ -14,7 +14,8 @@
  * Run:
  *   bun run scripts/bakeoff.ts --target "Comic Sans MS" --category script \
  *     --oracle "/System/Library/Fonts/Supplemental/Comic Sans MS.ttf" \
- *     --oracle-env "Comic Sans MS (macOS Supplemental)" [--top 25]
+ *     --oracle-env "Comic Sans MS (macOS Supplemental)" \
+ *     --cache <local-open-font-cache-dir>   (or set DOCFONTS_FONT_CACHE) [--top 25]
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -37,17 +38,6 @@ const SNAPSHOT_FILE = join(
   "data",
   "discovery",
   "google-fonts-all-files-2026-06-04.json",
-);
-const CACHE = join(
-  import.meta.dir,
-  "..",
-  "..",
-  "font-fidelity-research",
-  "harness",
-  "corpus",
-  "open-fonts",
-  "google-fonts-latin-all-files",
-  "files",
 );
 const OUT_DIR = join(
   import.meta.dir,
@@ -82,15 +72,25 @@ async function main() {
   const oraclePath = arg("oracle");
   const oracleEnv = arg("oracle-env");
   const top = Number(arg("top") ?? "25");
-  if (!target || !targetCategory || !oraclePath || !oracleEnv) {
+  // Where the open candidate font bytes live locally (the discovery snapshot stores only pointers).
+  // Explicit per operator - no hardcoded repo layout: pass --cache or set DOCFONTS_FONT_CACHE.
+  const cache = arg("cache") ?? process.env.DOCFONTS_FONT_CACHE;
+  if (!target || !targetCategory || !oraclePath || !oracleEnv || !cache) {
     throw new Error(
-      'usage: bun run scripts/bakeoff.ts --target "<font>" --category <cat> --oracle <path> --oracle-env "<label>" [--top N]',
+      'usage: bun run scripts/bakeoff.ts --target "<font>" --category <cat> --oracle <path> --oracle-env "<label>" --cache <font-cache-dir> [--top N]\n  (--cache may also come from the DOCFONTS_FONT_CACHE env var)',
     );
   }
 
   const oracleR = parseFontFace(new Uint8Array(readFileSync(oraclePath)));
   if (!oracleR.ok) throw new Error(`oracle parse failed: ${oracleR.error}`);
   const oracle = oracleR.face;
+  // A bakeoff is face-scoped: record the exact oracle face, and only compare candidates of that face.
+  const oracleStyle = oracle.metadata.face;
+  const targetFace = {
+    styleKey: oracleStyle.styleKey,
+    weight: oracleStyle.weightClass ?? 0,
+    italic: oracleStyle.italic,
+  };
 
   const snapshot = JSON.parse(
     readFileSync(SNAPSHOT_FILE, "utf8"),
@@ -103,10 +103,10 @@ async function main() {
   const candidates: BakeoffCandidate[] = [];
   let considered = 0;
 
-  // Regular-face bakeoff: compare the oracle's regular face against each open Regular candidate in the
+  // Face-scoped bakeoff: compare the oracle face against open candidates of the SAME face in the
   // target's category. Cross-category and low-coverage candidates are rejected and COUNTED, not hidden.
   for (const face of snapshot.faces) {
-    if (face.styleKey !== "regular") continue;
+    if (face.styleKey !== targetFace.styleKey) continue;
     if (face.category !== targetCategory) {
       bump("category_mismatch");
       continue;
@@ -116,7 +116,7 @@ async function main() {
       continue;
     }
     const bytes = new Uint8Array(
-      readFileSync(join(CACHE, face.repoPath.replaceAll("/", "__"))),
+      readFileSync(join(cache, face.repoPath.replaceAll("/", "__"))),
     );
     if ((await sha256Hex(bytes)) !== face.fileSha256) {
       bump("cache_sha_mismatch");
@@ -158,6 +158,7 @@ async function main() {
 
   const result: BakeoffResult = {
     target,
+    targetFace,
     targetCategory,
     oracleEnv,
     corpusSnapshotId: snapshot.snapshotId,

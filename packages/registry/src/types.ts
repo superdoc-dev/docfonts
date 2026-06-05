@@ -182,6 +182,9 @@ export interface BakeoffRejection {
 
 export interface BakeoffResult {
   target: string; // the proprietary font compared against, e.g. "Comic Sans MS"
+  /** the exact ORACLE face measured (and the candidate face matched against it). A bakeoff is
+   *  face-scoped, never family-wide - "Aptos" here means Aptos Regular, not the whole family. */
+  targetFace: { styleKey: StyleKey; weight: number; italic: boolean };
   targetCategory: FontCategory;
   oracleEnv: string; // labeled oracle (no path, no bytes), e.g. "Comic Sans MS (macOS Supplemental)"
   corpusSnapshotId: string; // the discovery snapshot that was searched

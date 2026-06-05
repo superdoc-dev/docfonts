@@ -1,5 +1,10 @@
 {
   "target": "Comic Sans MS",
+  "targetFace": {
+    "styleKey": "regular",
+    "weight": 400,
+    "italic": false
+  },
   "targetCategory": "script",
   "oracleEnv": "Comic Sans MS (macOS Supplemental), hmtx analytic",
   "corpusSnapshotId": "google-fonts-all-files-2026-06-04",
