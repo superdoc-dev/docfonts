@@ -9,7 +9,7 @@ The package ships no font binaries and no proprietary data. It contains a review
 runtime lookup helpers, and tests that prove the npm tarball excludes research data, local paths, and
 oracle-environment labels.
 
-Built by the team behind SuperDoc. Standalone and neutral.
+Built by the team behind [SuperDoc](https://github.com/superdoc-dev/superdoc). Standalone and neutral.
 
 ## Package
 
