@@ -703,5 +703,50 @@
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-05",
     "notes": "No open Calibri Light clone: Carlito has no Light face. Carlito Regular is the family-correct fallback (same Calibri letterforms, already shipped), but it reflows (advance max 6.6%) and renders heavier than Light (Regular weight 400 vs Light 300). Calibri Light is its own metric design, not a lighter Calibri (it diverges 6.6% from Calibri Regular too). Chosen editorially as the family fallback, not the mathematically closest open font; resolver weight policy unresolved."
+  },
+  {
+    "evidenceId": "baskerville-old-face",
+    "originalFont": "Baskerville Old Face",
+    "candidate": {
+      "candidateFamily": "Bacasime Antique"
+    },
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": false,
+      "italic": false,
+      "boldItalic": false
+    },
+    "advance": {
+      "meanDelta": 0,
+      "maxDelta": 0.4915590863952334
+    },
+    "candidateLicense": "OFL-1.1",
+    "candidateLicenseSource": "promoted-google-fonts-2026-06-05 (reviewed corpus; license text hashed)",
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "not_run"
+    },
+    "measurementRefs": [
+      "baskerville-old-face_regular__bacasime-antique#regular#w400#7dac1e5f#analytic_advance#2026-06-05"
+    ],
+    "policyAction": "substitute",
+    "confidence": "high",
+    "exportRule": "preserve_original_name",
+    "measuredDate": "2026-06-05",
+    "notes": "Baskerville Old Face is a single-style (Regular-only) proprietary face; Word synthesizes its bold/italic, so only the regular face is a real substitution target. Bacasime Antique (a Baskerville Old Face metric clone on Google Fonts, OFL) is advance-identical across the Latin core except the no-break space (see glyphExceptions): the prose-weighted mean advance is 0 and 169 of 170 covered glyphs match exactly. It is named as the substitute but verdict-capped at visual_only by the single NBSP divergence, not near_metric. Provenance is the reviewed promoted corpus (promoted-google-fonts-2026-06-05).",
+    "faceVerdicts": {
+      "regular": "visual_only"
+    },
+    "glyphExceptions": [
+      {
+        "styleKey": "regular",
+        "codepoint": 160,
+        "advanceDelta": 0.4916,
+        "note": "Bacasime Antique Regular's no-break space (U+00A0) advance diverges ~49% from Baskerville Old Face; lines containing NBSP reflow. Every other Latin-core glyph is advance-identical, which is why this is visual_only with a single named exception, not near_metric."
+      }
+    ]
   }
 ]
