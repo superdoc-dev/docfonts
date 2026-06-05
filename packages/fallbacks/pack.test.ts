@@ -1,6 +1,6 @@
 /**
- * Publish-safety: prove the npm tarball ships only the built runtime artifact and no private evidence
- * labels, local paths, tests, or source files.
+ * Publish-safety: prove the npm tarball ships only the built runtime artifact, not local paths,
+ * measurement environment details, tests, or source files.
  */
 import { describe, expect, test } from "bun:test";
 import { execSync } from "node:child_process";
@@ -59,7 +59,7 @@ describe("publish tarball hygiene", () => {
         expect(pat.test(f), `forbidden file packed: ${f}`).toBe(false);
   });
 
-  test("the shipped bytes carry no local path or oracle-environment leak", () => {
+  test("the shipped bytes carry no local paths or measurement environment details", () => {
     const distDir = join(PKG_DIR, "dist");
     expect(existsSync(distDir)).toBe(true);
     const bytes = readdirSync(distDir)

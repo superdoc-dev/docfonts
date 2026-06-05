@@ -87,8 +87,8 @@ export interface SubstitutionEvidence {
 }
 
 /**
- * A resolved fallback: which open family to render, how it was chosen, and how faithful it is. The full
- * structured row stays available via {@link SUBSTITUTION_EVIDENCE} for richer reporting.
+ * A resolved fallback: which open family to render, how it was chosen, and whether advances preserve
+ * line breaks. The full structured row stays available via {@link SUBSTITUTION_EVIDENCE} for reporting.
  */
 export interface FontFallback {
   /** the open family to render in place of the requested font. */
