@@ -1,6 +1,7 @@
 {
   "name": "docfonts",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "workspaces": [
     "packages/fallbacks"

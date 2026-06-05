@@ -1,5 +1,9 @@
 # docfonts
 
+[![CI](https://github.com/superdoc-dev/docfonts/actions/workflows/ci.yml/badge.svg)](https://github.com/superdoc-dev/docfonts/actions/workflows/ci.yml)
+[![Release](https://github.com/superdoc-dev/docfonts/actions/workflows/release.yml/badge.svg)](https://github.com/superdoc-dev/docfonts/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 > Document font substitution, measured.
 
 This public repository currently publishes `@docfonts/fallbacks`: a small runtime package that maps
@@ -33,3 +37,8 @@ bun run test
 bun run lint
 bun run build
 ```
+
+## Release
+
+`@docfonts/fallbacks` is released from the manual `release-fallbacks` workflow.
+Versioning follows Conventional Commits through semantic-release.
