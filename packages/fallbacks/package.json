@@ -34,7 +34,6 @@
     "directory": "packages/fallbacks"
   },
   "scripts": {
-    "gen": "bun run ../../scripts/gen-fallbacks-data.ts",
     "build": "tsc -p tsconfig.build.json",
     "prepack": "bun run build"
   },
