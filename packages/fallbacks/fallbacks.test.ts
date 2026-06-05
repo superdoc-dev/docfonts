@@ -1,9 +1,6 @@
 /**
- * Behavior contract for the V1 fallbacks surface. The load-bearing guarantees: a known substitute
- * resolves to its measured open family with an honest `faithful` flag; a category fallback is reported
- * AS a category fallback (not dressed up as faithful); and - the whole reason this is asset-aware - a
- * row whose physical family the consumer does NOT bundle resolves to null instead of routing to a font
- * that cannot load. Unknown / no-substitute families resolve to null.
+ * Behavior contract for the public fallback helpers: honest action labels, asset-aware routing, and
+ * null for unknown or non-renderable rows.
  */
 import { describe, expect, test } from "bun:test";
 import {
@@ -12,7 +9,7 @@ import {
   SUBSTITUTION_EVIDENCE,
 } from "./src/index";
 
-// A consumer that ships exactly the five families SuperDoc bundles today.
+// Sample consumer bundle for asset-gating tests.
 const BUNDLED = new Set([
   "Carlito",
   "Caladea",
@@ -48,15 +45,11 @@ describe("getFallback", () => {
   });
 
   test("a substitute whose family the consumer does NOT bundle resolves to null (inert row)", () => {
-    // Georgia -> Gelasio is a real docfonts substitute, but a consumer that doesn't ship Gelasio must
-    // not be routed to it. Without hasFamily it resolves; with our 5-family bundle it stays inert.
     expect(getFallback("Georgia")?.family).toBe("Gelasio");
     expect(getFallback("Georgia", { hasFamily })).toBeNull();
   });
 
   test("Baskerville (Regular-only) resolves the family; face routing is the consumer's job", () => {
-    // hasFamily is family-level; the row's `faces` (regular-only) lives on SUBSTITUTION_EVIDENCE for the
-    // consumer's own hasFace pass. getFallback only answers "which family".
     expect(getFallback("Baskerville Old Face")?.family).toBe(
       "Bacasime Antique",
     );
@@ -115,8 +108,6 @@ describe("deriveFallbackMap", () => {
   });
 
   test("hasFamily is required, and a bundle-everything consumer activates all renderable rows", () => {
-    // deriveFallbackMap REQUIRES hasFamily (a render map must be asset-safe). A consumer that ships
-    // every family activates exactly the renderable rows that name a physical family.
     const map = deriveFallbackMap({ hasFamily: () => true });
     const renderable = SUBSTITUTION_EVIDENCE.filter(
       (r) =>

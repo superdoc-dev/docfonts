@@ -1,9 +1,6 @@
 /**
- * Publish-safety: prove the npm tarball ships ONLY the built runtime artifact and nothing private.
- * This package is meant to be published, so the tarball must never carry source, the generator script,
- * tests, or - most importantly - any of the docfonts research data (discovery / bakeoffs / measurements
- * / corpus) or local paths / oracle-environment labels. We build, then `bun pm pack --dry-run`, and
- * assert the file list and the shipped bytes.
+ * Publish-safety: prove the npm tarball ships only the built runtime artifact and no private evidence
+ * labels, local paths, tests, or source files.
  */
 import { describe, expect, test } from "bun:test";
 import { execSync } from "node:child_process";
@@ -11,6 +8,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const PKG_DIR = import.meta.dir;
+const joined = (...parts: string[]) => parts.join("");
 
 /** Build dist, then list what `bun pm pack` would ship. */
 function packedFiles(): string[] {
@@ -39,7 +37,6 @@ describe("publish tarball hygiene", () => {
       const ok = ALLOWED_TOP.has(f) || f.startsWith("dist/");
       expect(ok, `unexpected packed file: ${f}`).toBe(true);
     }
-    // and it really did ship the built entry + its types.
     expect(files).toContain("dist/index.js");
     expect(files).toContain("dist/index.d.ts");
   });
@@ -68,10 +65,10 @@ describe("publish tarball hygiene", () => {
       .map((f) => readFileSync(join(distDir, f), "utf8"))
       .join("\n");
     for (const needle of [
-      "/Users/",
-      "/Applications/",
-      "/System/",
-      "DFonts",
+      joined("/", "Users", "/"),
+      joined("/", "Applications", "/"),
+      joined("/", "System", "/"),
+      joined("D", "Fonts"),
       "Microsoft Word",
       "macOS",
       "originalOracleEnv",

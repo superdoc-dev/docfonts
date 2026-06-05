@@ -3,18 +3,15 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "packages/fallbacks"
   ],
   "scripts": {
-    "dev": "bun run --cwd apps/site dev",
-    "cli": "bun apps/cli/src/index.ts",
-    "build": "bun run --filter '*' build",
+    "build": "bun run --cwd packages/fallbacks build",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "test": "bun test",
-    "check": "bun run typecheck && bun test && bun run lint && bun run build",
+    "test": "bun test packages/fallbacks",
+    "check": "bun run typecheck && bun run test && bun run lint && bun run build",
     "check:fast": "bun run typecheck && bun run lint",
     "prepare": "if [ -z \"$CI\" ]; then bunx lefthook install; fi"
   },

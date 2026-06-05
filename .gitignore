@@ -3,10 +3,8 @@ dist/
 .DS_Store
 .env
 dev/
+.internal/
 .wrangler/
 .mcp.json
-
-# Local brand-mockup scratch: a design process regenerates these HTML previews in-tree.
-# They are not product source - never committed (the brand decision lives in brand.md).
 mockups/
 STATE.md
