@@ -78,7 +78,8 @@
     "originalOracleEnv": "Windows 11 M365 Word vs SuperDoc engine (font-fidelity-research live proof, 2026-06-03)",
     "candidate": {
       "candidateFamily": "Gelasio",
-      "candidateFaceId": "gelasio#regular#w400#1543f04d"
+      "candidateFaceId": "gelasio#regular#w400#1543f04d",
+      "fileSha256": "1543f04d4c55d0dc88b136993bb2312ba57c648564c26256f2df316d7af02b16"
     },
     "methodVersion": "live-superdoc-vs-word",
     "measuredDate": "2026-06-03",
@@ -96,7 +97,8 @@
     "originalOracleEnv": "Windows 11 M365 Word vs SuperDoc engine (font-fidelity-research live proof, 2026-06-03)",
     "candidate": {
       "candidateFamily": "Gelasio",
-      "candidateFaceId": "gelasio#bold#w700#5a1b9bd7"
+      "candidateFaceId": "gelasio#bold#w700#5a1b9bd7",
+      "fileSha256": "5a1b9bd72ba16e8ac4e12ac59d95b26a95c1fea67f5fbf07f63b0edbd6b049ab"
     },
     "methodVersion": "live-superdoc-vs-word",
     "measuredDate": "2026-06-03",
@@ -114,7 +116,8 @@
     "originalOracleEnv": "Windows 11 M365 Word vs SuperDoc engine (font-fidelity-research live proof, 2026-06-03)",
     "candidate": {
       "candidateFamily": "Gelasio",
-      "candidateFaceId": "gelasio#italic#w400#be1243a9"
+      "candidateFaceId": "gelasio#italic#w400#be1243a9",
+      "fileSha256": "be1243a9217091059073ff906692aafb43afa9e32332f6c24c68420d66ae79fe"
     },
     "methodVersion": "live-superdoc-vs-word",
     "measuredDate": "2026-06-03",
@@ -132,7 +135,8 @@
     "originalOracleEnv": "Windows 11 M365 Word vs SuperDoc engine (font-fidelity-research live proof, 2026-06-03)",
     "candidate": {
       "candidateFamily": "Gelasio",
-      "candidateFaceId": "gelasio#boldItalic#w700#6f3b3f7a"
+      "candidateFaceId": "gelasio#boldItalic#w700#6f3b3f7a",
+      "fileSha256": "6f3b3f7a646f05bfe2c0581e2a6b0671da288e0680550731e2e5682d572bbed8"
     },
     "methodVersion": "live-superdoc-vs-word",
     "measuredDate": "2026-06-03",
