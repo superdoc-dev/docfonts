@@ -1,8 +1,13 @@
 /**
  * `@docfonts/fallbacks` public types. SELF-CONTAINED on purpose: this package is the small runtime
  * artifact a renderer imports, so it carries its own copy of the verdict/policy vocabulary rather than
- * depending on `@docfonts/core` (which would force core to be published too). The docfonts repo keeps a
- * drift test asserting these unions stay in sync with `@docfonts/core` and with the shipped data.
+ * depending on `@docfonts/core` (which would force core to be published too).
+ *
+ * Drift guard: the shipped {@link SUBSTITUTION_EVIDENCE} is generated from the registry artifact and a
+ * test asserts it stays byte-for-byte that artifact. These unions are checked against that data at
+ * BUILD time - a verdict/action value the data uses but these unions lack fails to typecheck. They are
+ * NOT proactively diffed against `@docfonts/core`, so a brand-new core verdict that no row uses yet
+ * would not be flagged until it appears in the data; keep this file in step with core when core grows.
  */
 
 /** Fidelity verdict, best to worst. Mirror of `@docfonts/core` `Verdict`. */
@@ -101,7 +106,12 @@ export interface FontFallback {
   action: PolicyAction;
   /** the worst-face fidelity verdict behind the choice. */
   verdict: Verdict;
-  /** true iff the substitution is metric-grade (line-break faithful): verdict metric_safe or near_metric. */
+  /**
+   * Coarse "good enough for line-break fidelity" flag: true for the metric-grade bands (verdict
+   * metric_safe or near_metric), false otherwise. NOT a claim of a perfect/exact clone - near_metric
+   * drifts a few glyphs, and a row can roll up to a worse top-level verdict because of one face (see
+   * Cambria). Read `verdict` (and the row's `faceVerdicts`) for the precise tier.
+   */
   faithful: boolean;
   /** docfonts provenance pointer - the EvidenceRecord this came from. */
   evidenceId: string;

@@ -10,8 +10,10 @@
 export { SUBSTITUTION_EVIDENCE } from "./data";
 export {
   deriveFallbackMap,
+  type FallbackMapOptions,
   type FallbackOptions,
   getFallback,
+  type HasFamily,
 } from "./fallbacks";
 export type {
   AdvanceDelta,

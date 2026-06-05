@@ -1,9 +1,13 @@
 /**
- * The V1 ergonomic surface over {@link SUBSTITUTION_EVIDENCE}: one lookup, `getFallback`, plus a
- * batch `deriveFallbackMap`. Both are asset-aware - a consumer passes `hasFamily` so a row is only
- * activated when the consumer actually bundles the physical font. This is what lets a renderer import
- * the full docfonts evidence (which knows more substitutes than any one renderer ships) without
- * routing to a font it cannot load: un-bundled rows resolve to null and stay inert.
+ * The V1 ergonomic surface over {@link SUBSTITUTION_EVIDENCE}: a single recommendation lookup,
+ * `getFallback`, and a renderer-safe batch map, `deriveFallbackMap`.
+ *
+ * The asset-availability split is deliberate. `getFallback` is the broad lookup - "what does docfonts
+ * recommend for this family?" - and gating by what the consumer bundles is OPTIONAL, because the caller
+ * inspects the single result. `deriveFallbackMap` is the map a renderer wires wholesale into its
+ * resolver, so `hasFamily` is REQUIRED: a batch map must never silently include a substitute whose font
+ * the consumer cannot load. That asymmetry is the whole safety contract - docfonts knows more
+ * substitutes than any one renderer ships, and the render map only carries the ones it can actually use.
  *
  * Face-level routing (a Regular-only substitute like Baskerville -> Bacasime) is deliberately NOT here:
  * the consumer already owns face-aware absence handling and applies its own `hasFace` after the family
@@ -17,14 +21,21 @@ import type {
   Verdict,
 } from "./types";
 
-/** Options shared by the lookup helpers. */
+/** Reports whether the consumer can actually render (i.e. bundles the asset for) a physical family. */
+export type HasFamily = (family: string) => boolean;
+
+/** Options for {@link getFallback}. `hasFamily` is OPTIONAL here - omit it to get the raw recommendation. */
 export interface FallbackOptions {
   /**
-   * Reports whether the consumer can actually render a physical family (i.e. it ships the asset). When
-   * given, a row whose `physicalFamily` is not available resolves to null - the row stays inert until
-   * the consumer bundles it. When omitted, every row with a physical family is considered available.
+   * When given, a row whose `physicalFamily` is not available resolves to null - the row stays inert
+   * until the consumer bundles it. When omitted, every row with a physical family is considered present.
    */
-  hasFamily?: (family: string) => boolean;
+  hasFamily?: HasFamily;
+}
+
+/** Options for {@link deriveFallbackMap}. `hasFamily` is REQUIRED - a render map must be asset-safe. */
+export interface FallbackMapOptions {
+  hasFamily: HasFamily;
 }
 
 /** The two metric-grade bands. A substitution in either is line-break faithful; everything else is not. */
@@ -57,7 +68,7 @@ const BY_LOGICAL: ReadonlyMap<string, SubstitutionEvidence> = new Map(
 /** Project a row to a FontFallback, or null when it offers nothing the consumer can render. */
 function toFallback(
   row: SubstitutionEvidence,
-  hasFamily: FallbackOptions["hasFamily"],
+  hasFamily: HasFamily | undefined,
 ): FontFallback | null {
   // No recommended physical family (no_substitute / a candidate-less category row): nothing to render.
   if (row.physicalFamily === null) return null;
@@ -87,12 +98,13 @@ export function getFallback(
 }
 
 /**
- * Every active fallback, keyed by the normalized (lowercased) logical family. Excludes rows that
- * {@link getFallback} would resolve to null, so a consumer can build its substitute map in one call:
- * the keys are exactly the families it should remap.
+ * The renderer's substitute map: every fallback the consumer can actually render, keyed by the
+ * normalized (lowercased) logical family. `hasFamily` is REQUIRED - rows whose physical family the
+ * consumer does not bundle are excluded, so the map is safe to wire straight into a resolver. The keys
+ * are exactly the families it should remap. For the un-gated single recommendation, use {@link getFallback}.
  */
 export function deriveFallbackMap(
-  options: FallbackOptions = {},
+  options: FallbackMapOptions,
 ): Record<string, FontFallback> {
   const out: Record<string, FontFallback> = {};
   for (const [key, row] of BY_LOGICAL) {

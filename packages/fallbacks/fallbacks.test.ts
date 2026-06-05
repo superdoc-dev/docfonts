@@ -108,8 +108,16 @@ describe("deriveFallbackMap", () => {
     expect(map.georgia).toBeUndefined();
   });
 
-  test("without hasFamily, every renderable row that names a physical family is active", () => {
-    const map = deriveFallbackMap();
+  test("deriveFallbackMap will not compile without hasFamily (asset-safety is enforced by the type)", () => {
+    // @ts-expect-error - hasFamily is required; an ungated render map is a compile error by design.
+    const unsafe = () => deriveFallbackMap();
+    expect(typeof unsafe).toBe("function");
+  });
+
+  test("hasFamily is required, and a bundle-everything consumer activates all renderable rows", () => {
+    // deriveFallbackMap REQUIRES hasFamily (a render map must be asset-safe). A consumer that ships
+    // every family activates exactly the renderable rows that name a physical family.
+    const map = deriveFallbackMap({ hasFamily: () => true });
     const renderable = SUBSTITUTION_EVIDENCE.filter(
       (r) =>
         r.physicalFamily !== null &&
