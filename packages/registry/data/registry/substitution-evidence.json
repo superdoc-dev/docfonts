@@ -91,7 +91,9 @@
       "ship": "pass"
     },
     "policyAction": "substitute",
-    "measurementRefs": ["arial__liberation-sans#analytic_advance#2026-06-03"],
+    "measurementRefs": [
+      "arial__liberation-sans#analytic_advance#2026-06-03"
+    ],
     "exportRule": "preserve_original_name",
     "advance": {
       "meanDelta": 0,
@@ -273,7 +275,9 @@
       "ship": "not_run"
     },
     "policyAction": "customer_supplied",
-    "measurementRefs": ["aptos#top_candidates#2026-06-03"],
+    "measurementRefs": [
+      "aptos#top_candidates#2026-06-03"
+    ],
     "exportRule": "preserve_original_name",
     "candidateLicense": null
   },
@@ -323,7 +327,9 @@
       "ship": "not_run"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["verdana#top_candidates#2026-06-03"],
+    "measurementRefs": [
+      "verdana#top_candidates#2026-06-03"
+    ],
     "exportRule": "preserve_original_name",
     "candidateLicense": null
   },
@@ -345,7 +351,9 @@
       "ship": "not_run"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["tahoma#top_candidates#2026-06-03"],
+    "measurementRefs": [
+      "tahoma#top_candidates#2026-06-03"
+    ],
     "exportRule": "preserve_original_name",
     "candidateLicense": null
   },
@@ -367,7 +375,9 @@
       "ship": "not_run"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["trebuchet-ms#top_candidates#2026-06-03"],
+    "measurementRefs": [
+      "trebuchet-ms#top_candidates#2026-06-03"
+    ],
     "exportRule": "preserve_original_name",
     "candidateLicense": null
   },
@@ -417,7 +427,9 @@
       "ship": "not_run"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["candara#top_candidates#2026-06-03"],
+    "measurementRefs": [
+      "candara#top_candidates#2026-06-03"
+    ],
     "exportRule": "preserve_original_name",
     "candidateLicense": null
   },
@@ -439,7 +451,9 @@
       "ship": "not_run"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["constantia#top_candidates#2026-06-03"],
+    "measurementRefs": [
+      "constantia#top_candidates#2026-06-03"
+    ],
     "exportRule": "preserve_original_name",
     "candidateLicense": null
   },
@@ -461,7 +475,9 @@
       "ship": "not_run"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["corbel#top_candidates#2026-06-03"],
+    "measurementRefs": [
+      "corbel#top_candidates#2026-06-03"
+    ],
     "exportRule": "preserve_original_name",
     "candidateLicense": null
   },
@@ -483,7 +499,9 @@
       "ship": "not_run"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["lucida-console__cousine#analytic_advance#2026-06-03"],
+    "measurementRefs": [
+      "lucida-console__cousine#analytic_advance#2026-06-03"
+    ],
     "exportRule": "preserve_original_name",
     "advance": {
       "meanDelta": 0.004050000000000001,
@@ -548,7 +566,7 @@
       "static": "not_run",
       "metric": "pass",
       "layout": "not_run",
-      "ship": "fail"
+      "ship": "pass"
     },
     "policyAction": "substitute",
     "measurementRefs": [
@@ -579,7 +597,9 @@
       "ship": "fail"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["calibri-light__carlito#analytic_advance#2026-06-05"],
+    "measurementRefs": [
+      "calibri-light__carlito#analytic_advance#2026-06-05"
+    ],
     "exportRule": "preserve_original_name",
     "advance": {
       "meanDelta": 0.0148,

@@ -659,7 +659,7 @@
       "static": "not_run",
       "metric": "pass",
       "layout": "not_run",
-      "ship": "fail"
+      "ship": "pass"
     },
     "measurementRefs": [
       "helvetica__liberation-sans#analytic_advance#2026-06-03"
@@ -668,7 +668,7 @@
     "confidence": "R",
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-03",
-    "notes": "Apple Helvetica (macOS) measured 0.000% against already-shipped Liberation Sans (same 2048 upem, all four faces). Resolver-alias candidate only: no new font, no new license, no layout proof. Mac / Apryse toolbar parity, not Windows-Word-native; ship fails until the resolver alias lands in SuperDoc."
+    "notes": "Apple Helvetica (macOS) measured 0.000% against already-shipped Liberation Sans (same 2048 upem, all four faces). Resolver-alias candidate only: no new font, no new license, no layout proof - it reuses the bundled Liberation Sans that Arial already ships. Mac / Apryse toolbar parity, not Windows-Word-native. The resolver alias has now landed downstream, so the ship gate passes."
   },
   {
     "evidenceId": "calibri-light",

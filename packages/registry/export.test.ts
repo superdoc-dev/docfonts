@@ -35,8 +35,18 @@ describe("substitution-evidence export (renderer-facing projection)", () => {
   const records = loadRecords();
 
   test("committed artifact is exactly a fresh export of the canonical records (no drift)", () => {
-    // The single anti-drift guarantee: regenerating from records.json must reproduce the committed file.
+    // The anti-drift guarantee, at two levels. Object level: the parsed artifact equals a fresh export.
     expect(evidence).toEqual(exportSubstitutionEvidence(records));
+    // BYTE level: the committed file is character-for-character the generator's output. The artifact is
+    // excluded from the formatter and committed in the generator's own JSON.stringify format, so this
+    // catches a stale OR a hand-reformatted file - a formatting-only edit slips past the object compare.
+    const raw = readFileSync(
+      join(import.meta.dir, "data", "registry", "substitution-evidence.json"),
+      "utf8",
+    );
+    expect(raw).toBe(
+      `${JSON.stringify(exportSubstitutionEvidence(records), null, 2)}\n`,
+    );
     // and it covers every record, one row each, in order.
     expect(evidence.map((e) => e.evidenceId)).toEqual(
       records.map((r) => r.evidenceId),
