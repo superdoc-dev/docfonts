@@ -18,13 +18,50 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { DiscoverySnapshot } from "@docfonts/registry";
+import type { DiscoveryFace, DiscoverySnapshot } from "@docfonts/registry";
 import type { CorpusSource, RawCorpusFace } from "./corpus-sources/types";
 import { buildManifest } from "./import-corpus";
 
-// Allow-list: explicit families only. Static, single-source, license-fetchable. (Variable fonts get a
-// deliberate instancing pass later - see gelasio-instances.) Add a family here to promote it.
-const ALLOW_LIST = ["Viga"];
+/** A family to promote + the EXACT faces (styleKeys) to take from it. Explicit per face, never "all
+ *  faces of this family" - a family can carry weights/variants we have not reviewed. */
+interface PromotionEntry {
+  family: string;
+  faces: string[]; // styleKeys, e.g. ["regular"]
+}
+
+// Allow-list: explicit families AND faces only. Static fonts only - variable fonts are REJECTED here
+// (they need a deliberate instancing pass, like gelasio-instances), never direct promotion.
+const ALLOW_LIST: PromotionEntry[] = [{ family: "Viga", faces: ["regular"] }];
+
+/**
+ * Resolve an allow-list entry to its exact discovery faces, with guards: every listed styleKey must
+ * resolve to exactly one face, and a variable font is rejected (no direct promotion). Pure + testable.
+ */
+export function selectPromotionFaces(
+  snapshot: DiscoverySnapshot,
+  entry: PromotionEntry,
+): DiscoveryFace[] {
+  const out: DiscoveryFace[] = [];
+  for (const styleKey of entry.faces) {
+    const matches = snapshot.faces.filter(
+      (f) => f.family === entry.family && f.styleKey === styleKey,
+    );
+    if (matches.length === 0)
+      throw new Error(
+        `[promote] ${entry.family}: no ${styleKey} face in the discovery snapshot`,
+      );
+    if (matches.length > 1)
+      throw new Error(
+        `[promote] ${entry.family}: ${matches.length} ${styleKey} faces (ambiguous)`,
+      );
+    if (matches[0].isVariable)
+      throw new Error(
+        `[promote] ${entry.family} ${styleKey} is a VARIABLE font - needs an instancing plan (see gelasio-instances), not direct promotion`,
+      );
+    out.push(matches[0]);
+  }
+  return out;
+}
 
 const CORPUS_ID = "promoted-google-fonts-2026-06-05";
 const RETRIEVED_DATE = "2026-06-05";
@@ -73,12 +110,9 @@ async function main() {
 
   // Pre-fetch everything (bytes + license texts) so the sync CorpusSource the driver consumes is ready.
   const raw: RawCorpusFace[] = [];
-  for (const family of ALLOW_LIST) {
-    const faces = snapshot.faces.filter((f) => f.family === family);
-    if (!faces.length)
-      throw new Error(
-        `[promote] ${family} not found in the discovery snapshot`,
-      );
+  for (const entry of ALLOW_LIST) {
+    // Guarded resolution: only the explicitly listed faces, exactly one each, no variable fonts.
+    const faces = selectPromotionFaces(snapshot, entry);
     // One license text per family (the upstream OFL/LICENSE that sits in the family's source dir).
     const dir = faces[0].repoPath.split("/").slice(0, -1).join("/"); // e.g. "ofl/viga"
     const licenseName =
@@ -86,7 +120,7 @@ async function main() {
     const licRes = await fetch(`${RAW_BASE}/${dir}/${licenseName}`);
     if (!licRes.ok)
       throw new Error(
-        `[promote] license fetch failed for ${family}: ${licRes.status}`,
+        `[promote] license fetch failed for ${entry.family}: ${licRes.status}`,
       );
     const licenseTextBytes = new Uint8Array(await licRes.arrayBuffer());
     for (const face of faces) {
@@ -94,7 +128,7 @@ async function main() {
         readFileSync(join(cache, face.repoPath.replaceAll("/", "__"))),
       );
       raw.push({
-        family,
+        family: entry.family,
         fileName: face.fileName,
         bytes,
         expectedSha256: face.fileSha256, // driver verifies bytes against the discovery hash
@@ -118,11 +152,12 @@ async function main() {
   writeFileSync(OUT, `${JSON.stringify(manifest, null, 2)}\n`);
   const faceCount = manifest.families.reduce((n, f) => n + f.faces.length, 0);
   console.log(
-    `[promote] wrote ${CORPUS_ID}: ${manifest.families.length} families, ${faceCount} faces (${ALLOW_LIST.join(", ")}).`,
+    `[promote] wrote ${CORPUS_ID}: ${manifest.families.length} families, ${faceCount} faces (${ALLOW_LIST.map((e) => e.family).join(", ")}).`,
   );
 }
 
-main().catch((e) => {
-  console.error(e instanceof Error ? e.message : e);
-  process.exit(1);
-});
+if (import.meta.main)
+  main().catch((e) => {
+    console.error(e instanceof Error ? e.message : e);
+    process.exit(1);
+  });
