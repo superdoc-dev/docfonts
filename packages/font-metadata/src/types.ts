@@ -90,7 +90,7 @@ export type ParseResult =
 export interface ParseOptions {
   /** caller-computed sha256 of the file bytes (the corpus join key). See {@link sha256Hex}. */
   fileSha256?: string;
-  /** which face of a .ttc collection to parse (default 0). Ignored for single-face .ttf/.otf. */
+  /** which face of a .ttc collection to parse (default 0). For a single-face .ttf/.otf only 0 is valid; a nonzero index is a parse error. */
   faceIndex?: number;
 }
 
