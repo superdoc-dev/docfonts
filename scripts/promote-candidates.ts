@@ -32,7 +32,13 @@ interface PromotionEntry {
 
 // Allow-list: explicit families AND faces only. Static fonts only - variable fonts are REJECTED here
 // (they need a deliberate instancing pass, like gelasio-instances), never direct promotion.
-const ALLOW_LIST: PromotionEntry[] = [{ family: "Viga", faces: ["regular"] }];
+const ALLOW_LIST: PromotionEntry[] = [
+  { family: "Viga", faces: ["regular"] },
+  // Bacasime Antique: the DocRepair Baskerville clone (already on Google Fonts). Regular-only.
+  // Advance-exact vs Baskerville Old Face except NBSP; promotion gives it reviewed provenance - the
+  // public verdict (visual_only + NBSP glyphException, Regular-only) is a SEPARATE editorial step.
+  { family: "Bacasime Antique", faces: ["regular"] },
+];
 
 /**
  * Resolve an allow-list entry to its exact discovery faces, with guards: every listed styleKey must
