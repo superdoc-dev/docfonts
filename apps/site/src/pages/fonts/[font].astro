@@ -87,9 +87,9 @@ const faceRows = record.faceVerdicts
           </ul>
         )}
         <p class="fineprint">
-          Per-face verdicts are authoritative: this substitute is not uniformly{" "}
-          {VERDICT_META[record.verdict].label}. The top-level verdict is the substitute
-          recommendation, not an all-faces-pass claim.
+          Per-face verdicts are authoritative. The headline verdict ({VERDICT_META[record.verdict].label})
+          is the <b>worst face</b>, so the summary never over-claims; the stronger faces above are better
+          than the headline. This substitute is not uniformly {VERDICT_META[record.verdict].label}.
         </p>
       </section>
     )

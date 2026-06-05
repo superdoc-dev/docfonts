@@ -19,7 +19,7 @@ docfonts is an open, measured registry of which open fonts can stand in for prop
 
 It was built by the team behind SuperDoc, out of the font-fidelity measurement work behind SuperDoc's document rendering. SuperDoc needed to know, with evidence, which open font to fall back to when a document named a proprietary one. The folklore lists could not answer that. So the measurement became a product of its own.
 
-What docfonts really does is replace folklore with measurement. Every entry carries advance deltas, face coverage (regular / bold / italic / bold-italic), license provenance, the method and date the numbers were produced, and a verdict drawn from a fixed taxonomy: metric-safe, cell-width-only, visual-only, customer-supplied, preserve-only, no-substitute.
+What docfonts really does is replace folklore with measurement. Every entry carries advance deltas, face coverage (regular / bold / italic / bold-italic), license provenance, the method and date the numbers were produced, and a verdict drawn from a fixed taxonomy: metric-safe, near-metric, cell-width-only, visual-only, customer-supplied, preserve-only, no-substitute. For a substitute whose faces differ, the verdict is recorded per face and the headline rolls up to the worst face.
 
 The problem it solves is structural. The common substitute-font sources assert pairs without measuring them. A "metric-equivalent" font ships with no italic face. Another matches advance widths but draws different letterforms. Document renderers inherit this silent fidelity loss - pages reflow, italics vanish - and the negative result that would have warned them rarely gets published.
 
@@ -156,7 +156,7 @@ We measure.
 
 We measure the advance widths. We count the faces that actually exist. We trace the license. We record the method and the date.
 
-Then we give it a verdict. One of six words. No hedging.
+Then we give it a verdict. One of a fixed set of words. No hedging.
 
 And when the measurement says no open font stands in, we publish the no.
 
@@ -224,7 +224,7 @@ These extend the SuperDoc voice rules. Where they are more specific, they win.
 1. No metric-safe claim without a measurement. Ever. This is the litmus test in sentence form.
 2. Lead with the number, not the adjective. "advance delta 1.8%" before "close."
 3. Name the missing face. If there is no italic, write "no italic face" - never "near-complete."
-4. A verdict is one of six words: metric-safe, cell-width-only, visual-only, customer-supplied, preserve-only, no-substitute. Use the taxonomy; do not invent grades.
+4. A verdict is one of the fixed taxonomy words: metric-safe, near-metric, cell-width-only, visual-only, customer-supplied, preserve-only, no-substitute. Use the taxonomy; do not invent grades. When faces differ, record a per-face verdict and roll the headline up to the worst face.
 5. Scope every negative to method and date: "no open metric substitute found (this method, this date)." A measurement is not a law of nature.
 6. Describe the category by what it is, not as wrong. "Alias lists and distro configs assert pairs without measurement." Report; do not sneer.
 7. SuperDoc is endorsement, not authorship of the truth. Say "Built by the team behind SuperDoc." Never "the official SuperDoc font tool."
@@ -279,18 +279,19 @@ Warm paper and ink, with soft graph-paper rules. This is deliberately not SuperD
 
 **Verdict system (functional, semantic - the signature of the brand)**
 
-These map one-to-one to the six `Verdict` tokens in `@docfonts/core`. They are functional, not decorative: a verdict badge always uses its assigned color, so the page can be read at a glance. Two conditional verdicts share one neutral color but remain distinct tokens - color is a reading aid, not the source of truth.
+These map one-to-one to the `Verdict` tokens in `@docfonts/core`. They are functional, not decorative: a verdict badge always uses its assigned color, so the page can be read at a glance. Two conditional verdicts share one neutral color but remain distinct tokens - color is a reading aid, not the source of truth.
 
 | Verdict (core token) | Hex | Reads as |
 |---|---|---|
-| metric-safe (`metric_safe`) | `#15803D` (measured green) | Pass, measured |
+| metric-safe (`metric_safe`) | `#15803D` (measured green) | Pass, measured (within the direct threshold) |
+| near-metric (`near_metric`) | `#3F6212` (olive) | Near-exact: within the likely band; a few glyphs drift |
 | cell-width-only (`cell_width_only`) | `#B45309` (amber) | Partial: advance matches, letterform does not |
 | visual-only (`visual_only`) | `#92400E` (deep ochre) | Partial: looks close, not metric-matched |
 | customer-supplied (`customer_supplied`) | `#475569` (slate) | Conditional: a font the user supplies, outside the open registry |
 | preserve-only (`preserve_only`) | `#475569` (slate) | Conditional: keep the original; do not substitute |
 | no-substitute (`no_substitute`) | `#A8392B` (clay) | The honest no - definite, not alarm |
 
-Clay, not fire-engine red, for the negative. A no is a measured result, not an emergency. All six colors meet WCAG AA (at least 4.5:1) for badge text on the paper background; if a verdict token is renamed or added in core, this table moves with it.
+Clay, not fire-engine red, for the negative. A no is a measured result, not an emergency. Every color meets WCAG AA (at least 4.5:1) for badge text on the paper background; if a verdict token is renamed or added in core, this table moves with it. When a substitute's faces differ, the badge shows the worst-face rollup with a "qualified" marker; the per-face breakdown carries the stronger faces.
 
 **Reserved**
 
