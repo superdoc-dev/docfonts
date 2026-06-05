@@ -51,3 +51,7 @@ The data comes from reviewed docfonts evidence. Measurements are produced agains
 but this package distributes no proprietary binaries or raw proprietary metrics.
 
 Built by the team behind SuperDoc. Standalone and neutral.
+
+## License
+
+MIT

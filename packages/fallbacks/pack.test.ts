@@ -37,6 +37,7 @@ describe("publish tarball hygiene", () => {
       const ok = ALLOWED_TOP.has(f) || f.startsWith("dist/");
       expect(ok, `unexpected packed file: ${f}`).toBe(true);
     }
+    expect(files).toContain("LICENSE");
     expect(files).toContain("dist/index.js");
     expect(files).toContain("dist/index.d.ts");
   });
