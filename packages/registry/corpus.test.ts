@@ -74,6 +74,11 @@ describe("loadCorpus (open-font corpus manifests)", () => {
         (f) => f.family === family && f.styleKey === "regular",
       );
       expect(fam?.faces[0].fileSha256).toBe(disc?.fileSha256);
+      // Provenance must point at the pinned reviewed bytes, never the mutable /main/ ref: the
+      // sourceUrl carries the snapshot's 40-char sourceCommit (see promote-candidates.ts).
+      expect(fam?.sourceUrl).toContain("/google/fonts/tree/");
+      expect(fam?.sourceUrl).not.toContain("/tree/main");
+      expect(fam?.sourceUrl).toMatch(/\/tree\/[0-9a-f]{40}\//);
     }
   });
 

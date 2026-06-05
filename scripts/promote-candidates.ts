@@ -72,8 +72,12 @@ export function selectPromotionFaces(
 
 const CORPUS_ID = "promoted-google-fonts-2026-06-05";
 const RETRIEVED_DATE = "2026-06-05";
-const RAW_BASE = "https://raw.githubusercontent.com/google/fonts/main";
-const TREE_BASE = "https://github.com/google/fonts/tree/main";
+// Bases are pinned to the snapshot's sourceCommit at runtime (NOT mutable /main/), so promoted
+// provenance points at the exact reviewed bytes. See main().
+const rawBaseFor = (commit: string) =>
+  `https://raw.githubusercontent.com/google/fonts/${commit}`;
+const treeBaseFor = (commit: string) =>
+  `https://github.com/google/fonts/tree/${commit}`;
 const LICENSE_URL: Record<string, string> = {
   "OFL-1.1": "https://openfontlicense.org/open-font-license-official-text/",
   "Apache-2.0": "https://www.apache.org/licenses/LICENSE-2.0",
@@ -115,6 +119,16 @@ async function main() {
     readFileSync(SNAPSHOT, "utf8"),
   ) as DiscoverySnapshot;
 
+  // Promote ONLY from a pinned snapshot: provenance must point at the exact reviewed bytes, so the
+  // license fetch and sourceUrls are derived from sourceCommit, never the mutable /main/ ref.
+  const commit = snapshot.sourceCommit;
+  if (!commit)
+    throw new Error(
+      "[promote] snapshot is not pinned (no sourceCommit) - run pin-discovery first",
+    );
+  const rawBase = rawBaseFor(commit);
+  const treeBase = treeBaseFor(commit);
+
   // Pre-fetch everything (bytes + license texts) so the sync CorpusSource the driver consumes is ready.
   const raw: RawCorpusFace[] = [];
   for (const entry of ALLOW_LIST) {
@@ -124,7 +138,7 @@ async function main() {
     const dir = faces[0].repoPath.split("/").slice(0, -1).join("/"); // e.g. "ofl/viga"
     const licenseName =
       faces[0].license === "Apache-2.0" ? "LICENSE.txt" : "OFL.txt";
-    const licRes = await fetch(`${RAW_BASE}/${dir}/${licenseName}`);
+    const licRes = await fetch(`${rawBase}/${dir}/${licenseName}`);
     if (!licRes.ok)
       throw new Error(
         `[promote] license fetch failed for ${entry.family}: ${licRes.status}`,
@@ -142,7 +156,7 @@ async function main() {
         license: face.license,
         licenseTextBytes,
         licenseUrl: LICENSE_URL[face.license] ?? "",
-        sourceUrl: `${TREE_BASE}/${dir}`,
+        sourceUrl: `${treeBase}/${dir}`,
       });
     }
   }
@@ -150,7 +164,7 @@ async function main() {
   const src: CorpusSource = {
     corpusId: CORPUS_ID,
     source: "Google Fonts (promoted from discovery, reviewed)",
-    sourceUrl: TREE_BASE,
+    sourceUrl: treeBase,
     retrievedDate: RETRIEVED_DATE,
     licenseSource: "google/fonts + fetched upstream license text",
     faces: () => raw,
