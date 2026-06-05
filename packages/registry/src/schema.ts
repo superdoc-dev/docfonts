@@ -3,10 +3,14 @@
  * (EvidenceRecord[]). Consumers and CI can verify a registry export without a JSON-Schema engine.
  * EVIDENCE_RECORDS_SCHEMA is also serialized to data/registry/schema.json.
  */
+
+import type { Verdict } from "@docfonts/core";
+import { worstVerdict } from "@docfonts/core";
 import type { EvidenceRecord, MeasurementKind } from "./types";
 
 const VERDICTS = [
   "metric_safe",
+  "near_metric",
   "cell_width_only",
   "visual_only",
   "customer_supplied",
@@ -30,6 +34,7 @@ const STYLE_KEYS: ReadonlySet<string> = new Set(STYLE_KEYS_LIST);
  */
 const NEEDS_CANDIDATE: ReadonlySet<string> = new Set([
   "metric_safe",
+  "near_metric",
   "cell_width_only",
 ]);
 /** measurement kinds that can substantiate a passing layout gate. */
@@ -202,11 +207,22 @@ export function validateRecords(
     // glyphExceptions name a style key and carry a note. When present they make the record qualified.
     if (r.faceVerdicts != null) {
       const fv = r.faceVerdicts as Record<string, unknown>;
+      const values: Verdict[] = [];
       for (const [k, v] of Object.entries(fv)) {
         if (!STYLE_KEYS.has(k))
           errors.push(`${at}.faceVerdicts has unknown style key: ${k}`);
         if (!VERDICTS.includes(v as (typeof VERDICTS)[number]))
           errors.push(`${at}.faceVerdicts.${k} invalid verdict: ${String(v)}`);
+        else values.push(v as Verdict);
+      }
+      // worst-face rollup: the top-level verdict must equal the worst per-face verdict, so the public
+      // summary is honest at a glance and never over-claims relative to the faces.
+      if (values.length > 0 && typeof r.verdict === "string") {
+        const worst = worstVerdict(values);
+        if (r.verdict !== worst)
+          errors.push(
+            `${at}.verdict "${r.verdict}" must equal the worst faceVerdict "${worst}" (worst-face rollup)`,
+          );
       }
     }
     if (r.glyphExceptions != null) {

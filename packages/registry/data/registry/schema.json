@@ -26,6 +26,7 @@
       "verdict": {
         "enum": [
           "metric_safe",
+          "near_metric",
           "cell_width_only",
           "visual_only",
           "customer_supplied",
@@ -87,6 +88,7 @@
         "additionalProperties": {
           "enum": [
             "metric_safe",
+            "near_metric",
             "cell_width_only",
             "visual_only",
             "customer_supplied",

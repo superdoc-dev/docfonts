@@ -40,7 +40,7 @@
     "candidate": {
       "candidateFamily": "Caladea"
     },
-    "verdict": "metric_safe",
+    "verdict": "visual_only",
     "faces": {
       "regular": true,
       "bold": true,
@@ -193,7 +193,7 @@
     "candidate": {
       "candidateFamily": "Gelasio"
     },
-    "verdict": "metric_safe",
+    "verdict": "near_metric",
     "faces": {
       "regular": true,
       "bold": true,
@@ -201,26 +201,48 @@
       "boldItalic": true
     },
     "advance": {
-      "meanDelta": 0,
-      "maxDelta": 0
+      "meanDelta": 0.0000197,
+      "maxDelta": 0.0183727
     },
     "candidateLicense": "OFL-1.1",
-    "candidateLicenseSource": "apryse fallback summary 2026-06-04",
+    "candidateLicenseSource": "font-fidelity-research future-direct-candidates packet 2026-06-03 (gelasio VF, instanced wght 400/700)",
     "gates": {
       "static": "pass",
       "metric": "pass",
-      "layout": "pass",
+      "layout": "not_run",
       "ship": "fail"
     },
     "measurementRefs": [
-      "georgia__gelasio#analytic_advance#2026-06-03",
-      "georgia__gelasio#face_aggregate#2026-06-03"
+      "georgia_regular__gelasio#regular#w400#1543f04d#analytic_advance#2026-06-04",
+      "georgia_bold__gelasio#bold#w700#5a1b9bd7#analytic_advance#2026-06-04",
+      "georgia_italic__gelasio#italic#w400#be1243a9#analytic_advance#2026-06-04",
+      "georgia_boldItalic__gelasio#boldItalic#w700#6f3b3f7a#analytic_advance#2026-06-04"
     ],
     "policyAction": "substitute",
-    "confidence": "R",
+    "confidence": "high",
     "exportRule": "preserve_original_name",
-    "measuredDate": "2026-06-03",
-    "notes": "All 4 faces layout-proven 2026-06-03 vs Word (family-status.json); ship gate = Gelasio OFL legal sign-off"
+    "measuredDate": "2026-06-04",
+    "notes": "Gelasio is the substitute (static instances from the upstream VF at wght 400/700). regular/bold are metric-safe; italic/boldItalic are near-metric - exact except a few accented capital letters (see glyphExceptions). faceVerdicts is authoritative; top-level is the worst-face rollup.",
+    "faceVerdicts": {
+      "regular": "metric_safe",
+      "bold": "metric_safe",
+      "italic": "near_metric",
+      "boldItalic": "near_metric"
+    },
+    "glyphExceptions": [
+      {
+        "styleKey": "italic",
+        "codepoint": 210,
+        "advanceDelta": 0.0184,
+        "note": "Georgia Italic vs Gelasio Italic: accented capital O (U+00D2-D8: O-grave/acute/circumflex/diaeresis/stroke) advance differs ~1.84%. 5 rare glyphs; all other glyphs exact, mean 0%."
+      },
+      {
+        "styleKey": "boldItalic",
+        "codepoint": 204,
+        "advanceDelta": 0.011,
+        "note": "Georgia Bold Italic vs Gelasio Bold Italic: accented capital I (U+00CC-CE: I-grave/acute/circumflex) advance differs ~1.10%. 3 rare glyphs; all other glyphs exact, mean ~0%."
+      }
+    ]
   },
   {
     "evidenceId": "arial-narrow",
@@ -228,7 +250,7 @@
     "candidate": {
       "candidateFamily": "Liberation Sans Narrow"
     },
-    "verdict": "metric_safe",
+    "verdict": "visual_only",
     "faces": {
       "regular": true,
       "bold": true,

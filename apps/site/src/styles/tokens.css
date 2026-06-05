@@ -18,6 +18,7 @@
 
   /* verdict system - color is load-bearing; each pairs with a glyph in lib/verdict.ts */
   --v-safe: #15803d;
+  --v-near: #3f6212;
   --v-cell: #b45309;
   --v-visual: #92400e;
   --v-preserve: #475569;
@@ -219,6 +220,11 @@ section {
   color: var(--v-safe);
   background: #15803d10;
   border-color: #15803d30;
+}
+.badge.near {
+  color: var(--v-near);
+  background: #3f621210;
+  border-color: #3f621230;
 }
 .badge.cell {
   color: var(--v-cell);

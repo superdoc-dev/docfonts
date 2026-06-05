@@ -30,6 +30,7 @@ const faceScoped: EvidenceRecord = {
   evidenceId: "cambria",
   originalFont: "Cambria",
   candidate: { candidateFamily: "Caladea" },
+  verdict: "visual_only", // worst-face rollup: the worst faceVerdict below
   faceVerdicts: {
     regular: "metric_safe",
     bold: "metric_safe",
@@ -91,6 +92,34 @@ describe("validateRecords (public records.json contract)", () => {
 describe("face-scoped evidence (faceVerdicts + glyphExceptions)", () => {
   it("accepts valid per-face verdicts and a named glyph exception", () => {
     expect(validateRecords([faceScoped])).toEqual({ ok: true, errors: [] });
+  });
+
+  it("enforces worst-face rollup: top-level verdict must equal the worst faceVerdict", () => {
+    // top-level metric_safe but a face is visual_only -> must be rejected (should be visual_only).
+    const bad = {
+      ...faceScoped,
+      verdict: "metric_safe",
+    } as unknown as EvidenceRecord;
+    const r = validateRecords([bad]);
+    expect(r.ok).toBe(false);
+    expect(r.errors.some((e) => e.includes("worst-face rollup"))).toBe(true);
+  });
+
+  it("accepts near_metric as a top-level and per-face verdict", () => {
+    const georgia = {
+      ...valid,
+      evidenceId: "georgia",
+      originalFont: "Georgia",
+      candidate: { candidateFamily: "Gelasio" },
+      verdict: "near_metric",
+      faceVerdicts: {
+        regular: "metric_safe",
+        bold: "metric_safe",
+        italic: "near_metric",
+        boldItalic: "near_metric",
+      },
+    } as unknown as EvidenceRecord;
+    expect(validateRecords([georgia])).toEqual({ ok: true, errors: [] });
   });
 
   it("rejects an unknown face style key in faceVerdicts", () => {

@@ -20,6 +20,12 @@ export const VERDICT_META: Record<Verdict, VerdictMeta> = {
     cls: "safe",
     def: "Advances match within threshold. Layout holds, pending a live render proof.",
   },
+  near_metric: {
+    label: "near-metric",
+    glyph: "≃", // asymptotically equal
+    cls: "near",
+    def: "Near-exact: within the likely band (mean <= 1%, worst-case <= 2.5%). A few glyphs drift; most text holds.",
+  },
   cell_width_only: {
     label: "cell-width-only",
     glyph: "↔", // left-right arrow
@@ -55,6 +61,7 @@ export const VERDICT_META: Record<Verdict, VerdictMeta> = {
 /** Display order: pass -> partial -> conditional -> no. */
 export const VERDICT_ORDER: Verdict[] = [
   "metric_safe",
+  "near_metric",
   "cell_width_only",
   "visual_only",
   "preserve_only",
@@ -76,9 +83,9 @@ export const FACE_ORDER: StyleKey[] = [
 ];
 
 /**
- * A record is QUALIFIED when it carries per-face verdicts and at least one face differs from the
- * top-level verdict (e.g. Cambria: metric_safe overall, but boldItalic is only visual). Consumers
- * must surface this so the top-level verdict is never shown as an unqualified all-faces claim.
+ * A record is QUALIFIED when its faces do NOT share one verdict (e.g. Georgia: regular/bold metric-safe
+ * but italic/boldItalic near-metric). The top-level verdict is the worst-face rollup, so consumers add
+ * a "qualified" marker to signal that the stronger faces are better than the headline.
  */
 export function isQualified(record: {
   verdict: Verdict;
@@ -86,5 +93,6 @@ export function isQualified(record: {
 }): boolean {
   const fv = record.faceVerdicts;
   if (!fv) return false;
-  return Object.values(fv).some((v) => v && v !== record.verdict);
+  const values = Object.values(fv).filter(Boolean) as Verdict[];
+  return values.length > 0 && new Set(values).size > 1;
 }
