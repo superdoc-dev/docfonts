@@ -55,7 +55,16 @@ const slug = (s: string) =>
     .replace(/^-|-$/g, "");
 const round = (x: number) => Math.round(x * 1e6) / 1e6;
 
-function tierOf(mean: number, max: number): BakeoffCandidate["tier"] {
+function tierOf(
+  mean: number,
+  max: number,
+  category: string,
+): BakeoffCandidate["tier"] {
+  // Monospace target: a close advance match only proves CELL WIDTH (every mono font shares one cell),
+  // not glyph shape - so it is cell_width, never direct/likely. Mirrors the registry's cell_width_only.
+  if (category === "mono") {
+    return mean <= 0.01 && max <= 0.025 ? "cell_width" : "visual";
+  }
   if (mean <= 0.005 && max <= 0.01) return "direct";
   if (mean <= 0.01 && max <= 0.025) return "likely";
   return "visual";
@@ -147,7 +156,7 @@ async function main() {
       category: face.category,
       latinCoverage: face.latinCoverage,
       advance,
-      tier: tierOf(advance.meanDelta, advance.maxDelta),
+      tier: tierOf(advance.meanDelta, advance.maxDelta, targetCategory),
     });
   }
 
