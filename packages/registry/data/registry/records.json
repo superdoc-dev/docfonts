@@ -209,20 +209,24 @@
     "gates": {
       "static": "pass",
       "metric": "pass",
-      "layout": "not_run",
+      "layout": "pass",
       "ship": "fail"
     },
     "measurementRefs": [
       "georgia_regular__gelasio#regular#w400#1543f04d#analytic_advance#2026-06-04",
       "georgia_bold__gelasio#bold#w700#5a1b9bd7#analytic_advance#2026-06-04",
       "georgia_italic__gelasio#italic#w400#be1243a9#analytic_advance#2026-06-04",
-      "georgia_boldItalic__gelasio#boldItalic#w700#6f3b3f7a#analytic_advance#2026-06-04"
+      "georgia_boldItalic__gelasio#boldItalic#w700#6f3b3f7a#analytic_advance#2026-06-04",
+      "georgia_regular__gelasio#regular#w400#1543f04d#live_layout#2026-06-03",
+      "georgia_bold__gelasio#bold#w700#5a1b9bd7#live_layout#2026-06-03",
+      "georgia_italic__gelasio#italic#w400#be1243a9#live_layout#2026-06-03",
+      "georgia_boldItalic__gelasio#boldItalic#w700#6f3b3f7a#live_layout#2026-06-03"
     ],
     "policyAction": "substitute",
     "confidence": "high",
     "exportRule": "preserve_original_name",
     "measuredDate": "2026-06-04",
-    "notes": "Gelasio is the substitute (static instances from the upstream VF at wght 400/700). regular/bold are metric-safe; italic/boldItalic are near-metric - exact except a few accented capital letters (see glyphExceptions). faceVerdicts is authoritative; top-level is the worst-face rollup.",
+    "notes": "Gelasio is the substitute (static instances from the upstream VF at wght 400/700). regular/bold are metric-safe; italic/boldItalic are near-metric - exact except a few accented capital letters (see glyphExceptions). faceVerdicts is authoritative; top-level is the worst-face rollup. Live SuperDoc-vs-Word layout proof passed for all four faces (line breaks exact); the near-metric grade reflects analytic advance divergence on rare accented capitals not present in the proof text.",
     "faceVerdicts": {
       "regular": "metric_safe",
       "bold": "metric_safe",
