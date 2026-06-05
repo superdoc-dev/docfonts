@@ -2,15 +2,16 @@
 /**
  * import-research.ts - HISTORICAL bootstrap tooling. NOT the authoritative generator.
  *
- * This script seeded the original registry from font-fidelity-research artifacts. It is kept for
- * reference and as the starting point for a future reproducible pipeline, but it NO LONGER owns
- * data/registry/records.json. The committed registry is now the HAND-CURATED source of truth: rows
- * have been added and edited directly (e.g. Aptos Display, Cambria Math, Helvetica), and the
- * structured sources live in a sibling repo that is not vendored here. So re-running this importer
- * does NOT reproduce the committed registry - it would drop every hand-maintained row and is missing
- * those sources. It runs as a DRY RUN by default; --write is gated and loudly warns. To make this a
- * true generator again, see the "make registry generation reproducible" follow-up (vendor the
- * sources, wire the hand-maintained rows, design the generated-vs-runner measurement boundary).
+ * This script seeded the original registry from the research artifacts (now vendored, public-safe,
+ * under ./research-sources). It is kept for reference, but it NO LONGER owns data/registry/records.json.
+ * The committed registry is the HAND-CURATED source of truth and is deliberately MORE honest than this
+ * importer can reproduce: several curated verdicts depend on face-scoped and runner-measured evidence
+ * that the coarse summaries here do not capture. Re-running this importer would OVERCLAIM those rows -
+ * e.g. it would call Cambria (face-scoped visual_only, ~23% worst face), Georgia (near_metric, 1.84%),
+ * and Arial Narrow (visual_only, ~50%) all "metric_safe" off the apryse 1-best. It also drops the
+ * hand-added rows it has no source for. So it runs as a DRY RUN by default and is NOT wired into CI.
+ * Making it authoritative would require the richer measured artifacts and the face-scoped verdict
+ * model as first-class inputs, not CSV rules patched until they reproduce today's JSON.
  *
  * SEPARATION OF CONCERNS (the original design, retained for reference):
  *   - MECHANICAL (this script): gates, advance deltas, license, measurement refs - all pulled from
@@ -25,11 +26,10 @@
  *     only in a top_candidates measurement (shown, never claimed as "the" substitute). Rows with no
  *     curated verdict, or a curated candidate lacking a structured measurement, are SKIPPED + LOGGED.
  *
- * SOURCES (read-only sibling research repo):
+ * SOURCES (vendored, public-safe reference snapshots; see ./research-sources/README.md):
  *   - STATUS.csv                     gate authority (static/metric/layout/ship) + status.
- *   - apryse ...summary-simple.csv   curated 1-best advance/license per font.
- *   - curated-proprietary scorecard  per-candidate advance/license (for a specific curated candidate,
- *                                    and for fonts absent from the apryse summary).
+ *   - apryse ...summary CSV          1-best advance/license per font (coarse; rounds near-clones to 0).
+ *   - similarity scorecard CSV       per-candidate advance/license for the curated visual bakeoffs.
  *
  * OUTPUT (was committed; now hand-curated and NOT owned by this script):
  *   - data/registry/records.json     EvidenceRecord[]
@@ -60,21 +60,10 @@ import {
   validateRecords,
 } from "../packages/registry/src/index";
 
-const RESEARCH = join(import.meta.dir, "..", "..", "font-fidelity-research");
-const STATUS_CSV = join(RESEARCH, "harness", "proofs", "STATUS.csv");
-const APRYSE_CSV = join(
-  RESEARCH,
-  "harness",
-  "results",
-  "2026-06-04-apryse-font-fallback-summary-simple.csv",
-);
-const SCORECARD_CSV = join(
-  RESEARCH,
-  "harness",
-  "results",
-  "2026-06-03-similarity-curated-proprietary",
-  "scorecard.csv",
-);
+const SOURCES = join(import.meta.dir, "research-sources");
+const STATUS_CSV = join(SOURCES, "STATUS.csv");
+const APRYSE_CSV = join(SOURCES, "apryse-font-fallback-summary-2026-06-04.csv");
+const SCORECARD_CSV = join(SOURCES, "similarity-scorecard-2026-06-03.csv");
 const REGISTRY_DATA = join(
   import.meta.dir,
   "..",
@@ -224,7 +213,7 @@ function main() {
   for (const p of [STATUS_CSV, APRYSE_CSV, SCORECARD_CSV]) {
     if (!existsSync(p)) {
       console.error(
-        `[import] source not found: ${p}\n  This generator needs the sibling font-fidelity-research repo.`,
+        `[import] source not found: ${p}\n  Expected a vendored snapshot under scripts/research-sources/.`,
       );
       process.exit(1);
     }

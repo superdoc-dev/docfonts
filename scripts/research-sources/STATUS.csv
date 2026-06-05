@@ -1,0 +1,25 @@
+logical_font,substitute_or_policy,status,static_gate,metric_gate,layout_gate,ship_gate,note
+Calibri,Carlito,verified_shipped,pass,pass,pass,pass,shipped; Calibri to Carlito four-face layout-proven
+Cambria,Caladea,verified_shipped,pass,pass,not_run,pass,"shipped; advance and harness verified; per-document four-face layout check recommended"
+Arial,Liberation Sans,verified_shipped,pass,pass,not_run,pass,shipped; advance and harness verified
+Times New Roman,Liberation Serif,verified_shipped,pass,pass,not_run,pass,shipped; advance and harness verified
+Courier New,Liberation Mono,verified_shipped,pass,pass,not_run,pass,shipped; advance and harness verified
+Georgia,Gelasio,layout_proven_all_faces,pass,pass,pass,fail,All four faces layout-proven 2026-06-03 vs Word; ship pending Gelasio OFL licensing sign-off
+Arial Narrow,Liberation Sans Narrow,layout_proven_all_faces,pass,pass,pass,fail,All four faces layout-proven 2026-06-03 vs Word; ship pending GPLv2-plus-font-exception license review
+Calibri Light,Carlito,metric_only_candidate,pass,partial,not_run,fail,no dedicated Light face; weight policy unresolved
+Aptos,none (visual: Source Sans 3 / Roboto),visual_only,na,fail,na,na,no open metric clone (best ~3%); customer-first, with a reported visual fallback
+Consolas,Inconsolata SemiExpanded (cell-width) / generic mono,visual_only,na,partial,na,na,"all-files bakeoff 2026-06-04 found a monospace cell-width match 0.036% (Inconsolata SemiExpanded; Syne Mono ties but Regular-only). Cell-width only = single advance ratio, not shape-proven; Inconsolata has no italic so Consolas italic is uncovered (face-policy gap). Visual/code-font and face policy pending."
+Verdana,DejaVu Sans (visual),visual_only,na,fail,na,na,"DejaVu 1.51% mean best, fails worst-case 6.64%"
+Tahoma,Open Sans (visual),visual_only,na,fail,na,na,"best Open Sans 4.85%, not metric"
+Trebuchet MS,Open Sans (visual),visual_only,na,fail,na,na,"best Open Sans 3.64%, not metric"
+Comic Sans MS,Comic Neue (visual),visual_only,na,fail,na,na,measured 10.05% mean - NOT metric
+Candara,Source Sans 3 (visual),visual_only,na,fail,na,na,"best Source Sans 3 1.46% mean, fails worst-case"
+Constantia,Caladea (visual),visual_only,na,fail,na,na,"best Caladea 3.60% mean, not metric"
+Corbel,Source Sans 3 (visual),visual_only,na,fail,na,na,"best Source Sans 3 1.14% mean, fails worst-case"
+Cambria Math,preserve-only (OMML math),special_preserve_only,na,na,na,na,"math layout, not normal font fallback"
+Symbol / Wingdings / Webdings / Bookshelf Symbol 7 / MS Outlook,preserve-only (symbol),special_preserve_only,na,na,na,na,codepoint-specific; never normal-substitute
+SimSun / Malgun Gothic / Meiryo (CJK),customer / optional Noto pack,special_preserve_only,na,na,na,na,"CJK; customer-first, optional Noto-by-script pack"
+Baskerville Old Face,Bacasime Antique (DocRepair),metric_only_candidate,na,pass,not_run,fail,"all-files bakeoff 2026-06-04: exact proportional advance match (50 distinct advances identical, verified). DocRepair OOXML clone, OFL-1.1, provenance-supported (licensing review pending). Regular-only; coverage gap U+B7 shared with the Word oracle (benign). Blocked until face-scoped resolver support lands; proofs then need positive Regular layout and negative bold/italic routing."
+Cooper Black,Caprasimo (DocRepair),metric_only_candidate,na,pass,not_run,fail,"all-files bakeoff 2026-06-04: exact proportional advance match (53 distinct advances identical, verified). DocRepair OOXML clone, OFL-1.1, provenance-supported (licensing review pending). Regular-only display; ink-floor parity is the real layout risk. Blocked until face-scoped resolver support lands; proofs then need positive Regular layout and negative missing-face routing."
+Lucida Console,Cousine (cell-width),visual_only,na,partial,na,na,"all-files bakeoff 2026-06-04: monospace cell-width match 0.405% (single advance ratio), not shape/code-font proven. Cousine has 4 faces in the local Google Fonts OFL corpus. Visual/code-font and layout validation pending."
+Helvetica,Liberation Sans (ALREADY SHIPPED),metric_only_candidate,na,pass,not_run,na,"Shipped Liberation Sans measured 0.000% (verified, same 2048 upem). Resolver-alias candidate only: no new font, no new license, no layout proof. Mac / Apryse toolbar row, not Windows-Word-native."
