@@ -26,7 +26,7 @@
     },
     "tahoma": {
       "verdict": "visual_only",
-      "rationale": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed."
+      "rationale": "No human-approved visual substitute yet; closest measured fonts are reported, not anointed. The closest lead, Viga, was reviewed for promotion and declined: its low mean (~0.6%) hides broad reflow - worst glyphs include punctuation such as > and <, the space character diverges ~26%, and 120+ glyphs exceed the near-metric band. This is not a single-glyph exception. Viga has reviewed corpus provenance (promoted-google-fonts) if a stronger case emerges."
     },
     "trebuchet-ms": {
       "verdict": "visual_only",
