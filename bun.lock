@@ -48,6 +48,10 @@
         "fflate": "^0.8.2",
       },
     },
+    "packages/fallbacks": {
+      "name": "@docfonts/fallbacks",
+      "version": "0.1.0",
+    },
     "packages/font-metadata": {
       "name": "@docfonts/font-metadata",
       "version": "0.0.1",
@@ -141,6 +145,8 @@
     "@docfonts/core": ["@docfonts/core@workspace:packages/core"],
 
     "@docfonts/docx-fonts": ["@docfonts/docx-fonts@workspace:packages/docx-fonts"],
+
+    "@docfonts/fallbacks": ["@docfonts/fallbacks@workspace:packages/fallbacks"],
 
     "@docfonts/font-metadata": ["@docfonts/font-metadata@workspace:packages/font-metadata"],
 
