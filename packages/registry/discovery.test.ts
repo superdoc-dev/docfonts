@@ -65,9 +65,16 @@ describe("discovery snapshot (google-fonts-all-files)", () => {
     expect(snapshot.retrievedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(snapshot.faceCount).toBe(snapshot.faces.length);
     expect(snapshot.faces.length).toBeGreaterThan(1000);
-    // honest about HOW it was obtained; the bootstrap path is unpinned by design.
+    // honest about HOW it was obtained. A git_pinned snapshot is reproducible: it names the exact
+    // sourceCommit and every rawUrl is pinned to it (no mutable /main/). A bootstrap is unpinned.
     expect(snapshot.acquisition).toBeTruthy();
-    if (snapshot.acquisition === "local_bootstrap") {
+    if (snapshot.acquisition === "git_pinned") {
+      expect(snapshot.sourceCommit).toMatch(/^[0-9a-f]{40}$/);
+      for (const f of snapshot.faces) {
+        expect(f.rawUrl).not.toContain("/main/");
+        expect(f.rawUrl).toContain(snapshot.sourceCommit as string);
+      }
+    } else if (snapshot.acquisition === "local_bootstrap") {
       expect(snapshot.sourceCommit).toBeUndefined();
     }
   });

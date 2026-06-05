@@ -138,11 +138,13 @@ export interface DiscoverySnapshot {
   retrievedDate: string; // YYYY-MM-DD
   /**
    * how THIS snapshot's faces were obtained. "local_bootstrap" = mapped from an existing local corpus
-   * (no fresh acquisition / pinned commit) - the bootstrap path used to validate the schema; the
-   * long-term path acquires the source directly (git clone at a pinned commit, release, or package).
+   * (no fresh acquisition / pinned commit). "git_pinned" = every face re-fetched from the source repo
+   * at the exact `sourceCommit` and sha256-verified, so the snapshot is reproducible from that commit
+   * (the strong path). The others reserve future acquisition kinds (full clone, release, package).
    */
   acquisition:
     | "local_bootstrap"
+    | "git_pinned"
     | "git_clone"
     | "release_download"
     | "package_resolve";
