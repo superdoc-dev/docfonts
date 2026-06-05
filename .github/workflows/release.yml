@@ -1,9 +1,15 @@
 # Release @docfonts/fallbacks to npm via semantic-release. Minimal skeleton - add on top as needed.
 #
-# NOT ARMED: manual dispatch only, DRY RUN by default, never publishes on push. Before a real publish:
+# NOT ARMED: manual dispatch only, DRY RUN by default, never publishes on push.
+#
+# NPM_TOKEN is required to run this AT ALL - even the dry run. semantic-release verifies npm auth in
+# verifyConditions (the package is public, so it runs `npm whoami`) before publish is ever skipped, so
+# without a valid NPM_TOKEN secret the dry run fails at auth. Add the secret (publish rights to the
+# @docfonts scope) before running either mode.
+#
+# Before a real (non-dry) publish, also:
 #   1. Confirm the package license + copyright holder (manifest says MIT; no LICENSE file yet).
-#   2. Add an NPM_TOKEN secret with publish rights to the @docfonts scope.
-#   3. Publish the first version (0.1.0) intentionally; semantic-release derives later versions from
+#   2. Publish the first version (0.1.0) intentionally; semantic-release derives later versions from
 #      commits, so always dry-run first and read the planned version.
 # Releases ONLY packages/fallbacks (see .releaserc.json: pkgRoot + the `fallbacks-v*` tag namespace).
 name: release-fallbacks
