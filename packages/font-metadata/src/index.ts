@@ -9,6 +9,7 @@
 export {
   advanceOfString,
   buildLatinCore,
+  countFaces,
   coverage,
   LATIN_CORE,
   parseFontFace,

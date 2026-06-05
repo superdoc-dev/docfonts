@@ -36,14 +36,31 @@ const utf16be = (b: Uint8Array, o: number, len: number): string => {
 
 type TableRec = { offset: number; length: number };
 
-function tableDirectory(b: Uint8Array, d: DataView) {
+/** Number of faces in a font file: numFonts for a .ttc collection, else 1. */
+export function countFaces(bytes: Uint8Array): number {
+  if (bytes.length < 12 || tag(bytes, 0) !== "ttcf") return 1;
+  const d = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  return u32(d, 8); // ttc header: numFonts
+}
+
+function tableDirectory(b: Uint8Array, d: DataView, faceIndex: number) {
   let sfntOffset = 0;
   let collection = false;
   let collectionIndex: number | undefined;
   if (tag(b, 0) === "ttcf") {
     collection = true;
-    sfntOffset = u32(d, 12); // first face's table directory
-    collectionIndex = 0;
+    const numFonts = u32(d, 8);
+    if (faceIndex < 0 || faceIndex >= numFonts) {
+      throw new RangeError(
+        `faceIndex ${faceIndex} out of range (collection has ${numFonts} faces)`,
+      );
+    }
+    sfntOffset = u32(d, 12 + faceIndex * 4); // this face's table directory
+    collectionIndex = faceIndex;
+  } else if (faceIndex !== 0) {
+    throw new RangeError(
+      `faceIndex ${faceIndex} on a single-face font (only 0 is valid)`,
+    );
   }
   const numTables = u16(d, sfntOffset + 4);
   const byTag: Record<string, TableRec> = {};
@@ -340,6 +357,7 @@ export function parseFontFace(
     const { byTag, collection, collectionIndex, sfntOffset } = tableDirectory(
       bytes,
       d,
+      options.faceIndex ?? 0,
     );
     const headT = byTag.head;
     const os2T = byTag["OS/2"];

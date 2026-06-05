@@ -4,11 +4,48 @@ import { join } from "node:path";
 import type { CmapKind, FontCategory, StyleKey } from "./src/index";
 import {
   advanceOfString,
+  countFaces,
   coverage,
   LATIN_CORE,
   parseFontFace,
   sha256Hex,
 } from "./src/index";
+
+const FIX = join(import.meta.dir, "..", "..", "tests", "fixtures", "fonts");
+
+describe(".ttc multi-face parsing", () => {
+  const ttc = new Uint8Array(readFileSync(join(FIX, "CarlitoCollection.ttc")));
+
+  it("countFaces reports the collection size; a single .ttf is 1", () => {
+    expect(countFaces(ttc)).toBe(2);
+    expect(
+      countFaces(
+        new Uint8Array(readFileSync(join(FIX, "Carlito-Regular.ttf"))),
+      ),
+    ).toBe(1);
+  });
+
+  it("parses each face by faceIndex (0 = Regular, 1 = Bold)", () => {
+    const f0 = parseFontFace(ttc, { faceIndex: 0 });
+    const f1 = parseFontFace(ttc, { faceIndex: 1 });
+    expect(f0.ok && f0.face.metadata.face.styleKey).toBe("regular");
+    expect(f1.ok && f1.face.metadata.face.styleKey).toBe("bold");
+    expect(f0.ok && f0.face.metadata.names.family).toBe("Carlito");
+    expect(f1.ok && f1.face.metadata.collectionIndex).toBe(1);
+  });
+
+  it("defaults to face 0 and rejects an out-of-range faceIndex", () => {
+    const def = parseFontFace(ttc);
+    expect(def.ok && def.face.metadata.face.styleKey).toBe("regular");
+    expect(parseFontFace(ttc, { faceIndex: 5 }).ok).toBe(false);
+    expect(
+      parseFontFace(
+        new Uint8Array(readFileSync(join(FIX, "Carlito-Regular.ttf"))),
+        { faceIndex: 1 },
+      ).ok,
+    ).toBe(false);
+  });
+});
 
 const FONT_DIR = join(
   import.meta.dir,

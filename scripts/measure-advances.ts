@@ -19,6 +19,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
+  countFaces,
   type ParsedFace,
   parseFontFace,
   sha256Hex,
@@ -75,14 +76,20 @@ async function main() {
   const records = loadRecords();
 
   // parse every oracle font in the private dir, keyed by (family, styleKey). .ttc collections are
-  // included (Cambria ships as Cambria.ttc); the parser reads the collection's first face.
+  // enumerated face by face (Helvetica.ttc carries regular/bold/oblique/bold-oblique), so every
+  // packaged face is a usable oracle - not just face 0.
   const oracles = new Map<string, ParsedFace>();
   for (const file of readdirSync(oracleDir).filter(isOracleFontFile)) {
-    const f = parse(new Uint8Array(readFileSync(join(oracleDir, file))), file);
-    oracles.set(
-      `${f.metadata.names.family.toLowerCase()}|${f.metadata.face.styleKey}`,
-      f,
-    );
+    const bytes = new Uint8Array(readFileSync(join(oracleDir, file)));
+    for (let i = 0; i < countFaces(bytes); i++) {
+      const r = parseFontFace(bytes, { faceIndex: i });
+      if (!r.ok)
+        throw new Error(`parse failed (${file} face ${i}): ${r.error}`);
+      oracles.set(
+        `${r.face.metadata.names.family.toLowerCase()}|${r.face.metadata.face.styleKey}`,
+        r.face,
+      );
+    }
   }
 
   // Decide what to measure and what to skip BEFORE reading candidate bytes, so the run self-audits.
