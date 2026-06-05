@@ -47,9 +47,14 @@ describe("loadRecords (canonical generated registry)", () => {
     expect(res.ok).toBe(true);
   });
 
-  test("every record is backed by at least one measurement", () => {
-    for (const r of records)
+  test("every metric-claiming record is backed by a measurement (policy rows are exempt)", () => {
+    // preserve_only / customer_supplied make NO per-glyph metric claim, so they need no measurement.
+    // Everything that asserts a measured result (incl. the measured "no" of no_substitute) must.
+    const POLICY = new Set(["preserve_only", "customer_supplied"]);
+    for (const r of records) {
+      if (POLICY.has(r.verdict)) continue;
       expect(r.measurementRefs.length).toBeGreaterThanOrEqual(1);
+    }
   });
 
   test("Calibri is a metric_safe Carlito substitute", () => {
