@@ -7,6 +7,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   createFallbackMap,
+  type GlyphException,
   getFallbackDecision,
   getFallbackDecisionForFace,
   getRenderableFallback,
@@ -233,5 +234,58 @@ describe("face-aware lookups (Regular-only safety)", () => {
         canRenderFamily: () => true,
       }).kind,
     ).toBe("face_missing");
+  });
+});
+
+describe("glyphExceptions projection", () => {
+  const renderAll = { canRenderFamily: () => true };
+
+  test("a family lookup carries ALL the row's glyph exceptions", () => {
+    // Cambria -> Caladea's only exception is the Bold Italic grave accent (U+0060).
+    const fb = getRenderableFallback("Cambria", renderAll);
+    expect(fb?.verdict).toBe("visual_only");
+    expect(fb?.glyphExceptions).toMatchObject([
+      { slot: "boldItalic", codepoint: 0x60 },
+    ]);
+  });
+
+  test("a face lookup carries ONLY that face's exceptions (and per-face verdict)", () => {
+    const regular = getRenderableFallbackForFace(
+      "Cambria",
+      "regular",
+      renderAll,
+    );
+    expect(regular?.verdict).toBe("metric_safe");
+    expect(regular?.glyphExceptions).toBeUndefined(); // no Bold-Italic exception leaks onto Regular
+
+    const boldItalic = getRenderableFallbackForFace(
+      "Cambria",
+      "boldItalic",
+      renderAll,
+    );
+    expect(boldItalic?.verdict).toBe("visual_only");
+    expect(boldItalic?.glyphExceptions).toMatchObject([
+      { slot: "boldItalic", codepoint: 0x60 },
+    ]);
+  });
+
+  test("a fallback with no exceptions omits the field entirely", () => {
+    expect(
+      getRenderableFallback("Calibri", renderAll)?.glyphExceptions,
+    ).toBeUndefined();
+    expect(
+      getRenderableFallbackForFace("Calibri", "regular", renderAll)
+        ?.glyphExceptions,
+    ).toBeUndefined();
+  });
+
+  test("returns a FRESH array each call - mutating it does not corrupt a later lookup", () => {
+    const first = getRenderableFallback("Cambria", renderAll)
+      ?.glyphExceptions as GlyphException[];
+    expect(first.length).toBe(1);
+    first.push(first[0]); // a careless consumer mutates the returned array
+    expect(
+      getRenderableFallback("Cambria", renderAll)?.glyphExceptions,
+    ).toHaveLength(1);
   });
 });

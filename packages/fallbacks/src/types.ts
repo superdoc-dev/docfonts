@@ -120,6 +120,14 @@ export interface FontFallback {
   faces: FaceCoverage;
   /** stable reviewed-evidence id; look the full row up in {@link SUBSTITUTION_EVIDENCE}. */
   evidenceId: string;
+  /**
+   * Named glyph-level divergences that qualify this fallback (e.g. one codepoint reflows). Scoped to
+   * the lookup: a family lookup ({@link getRenderableFallback}) carries ALL of the row's exceptions; a
+   * face lookup ({@link getRenderableFallbackForFace}) carries only the requested face's. Omitted when
+   * none apply - so a renderer can surface a precise "this face reflows on U+0060" without re-deriving.
+   * A fresh array each call (readonly): mutating it never affects another lookup.
+   */
+  glyphExceptions?: readonly GlyphException[];
 }
 
 /**
