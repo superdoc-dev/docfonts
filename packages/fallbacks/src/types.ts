@@ -109,6 +109,15 @@ export interface FontFallback {
    * the row's `faceVerdicts`) for the precise tier.
    */
   lineBreakSafe: boolean;
+  /**
+   * Reviewed face coverage: which RIBBI faces this substitute is PROVEN to supply. A renderer MUST
+   * respect a face-scoped row: it can be Regular-only (e.g. Baskerville -> Bacasime, Cooper Black ->
+   * Caprasimo), and routing bold/italic to a face it lacks is wrong. NOTE: an all-false `faces` means
+   * the row is NOT face-scoped (e.g. a category fallback, whose physical font does have faces), NOT
+   * that the font has no faces - such rows render for any face. The face-aware helpers
+   * ({@link getRenderableFallbackForFace}) encode this rule for you.
+   */
+  faces: FaceCoverage;
   /** stable reviewed-evidence id; look the full row up in {@link SUBSTITUTION_EVIDENCE}. */
   evidenceId: string;
 }
@@ -118,8 +127,9 @@ export interface FontFallback {
  * cases that a bare `FontFallback | null` collapses: docfonts has never heard of the font (`unknown`)
  * vs knows it but recommends no renderable family (`no_recommended_fallback`), the substitute exists
  * but the consumer does not bundle it (`asset_missing`), and the deliberate non-substitution policies
- * (`preserve_only`, `customer_supplied`). `evidenceId` on the terminal kinds points back into
- * {@link SUBSTITUTION_EVIDENCE} for the full row (verdict, faces, ...).
+ * (`preserve_only`, `customer_supplied`). The face-aware lookups add `face_missing`: a substitute is
+ * recommended for the family but does NOT provide the requested face. `evidenceId` on the terminal
+ * kinds points back into {@link SUBSTITUTION_EVIDENCE} for the full row (verdict, faces, ...).
  */
 export type FallbackDecision =
   | { kind: "fallback"; fallback: FontFallback }
@@ -127,6 +137,13 @@ export type FallbackDecision =
       kind: "asset_missing";
       substituteFamily: string;
       verdict: Verdict;
+      evidenceId: string;
+    }
+  | {
+      /** the family has a renderable substitute, but it does not provide the requested face - route
+       *  this face through face-aware absence handling, do NOT substitute it. */
+      kind: "face_missing";
+      substituteFamily: string;
       evidenceId: string;
     }
   | { kind: "no_recommended_fallback"; evidenceId: string }

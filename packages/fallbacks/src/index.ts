@@ -8,7 +8,9 @@ export {
   createFallbackMap,
   type FallbackDecisionOptions,
   getFallbackDecision,
+  getFallbackDecisionForFace,
   getRenderableFallback,
+  getRenderableFallbackForFace,
   normalizeFamilyName,
   type RenderableFallbackOptions,
 } from "./fallbacks.js";

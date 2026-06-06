@@ -8,7 +8,9 @@ import { describe, expect, test } from "bun:test";
 import {
   createFallbackMap,
   getFallbackDecision,
+  getFallbackDecisionForFace,
   getRenderableFallback,
+  getRenderableFallbackForFace,
   normalizeFamilyName,
   SUBSTITUTION_EVIDENCE,
 } from "./src/index";
@@ -32,6 +34,7 @@ describe("getFallbackDecision", () => {
         policyAction: "substitute",
         verdict: "metric_safe",
         lineBreakSafe: true,
+        faces: { regular: true, bold: true, italic: true, boldItalic: true },
         evidenceId: "helvetica",
       },
     });
@@ -139,5 +142,96 @@ describe("normalizeFamilyName (public)", () => {
     expect(map[normalizeFamilyName("Times New Roman")]?.substituteFamily).toBe(
       "Liberation Serif",
     );
+  });
+});
+
+describe("face-aware lookups (Regular-only safety)", () => {
+  const renderAll = { canRenderFamily: () => true };
+
+  test("every FontFallback now carries the substitute's face coverage", () => {
+    // The family-level result is self-describing, so a map consumer can route per-face.
+    expect(
+      getRenderableFallback("Baskerville Old Face", renderAll)?.faces,
+    ).toEqual({
+      regular: true,
+      bold: false,
+      italic: false,
+      boldItalic: false,
+    });
+  });
+
+  test("a Regular-only substitute is returned for Regular and NULL for bold/italic", () => {
+    // Baskerville -> Bacasime is Regular-only. The face-safe lookup must not route bold to it.
+    expect(
+      getRenderableFallbackForFace("Baskerville Old Face", "regular", renderAll)
+        ?.substituteFamily,
+    ).toBe("Bacasime Antique");
+    expect(
+      getRenderableFallbackForFace("Baskerville Old Face", "bold", renderAll),
+    ).toBeNull();
+    expect(
+      getRenderableFallbackForFace("Baskerville Old Face", "italic", renderAll),
+    ).toBeNull();
+  });
+
+  test("an uncovered face is `face_missing`, not `unknown` or null collapse", () => {
+    expect(
+      getFallbackDecisionForFace(
+        "Baskerville Old Face",
+        "boldItalic",
+        renderAll,
+      ),
+    ).toEqual({
+      kind: "face_missing",
+      substituteFamily: "Bacasime Antique",
+      evidenceId: "baskerville-old-face",
+    });
+  });
+
+  test("a covered face carries its OWN verdict, not the worst-face rollup", () => {
+    // Cambria rolls up to visual_only (Bold Italic), but the regular face is metric_safe.
+    expect(getRenderableFallback("Cambria", renderAll)?.verdict).toBe(
+      "visual_only",
+    );
+    expect(
+      getRenderableFallbackForFace("Cambria", "regular", renderAll)?.verdict,
+    ).toBe("metric_safe");
+    expect(
+      getRenderableFallbackForFace("Cambria", "boldItalic", renderAll)?.verdict,
+    ).toBe("visual_only");
+  });
+
+  test("face-aware lookups stay asset-aware and honest for non-fallback families", () => {
+    // Not bundled -> asset_missing (face is moot). Unknown / policy rows pass through unchanged.
+    expect(
+      getFallbackDecisionForFace("Baskerville Old Face", "regular", {
+        canRenderFamily: () => false,
+      }).kind,
+    ).toBe("asset_missing");
+    expect(getFallbackDecisionForFace("Foo Unknown", "regular").kind).toBe(
+      "unknown",
+    );
+    expect(getFallbackDecisionForFace("Aptos", "regular").kind).toBe(
+      "customer_supplied",
+    );
+  });
+
+  test("a category fallback (all-false faces) is NOT face-scoped: it renders for EVERY face", () => {
+    // Regression: Calibri Light -> Carlito is a category_fallback with all-false faces. That means
+    // "not face-scoped", not "no faces" - it must render for every face, never face_missing.
+    const carlito = { canRenderFamily: (f: string) => f === "Carlito" };
+    for (const face of ["regular", "bold", "italic", "boldItalic"] as const) {
+      expect(
+        getRenderableFallbackForFace("Calibri Light", face, carlito)
+          ?.substituteFamily,
+        `Calibri Light ${face}`,
+      ).toBe("Carlito");
+    }
+    // ...while a genuinely face-scoped Regular-only row still gates bold to face_missing.
+    expect(
+      getFallbackDecisionForFace("Baskerville Old Face", "bold", {
+        canRenderFamily: () => true,
+      }).kind,
+    ).toBe("face_missing");
   });
 });
