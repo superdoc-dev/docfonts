@@ -86,6 +86,7 @@ Keys are normalized. Use `normalizeFamilyName` for lookups. Rows whose substitut
 - `lineBreakSafe` - true when advances preserve line breaks: `metric_safe`, `near_metric`, or monospace `cell_width_only`.
 - `faces` - reviewed face coverage for this evidence row. If any face is `true`, respect it as face-scoped coverage (a row can be Regular-only). If all faces are `false`, the row is **not** face-scoped (e.g. a category fallback whose physical font does have faces) and the face-aware helpers treat it as renderable for any face.
 - `evidenceId` - the stable id for the reviewed evidence row; look the full row up in `SUBSTITUTION_EVIDENCE`.
+- `glyphExceptions` - named glyph-level divergences that qualify this fallback (e.g. one codepoint reflows), or omitted when none. A family lookup carries all of the row's; a face lookup (`getRenderableFallbackForFace`) carries only that face's, so Cambria Regular shows none while Bold Italic shows its grave-accent exception.
 
 `cell_width_only` keeps monospace advances stable, but glyph shapes can still differ. A `substitute` can still have a lower-fidelity `verdict` when one face or glyph is qualified. The verdict is the fidelity signal.
 

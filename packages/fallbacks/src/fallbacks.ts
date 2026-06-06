@@ -60,12 +60,22 @@ const BY_LOGICAL: ReadonlyMap<string, SubstitutionEvidence> = new Map(
  * Build the FontFallback for a row known to carry a renderable physical family. `verdict` is passed in
  * so a face-aware caller can supply the per-face verdict (faceVerdicts[face]) instead of the worst-face
  * top-level one - e.g. Cambria regular is metric_safe even though the family rolls up to visual_only.
+ * `faceSlot` (a face lookup) scopes the glyph exceptions to that face; omitting it (a family lookup)
+ * carries all of the row's. Empty exception sets are dropped so the field is present only when it bites.
  */
 function buildFallback(
   row: SubstitutionEvidence,
   physicalFamily: string,
   verdict: Verdict,
+  faceSlot?: FaceSlot,
 ): FontFallback {
+  // Always hand back a FRESH array - filter() already copies; the family path must copy too, or a
+  // consumer mutating it would corrupt the shared evidence row for later lookups.
+  const glyphExceptions = faceSlot
+    ? row.glyphExceptions?.filter((g) => g.slot === faceSlot)
+    : row.glyphExceptions
+      ? [...row.glyphExceptions]
+      : undefined;
   return {
     substituteFamily: physicalFamily,
     policyAction: row.policyAction,
@@ -73,6 +83,9 @@ function buildFallback(
     lineBreakSafe: LINE_BREAK_SAFE_VERDICTS.has(verdict),
     faces: row.faces,
     evidenceId: row.evidenceId,
+    ...(glyphExceptions && glyphExceptions.length > 0
+      ? { glyphExceptions }
+      : {}),
   };
 }
 
@@ -137,7 +150,12 @@ function decideRowForFace(
   const faceVerdict = row.faceVerdicts?.[face] ?? row.verdict;
   return {
     kind: "fallback",
-    fallback: buildFallback(row, base.fallback.substituteFamily, faceVerdict),
+    fallback: buildFallback(
+      row,
+      base.fallback.substituteFamily,
+      faceVerdict,
+      face,
+    ),
   };
 }
 
