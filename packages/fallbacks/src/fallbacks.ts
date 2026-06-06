@@ -1,12 +1,14 @@
 /**
- * Fallback lookups over the reviewed evidence. Three intents:
- *   - getRenderableFallback - "I need a family to render now" (asset-gated, returns a family or null).
- *   - getFallbackDecision   - "I need diagnostics / UI / reporting" (the full honest outcome).
- *   - createFallbackMap      - "I need a resolver map" (asset-gated, render-only rows).
- * Face routing stays consumer-owned: these answer which family, not which face.
+ * Fallback lookups over the reviewed evidence:
+ *   - getRenderableFallback / getFallbackDecision - family-level ("which family", + the full outcome).
+ *   - getRenderableFallbackForFace / getFallbackDecisionForFace - face-SAFE: a Regular-only substitute
+ *     returns null / `face_missing` for bold/italic instead of being wrongly routed to a face it lacks.
+ *   - createFallbackMap - a family-level resolver map (asset-gated). Each entry carries `faces`, so a
+ *     consumer can route per-face; for Regular-only rows it MUST, or use the face-aware lookups.
  */
 import { SUBSTITUTION_EVIDENCE } from "./data.js";
 import type {
+  FaceSlot,
   FallbackDecision,
   FontFallback,
   SubstitutionEvidence,
@@ -54,16 +56,22 @@ const BY_LOGICAL: ReadonlyMap<string, SubstitutionEvidence> = new Map(
   ]),
 );
 
-/** Build the FontFallback for a row known to carry a renderable physical family. */
+/**
+ * Build the FontFallback for a row known to carry a renderable physical family. `verdict` is passed in
+ * so a face-aware caller can supply the per-face verdict (faceVerdicts[face]) instead of the worst-face
+ * top-level one - e.g. Cambria regular is metric_safe even though the family rolls up to visual_only.
+ */
 function buildFallback(
   row: SubstitutionEvidence,
   physicalFamily: string,
+  verdict: Verdict,
 ): FontFallback {
   return {
     substituteFamily: physicalFamily,
     policyAction: row.policyAction,
-    verdict: row.verdict,
-    lineBreakSafe: LINE_BREAK_SAFE_VERDICTS.has(row.verdict),
+    verdict,
+    lineBreakSafe: LINE_BREAK_SAFE_VERDICTS.has(verdict),
+    faces: row.faces,
     evidenceId: row.evidenceId,
   };
 }
@@ -91,7 +99,46 @@ function decideRow(
       verdict,
       evidenceId,
     };
-  return { kind: "fallback", fallback: buildFallback(row, physicalFamily) };
+  return {
+    kind: "fallback",
+    fallback: buildFallback(row, physicalFamily, verdict),
+  };
+}
+
+/** True when a row actually scopes faces (any RIBBI face marked covered). An all-false `faces` means
+ *  the row is NOT face-scoped - e.g. a category fallback whose physical font does have faces - so it
+ *  must not be gated per-face, only a measured per-face substitute (Baskerville Regular-only) is. */
+function isFaceScoped(row: SubstitutionEvidence): boolean {
+  const f = row.faces;
+  return f.regular || f.bold || f.italic || f.boldItalic;
+}
+
+/**
+ * Face-aware variant of {@link decideRow}: same family-level outcome, but when the family HAS a
+ * renderable substitute AND the row is face-scoped, gate on whether it provides the requested `face`.
+ * A face a face-scoped substitute does not cover yields `face_missing` (route it through absence
+ * handling); a covered face yields a fallback carrying that face's own verdict. A NON-face-scoped row
+ * (category fallback, all-false `faces`) renders for any face - it never becomes face_missing.
+ */
+function decideRowForFace(
+  row: SubstitutionEvidence,
+  face: FaceSlot,
+  canRenderFamily: CanRenderFamily | undefined,
+): FallbackDecision {
+  const base = decideRow(row, canRenderFamily);
+  // Non-fallback outcomes (asset_missing / no_recommended_fallback / policy) do not depend on the face.
+  if (base.kind !== "fallback") return base;
+  if (isFaceScoped(row) && !row.faces[face])
+    return {
+      kind: "face_missing",
+      substituteFamily: base.fallback.substituteFamily,
+      evidenceId: row.evidenceId,
+    };
+  const faceVerdict = row.faceVerdicts?.[face] ?? row.verdict;
+  return {
+    kind: "fallback",
+    fallback: buildFallback(row, base.fallback.substituteFamily, faceVerdict),
+  };
 }
 
 /**
@@ -121,9 +168,42 @@ export function getRenderableFallback(
 }
 
 /**
- * The renderer's substitute map: every fallback the consumer can actually render, keyed by the
- * normalized (lowercased) logical family - normalize lookups with {@link normalizeFamilyName}. Only
- * `kind: "fallback"` rows are included, so the map is safe to wire straight into a resolver.
+ * Face-aware outcome for a requested family + RIBBI face. Like {@link getFallbackDecision} but adds
+ * `face_missing` when the substitute exists yet does not provide that face (a Regular-only row asked
+ * for bold/italic). A covered face's fallback carries that face's own verdict. Case- and quote-insensitive.
+ */
+export function getFallbackDecisionForFace(
+  family: string,
+  face: FaceSlot,
+  options: FallbackDecisionOptions = {},
+): FallbackDecision {
+  const row = BY_LOGICAL.get(normalizeFamilyName(family));
+  return row
+    ? decideRowForFace(row, face, options.canRenderFamily)
+    : { kind: "unknown" };
+}
+
+/**
+ * The open family to render for a requested font AND a specific face, or null when that face has no
+ * renderable substitute (face not covered, no row, a non-substitution policy, or not bundled). This is
+ * the face-SAFE lookup: a Regular-only substitute returns null for bold/italic instead of being routed
+ * to a face it does not have. Use {@link getFallbackDecisionForFace} to report the reason.
+ */
+export function getRenderableFallbackForFace(
+  family: string,
+  face: FaceSlot,
+  options: RenderableFallbackOptions,
+): FontFallback | null {
+  const decision = getFallbackDecisionForFace(family, face, options);
+  return decision.kind === "fallback" ? decision.fallback : null;
+}
+
+/**
+ * A family-level substitute map: every fallback the consumer can render, keyed by the normalized
+ * (lowercased) logical family - normalize lookups with {@link normalizeFamilyName}. Only renderable
+ * rows are included. Each entry carries `faces`; a face-scoped (e.g. Regular-only) row is only safe in
+ * a FACE-AWARE resolver - one that checks `faces` or uses {@link getRenderableFallbackForFace} - since
+ * applying a Regular-only entry to bold/italic would route a face the substitute does not provide.
  */
 export function createFallbackMap(
   options: RenderableFallbackOptions,

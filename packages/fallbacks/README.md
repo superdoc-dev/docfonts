@@ -56,6 +56,7 @@ Decision kinds:
 
 - `fallback` - render the returned `substituteFamily`.
 - `asset_missing` - docfonts has a fallback, but your app does not load that family.
+- `face_missing` - (face-aware lookups only) the family has a substitute, but not for the requested face. Route that face through your absence handling; do not substitute it.
 - `no_recommended_fallback` - docfonts knows the font but recommends no renderable open family.
 - `customer_supplied` - the real font should come from the customer or environment.
 - `preserve_only` - keep the original family name. Do not substitute.
@@ -75,7 +76,7 @@ const map = createFallbackMap({
 map[normalizeFamilyName("Times New Roman")]; // { substituteFamily: "Liberation Serif", ... }
 ```
 
-Keys are normalized. Use `normalizeFamilyName` for lookups. Rows whose substitute family is not available are omitted.
+Keys are normalized. Use `normalizeFamilyName` for lookups. Rows whose substitute family is not available are omitted. Each entry carries `faces`: a Regular-only entry is only safe in a **face-aware** resolver (one that checks `faces` or uses `getRenderableFallbackForFace`), since applying it to bold/italic would route a face the substitute does not provide.
 
 ## What the fields mean
 
@@ -83,11 +84,26 @@ Keys are normalized. Use `normalizeFamilyName` for lookups. Rows whose substitut
 - `policyAction` - what a renderer should do, not a quality claim. Use `verdict` for fidelity.
 - `verdict` - the measured fidelity. Examples: `metric_safe`, `near_metric`, `cell_width_only`, `visual_only`.
 - `lineBreakSafe` - true when advances preserve line breaks: `metric_safe`, `near_metric`, or monospace `cell_width_only`.
+- `faces` - reviewed face coverage for this evidence row. If any face is `true`, respect it as face-scoped coverage (a row can be Regular-only). If all faces are `false`, the row is **not** face-scoped (e.g. a category fallback whose physical font does have faces) and the face-aware helpers treat it as renderable for any face.
 - `evidenceId` - the stable id for the reviewed evidence row; look the full row up in `SUBSTITUTION_EVIDENCE`.
 
 `cell_width_only` keeps monospace advances stable, but glyph shapes can still differ. A `substitute` can still have a lower-fidelity `verdict` when one face or glyph is qualified. The verdict is the fidelity signal.
 
-The full structured rows are exported as `SUBSTITUTION_EVIDENCE` for richer reporting, including faces, per-face verdicts, and glyph exceptions. Face-level routing stays yours: these helpers answer "which family", not "which face".
+## Face-aware routing (Regular-only substitutes)
+
+Some substitutes provide only some faces - e.g. Baskerville Old Face -> Bacasime Antique is Regular-only. The family-level helpers above answer "which family", and every result carries `faces`, so a resolver must route per-face. The face-aware helpers do it for you:
+
+```ts
+import { getRenderableFallbackForFace } from "@docfonts/fallbacks";
+const opts = { canRenderFamily: (family) => bundledFamilies.has(family) };
+
+getRenderableFallbackForFace("Baskerville Old Face", "regular", opts)?.substituteFamily; // "Bacasime Antique"
+getRenderableFallbackForFace("Baskerville Old Face", "bold", opts);                       // null (Regular-only)
+```
+
+`getFallbackDecisionForFace(family, face, options)` reports the reason - `face_missing` when the substitute exists but lacks that face. A covered face carries its OWN verdict, not the family's worst-face rollup (e.g. `Cambria` regular is `metric_safe` even though the family rolls up to `visual_only`).
+
+The full structured rows are exported as `SUBSTITUTION_EVIDENCE` for richer reporting (faces, per-face verdicts, glyph exceptions).
 
 ## Provenance
 
