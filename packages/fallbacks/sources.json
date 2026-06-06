@@ -1,0 +1,82 @@
+[
+  {
+    "sourceId": "tex-gyre-termes",
+    "family": "TeX Gyre Termes",
+    "project": "TeX Gyre",
+    "licenseFamily": "GUST-FL",
+    "upstream": "https://www.gust.org.pl/projects/e-foundry/tex-gyre/termes",
+    "retrieval": "OTF release from the GUST e-foundry page; extends the URW++ Base 35 core set. No account required.",
+    "targetFamilies": ["Times New Roman", "Times"],
+    "status": "backlog"
+  },
+  {
+    "sourceId": "tex-gyre-heros",
+    "family": "TeX Gyre Heros",
+    "project": "TeX Gyre",
+    "licenseFamily": "GUST-FL",
+    "upstream": "https://www.gust.org.pl/projects/e-foundry/tex-gyre/heros",
+    "retrieval": "OTF release from the GUST e-foundry page; extends the URW++ Base 35 core set. No account required.",
+    "targetFamilies": ["Arial", "Helvetica"],
+    "status": "backlog"
+  },
+  {
+    "sourceId": "tex-gyre-bonum",
+    "family": "TeX Gyre Bonum",
+    "project": "TeX Gyre",
+    "licenseFamily": "GUST-FL",
+    "upstream": "https://www.gust.org.pl/projects/e-foundry/tex-gyre/bonum",
+    "retrieval": "OTF release from the GUST e-foundry page; extends the URW++ Base 35 core set. No account required.",
+    "targetFamilies": ["Bookman Old Style", "ITC Bookman"],
+    "status": "backlog"
+  },
+  {
+    "sourceId": "tex-gyre-schola",
+    "family": "TeX Gyre Schola",
+    "project": "TeX Gyre",
+    "licenseFamily": "GUST-FL",
+    "upstream": "https://www.gust.org.pl/projects/e-foundry/tex-gyre/schola",
+    "retrieval": "OTF release from the GUST e-foundry page; extends the URW++ Base 35 core set. No account required.",
+    "targetFamilies": ["Century Schoolbook", "New Century Schoolbook"],
+    "status": "backlog"
+  },
+  {
+    "sourceId": "tex-gyre-pagella",
+    "family": "TeX Gyre Pagella",
+    "project": "TeX Gyre",
+    "licenseFamily": "GUST-FL",
+    "upstream": "https://www.gust.org.pl/projects/e-foundry/tex-gyre/pagella",
+    "retrieval": "OTF release from the GUST e-foundry page; extends the URW++ Base 35 core set. No account required.",
+    "targetFamilies": ["Palatino Linotype", "Book Antiqua"],
+    "status": "backlog"
+  },
+  {
+    "sourceId": "tex-gyre-adventor",
+    "family": "TeX Gyre Adventor",
+    "project": "TeX Gyre",
+    "licenseFamily": "GUST-FL",
+    "upstream": "https://www.gust.org.pl/projects/e-foundry/tex-gyre/adventor",
+    "retrieval": "OTF release from the GUST e-foundry page; extends the URW++ Base 35 core set. No account required.",
+    "targetFamilies": ["Century Gothic", "ITC Avant Garde Gothic"],
+    "status": "backlog"
+  },
+  {
+    "sourceId": "tex-gyre-cursor",
+    "family": "TeX Gyre Cursor",
+    "project": "TeX Gyre",
+    "licenseFamily": "GUST-FL",
+    "upstream": "https://www.gust.org.pl/projects/e-foundry/tex-gyre/cursor",
+    "retrieval": "OTF release from the GUST e-foundry page; extends the URW++ Base 35 core set. Monospaced. No account required.",
+    "targetFamilies": ["Courier New", "Courier"],
+    "status": "backlog"
+  },
+  {
+    "sourceId": "tex-gyre-chorus",
+    "family": "TeX Gyre Chorus",
+    "project": "TeX Gyre",
+    "licenseFamily": "GUST-FL",
+    "upstream": "https://www.gust.org.pl/projects/e-foundry/tex-gyre/chorus",
+    "retrieval": "OTF release from the GUST e-foundry page; extends the URW++ Base 35 core set. Chancery/script. No account required.",
+    "targetFamilies": ["Monotype Corsiva", "ITC Zapf Chancery"],
+    "status": "backlog"
+  }
+]

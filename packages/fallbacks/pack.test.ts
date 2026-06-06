@@ -52,6 +52,7 @@ describe("publish tarball hygiene", () => {
       /data\/measurements/,
       /data\/corpus/,
       /records\.json/,
+      /sources\.json/,
       /tsconfig/,
     ];
     for (const f of files)
