@@ -289,3 +289,58 @@ describe("glyphExceptions projection", () => {
     ).toHaveLength(1);
   });
 });
+
+describe("Cooper Black -> Caprasimo (Regular-only, metric_safe)", () => {
+  const renderAll = { canRenderFamily: () => true };
+  const onlyCaprasimo = { canRenderFamily: (f: string) => f === "Caprasimo" };
+
+  test("the family resolves to Caprasimo as an exact, line-break-safe Regular substitute", () => {
+    // Unlike Baskerville -> Bacasime (visual_only, NBSP reflows), Cooper measures 0% across the Latin
+    // core, so the row is metric_safe with no glyph exceptions.
+    expect(getRenderableFallback("Cooper Black", renderAll)).toEqual({
+      substituteFamily: "Caprasimo",
+      policyAction: "substitute",
+      verdict: "metric_safe",
+      lineBreakSafe: true,
+      faces: { regular: true, bold: false, italic: false, boldItalic: false },
+      evidenceId: "cooper-black",
+    });
+  });
+
+  test("Regular maps; bold/italic/boldItalic are face_missing (never faux-styled onto Caprasimo)", () => {
+    expect(
+      getRenderableFallbackForFace("Cooper Black", "regular", renderAll)
+        ?.substituteFamily,
+    ).toBe("Caprasimo");
+    for (const face of ["bold", "italic", "boldItalic"] as const) {
+      expect(
+        getRenderableFallbackForFace("Cooper Black", face, renderAll),
+        `Cooper Black ${face}`,
+      ).toBeNull();
+      expect(
+        getFallbackDecisionForFace("Cooper Black", face, renderAll),
+        `Cooper Black ${face} decision`,
+      ).toEqual({
+        kind: "face_missing",
+        substituteFamily: "Caprasimo",
+        evidenceId: "cooper-black",
+      });
+    }
+  });
+
+  test("stays asset-aware: a consumer that does not bundle Caprasimo gets asset_missing, not a render", () => {
+    // Asset gate: Cooper stays inert until a consumer actually bundles Caprasimo.
+    expect(
+      getFallbackDecision("Cooper Black", { canRenderFamily: () => false }),
+    ).toEqual({
+      kind: "asset_missing",
+      substituteFamily: "Caprasimo",
+      verdict: "metric_safe",
+      evidenceId: "cooper-black",
+    });
+    expect(
+      getRenderableFallbackForFace("Cooper Black", "regular", onlyCaprasimo)
+        ?.substituteFamily,
+    ).toBe("Caprasimo");
+  });
+});
