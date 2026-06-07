@@ -4,6 +4,7 @@ import type { SubstitutionEvidence } from "./types.js";
 export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   {
     "evidenceId": "calibri",
+    "generic": "sans-serif",
     "logicalFamily": "Calibri",
     "physicalFamily": "Carlito",
     "verdict": "metric_safe",
@@ -33,6 +34,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "cambria",
+    "generic": "serif",
     "logicalFamily": "Cambria",
     "physicalFamily": "Caladea",
     "verdict": "visual_only",
@@ -78,6 +80,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "arial",
+    "generic": "sans-serif",
     "logicalFamily": "Arial",
     "physicalFamily": "Liberation Sans",
     "verdict": "metric_safe",
@@ -106,6 +109,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "times-new-roman",
+    "generic": "serif",
     "logicalFamily": "Times New Roman",
     "physicalFamily": "Liberation Serif",
     "verdict": "metric_safe",
@@ -134,6 +138,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "courier-new",
+    "generic": "monospace",
     "logicalFamily": "Courier New",
     "physicalFamily": "Liberation Mono",
     "verdict": "metric_safe",
@@ -162,6 +167,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "georgia",
+    "generic": "serif",
     "logicalFamily": "Georgia",
     "physicalFamily": "Gelasio",
     "verdict": "near_metric",
@@ -217,6 +223,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "arial-narrow",
+    "generic": "sans-serif",
     "logicalFamily": "Arial Narrow",
     "physicalFamily": "Liberation Sans Narrow",
     "verdict": "visual_only",
@@ -262,6 +269,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "aptos",
+    "generic": "sans-serif",
     "logicalFamily": "Aptos",
     "physicalFamily": null,
     "verdict": "no_substitute",
@@ -286,6 +294,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "consolas",
+    "generic": "monospace",
     "logicalFamily": "Consolas",
     "physicalFamily": "Inconsolata SemiExpanded",
     "verdict": "cell_width_only",
@@ -314,6 +323,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "verdana",
+    "generic": "sans-serif",
     "logicalFamily": "Verdana",
     "physicalFamily": null,
     "verdict": "visual_only",
@@ -338,6 +348,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "tahoma",
+    "generic": "sans-serif",
     "logicalFamily": "Tahoma",
     "physicalFamily": null,
     "verdict": "visual_only",
@@ -362,6 +373,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "trebuchet-ms",
+    "generic": "sans-serif",
     "logicalFamily": "Trebuchet MS",
     "physicalFamily": null,
     "verdict": "visual_only",
@@ -386,6 +398,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "comic-sans-ms",
+    "generic": "sans-serif",
     "logicalFamily": "Comic Sans MS",
     "physicalFamily": "Comic Neue",
     "verdict": "visual_only",
@@ -414,6 +427,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "candara",
+    "generic": "sans-serif",
     "logicalFamily": "Candara",
     "physicalFamily": null,
     "verdict": "visual_only",
@@ -438,6 +452,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "constantia",
+    "generic": "serif",
     "logicalFamily": "Constantia",
     "physicalFamily": null,
     "verdict": "visual_only",
@@ -462,6 +477,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "corbel",
+    "generic": "sans-serif",
     "logicalFamily": "Corbel",
     "physicalFamily": null,
     "verdict": "visual_only",
@@ -486,6 +502,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "lucida-console",
+    "generic": "monospace",
     "logicalFamily": "Lucida Console",
     "physicalFamily": "Cousine",
     "verdict": "cell_width_only",
@@ -514,6 +531,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "aptos-display",
+    "generic": "sans-serif",
     "logicalFamily": "Aptos Display",
     "physicalFamily": null,
     "verdict": "customer_supplied",
@@ -535,6 +553,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "cambria-math",
+    "generic": "serif",
     "logicalFamily": "Cambria Math",
     "physicalFamily": null,
     "verdict": "preserve_only",
@@ -556,6 +575,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "helvetica",
+    "generic": "sans-serif",
     "logicalFamily": "Helvetica",
     "physicalFamily": "Liberation Sans",
     "verdict": "metric_safe",
@@ -584,6 +604,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "calibri-light",
+    "generic": "sans-serif",
     "logicalFamily": "Calibri Light",
     "physicalFamily": "Carlito",
     "verdict": "visual_only",
@@ -612,6 +633,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "baskerville-old-face",
+    "generic": "serif",
     "logicalFamily": "Baskerville Old Face",
     "physicalFamily": "Bacasime Antique",
     "verdict": "visual_only",
@@ -651,6 +673,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
   },
   {
     "evidenceId": "cooper-black",
+    "generic": "serif",
     "logicalFamily": "Cooper Black",
     "physicalFamily": "Caprasimo",
     "verdict": "metric_safe",

@@ -16,7 +16,7 @@ import {
   SUBSTITUTION_EVIDENCE,
 } from "./src/index";
 
-// A consumer that ships exactly the five families the reference renderer bundles.
+// A consumer that ships exactly these five open fallback families.
 const BUNDLED = new Set([
   "Carlito",
   "Caladea",
@@ -37,6 +37,7 @@ describe("getFallbackDecision", () => {
         lineBreakSafe: true,
         faces: { regular: true, bold: true, italic: true, boldItalic: true },
         evidenceId: "helvetica",
+        generic: "sans-serif",
       },
     });
   });
@@ -48,6 +49,7 @@ describe("getFallbackDecision", () => {
       substituteFamily: "Gelasio",
       verdict: "near_metric",
       evidenceId: "georgia",
+      generic: "serif",
     });
   });
 
@@ -56,14 +58,17 @@ describe("getFallbackDecision", () => {
     expect(getFallbackDecision("Aptos")).toEqual({
       kind: "customer_supplied",
       evidenceId: "aptos",
+      generic: "sans-serif",
     });
     expect(getFallbackDecision("Tahoma")).toEqual({
       kind: "no_recommended_fallback",
       evidenceId: "tahoma",
+      generic: "sans-serif",
     });
     expect(getFallbackDecision("Cambria Math")).toEqual({
       kind: "preserve_only",
       evidenceId: "cambria-math",
+      generic: "serif",
     });
     expect(getFallbackDecision("Foo Unknown Font")).toEqual({
       kind: "unknown",
@@ -124,6 +129,10 @@ describe("createFallbackMap", () => {
       "times new roman",
     ]);
     expect(map.helvetica.substituteFamily).toBe("Liberation Sans");
+    // Each entry carries the logical font's generic, so a face-aware resolver can emit a keyword.
+    expect(map.helvetica.generic).toBe("sans-serif");
+    expect(map["times new roman"].generic).toBe("serif");
+    expect(map["courier new"].generic).toBe("monospace");
     // Georgia/Arial Narrow/Baskerville point at un-bundled families, so they are absent.
     expect(map.georgia).toBeUndefined();
   });
@@ -186,6 +195,7 @@ describe("face-aware lookups (Regular-only safety)", () => {
       kind: "face_missing",
       substituteFamily: "Bacasime Antique",
       evidenceId: "baskerville-old-face",
+      generic: "serif",
     });
   });
 
@@ -290,6 +300,30 @@ describe("glyphExceptions projection", () => {
   });
 });
 
+describe("generic CSS family metadata", () => {
+  const renderAll = { canRenderFamily: () => true };
+
+  test("every evidence row carries one of the broad generic categories", () => {
+    const GENERICS = new Set(["serif", "sans-serif", "monospace"]);
+    for (const row of SUBSTITUTION_EVIDENCE) {
+      expect(
+        GENERICS.has(row.generic),
+        `${row.evidenceId} (${row.generic})`,
+      ).toBe(true);
+    }
+  });
+
+  test("a resolved fallback projects the logical font's generic", () => {
+    expect(getRenderableFallback("Cambria", renderAll)?.generic).toBe("serif");
+    expect(getRenderableFallback("Calibri", renderAll)?.generic).toBe(
+      "sans-serif",
+    );
+    expect(getRenderableFallback("Consolas", renderAll)?.generic).toBe(
+      "monospace",
+    );
+  });
+});
+
 describe("Cooper Black -> Caprasimo (Regular-only, metric_safe)", () => {
   const renderAll = { canRenderFamily: () => true };
   const onlyCaprasimo = { canRenderFamily: (f: string) => f === "Caprasimo" };
@@ -304,6 +338,7 @@ describe("Cooper Black -> Caprasimo (Regular-only, metric_safe)", () => {
       lineBreakSafe: true,
       faces: { regular: true, bold: false, italic: false, boldItalic: false },
       evidenceId: "cooper-black",
+      generic: "serif",
     });
   });
 
@@ -324,6 +359,7 @@ describe("Cooper Black -> Caprasimo (Regular-only, metric_safe)", () => {
         kind: "face_missing",
         substituteFamily: "Caprasimo",
         evidenceId: "cooper-black",
+        generic: "serif",
       });
     }
   });
@@ -337,6 +373,7 @@ describe("Cooper Black -> Caprasimo (Regular-only, metric_safe)", () => {
       substituteFamily: "Caprasimo",
       verdict: "metric_safe",
       evidenceId: "cooper-black",
+      generic: "serif",
     });
     expect(
       getRenderableFallbackForFace("Cooper Black", "regular", onlyCaprasimo)

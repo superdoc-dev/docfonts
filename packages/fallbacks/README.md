@@ -25,7 +25,7 @@ const fallback = getRenderableFallback("Helvetica", {
   canRenderFamily: (family) => bundledFamilies.has(family),
 });
 
-// { substituteFamily: "Liberation Sans", policyAction: "substitute", verdict: "metric_safe", lineBreakSafe: true, evidenceId: "helvetica" }
+// { substituteFamily: "Liberation Sans", policyAction: "substitute", verdict: "metric_safe", lineBreakSafe: true, evidenceId: "helvetica", generic: "sans-serif" }
 ```
 
 The result is `null` when there is nothing renderable from your available assets. Use `getFallbackDecision` when you need to know why.
@@ -38,10 +38,10 @@ Use `getFallbackDecision` for UI, diagnostics, and reporting. It distinguishes k
 import { getFallbackDecision } from "@docfonts/fallbacks";
 
 getFallbackDecision("Aptos");
-// { kind: "customer_supplied", evidenceId: "aptos" }
+// { kind: "customer_supplied", evidenceId: "aptos", generic: "sans-serif" }
 
 getFallbackDecision("Tahoma");
-// { kind: "no_recommended_fallback", evidenceId: "tahoma" }
+// { kind: "no_recommended_fallback", evidenceId: "tahoma", generic: "sans-serif" }
 
 getFallbackDecision("Made Up Font");
 // { kind: "unknown" }
@@ -49,7 +49,7 @@ getFallbackDecision("Made Up Font");
 getFallbackDecision("Georgia", {
   canRenderFamily: (family) => bundledFamilies.has(family),
 });
-// { kind: "asset_missing", substituteFamily: "Gelasio", verdict: "near_metric", evidenceId: "georgia" }
+// { kind: "asset_missing", substituteFamily: "Gelasio", verdict: "near_metric", evidenceId: "georgia", generic: "serif" }
 ```
 
 Decision kinds:
@@ -86,6 +86,7 @@ Keys are normalized. Use `normalizeFamilyName` for lookups. Rows whose substitut
 - `lineBreakSafe` - true when advances preserve line breaks: `metric_safe`, `near_metric`, or monospace `cell_width_only`.
 - `faces` - reviewed face coverage for this evidence row. If any face is `true`, respect it as face-scoped coverage (a row can be Regular-only). If all faces are `false`, the row is **not** face-scoped (e.g. a category fallback whose physical font does have faces) and the face-aware helpers treat it as renderable for any face.
 - `evidenceId` - the stable id for the reviewed evidence row; look the full row up in `SUBSTITUTION_EVIDENCE`.
+- `generic` - the logical font's broad CSS category (`serif`, `sans-serif`, or `monospace`), for a last-resort generic `font-family` keyword when no named substitute renders. Also present on the known (non-`unknown`) decision kinds.
 - `glyphExceptions` - named glyph-level divergences that qualify this fallback (e.g. one codepoint reflows), or omitted when none. A family lookup carries all of the row's; a face lookup (`getRenderableFallbackForFace`) carries only that face's, so Cambria Regular shows none while Bold Italic shows its grave-accent exception.
 
 `cell_width_only` keeps monospace advances stable, but glyph shapes can still differ. A `substitute` can still have a lower-fidelity `verdict` when one face or glyph is qualified. The verdict is the fidelity signal.
