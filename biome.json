@@ -5,6 +5,7 @@
       "**",
       "!mockups",
       "!.internal",
+      "!**/.cache",
       "!**/dist",
       "!**/.astro",
       "!packages/fallbacks/src/data.ts"
