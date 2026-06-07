@@ -16,6 +16,7 @@ export {
 } from "./fallbacks.js";
 export type {
   AdvanceDelta,
+  CssGeneric,
   FaceCoverage,
   FaceSlot,
   FallbackDecision,

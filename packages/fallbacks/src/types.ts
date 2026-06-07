@@ -26,6 +26,13 @@ export type GateStatus = "pass" | "not_run" | "fail";
 /** RIBBI face slot - the renderer's coarse face bucket. */
 export type FaceSlot = "regular" | "bold" | "italic" | "boldItalic";
 
+/**
+ * CSS generic family for the logical font: the broad category a renderer can drop in as a
+ * last-resort `font-family` keyword when no named substitute renders. Only the categories consumers
+ * currently need.
+ */
+export type CssGeneric = "serif" | "sans-serif" | "monospace";
+
 /** Advance-width divergence vs the proprietary oracle, as fractions (0 = identical advances). */
 export interface AdvanceDelta {
   meanDelta: number;
@@ -66,6 +73,8 @@ export interface SubstitutionEvidence {
   evidenceId: string;
   /** the proprietary family the document asks for, e.g. "Cambria". */
   logicalFamily: string;
+  /** the logical font's broad CSS category, for a last-resort generic `font-family` keyword. */
+  generic: CssGeneric;
   /** the physical substitute rendered in its place; null when no candidate is recommended. */
   physicalFamily: string | null;
   /** worst-face fidelity verdict (the public summary; see `faceVerdicts` when faces disagree). */
@@ -120,6 +129,8 @@ export interface FontFallback {
   faces: FaceCoverage;
   /** stable reviewed-evidence id; look the full row up in {@link SUBSTITUTION_EVIDENCE}. */
   evidenceId: string;
+  /** the logical font's broad CSS category, for a last-resort generic `font-family` keyword. */
+  generic: CssGeneric;
   /**
    * Named glyph-level divergences that qualify this fallback (e.g. one codepoint reflows). Scoped to
    * the lookup: a family lookup ({@link getRenderableFallback}) carries ALL of the row's exceptions; a
@@ -137,7 +148,9 @@ export interface FontFallback {
  * but the consumer does not bundle it (`asset_missing`), and the deliberate non-substitution policies
  * (`preserve_only`, `customer_supplied`). The face-aware lookups add `face_missing`: a substitute is
  * recommended for the family but does NOT provide the requested face. `evidenceId` on the terminal
- * kinds points back into {@link SUBSTITUTION_EVIDENCE} for the full row (verdict, faces, ...).
+ * kinds points back into {@link SUBSTITUTION_EVIDENCE} for the full row (verdict, faces, ...). The
+ * known (non-`unknown`) kinds also carry the logical font's `generic`, so a consumer with no
+ * renderable substitute can still emit a same-category generic `font-family` keyword.
  */
 export type FallbackDecision =
   | { kind: "fallback"; fallback: FontFallback }
@@ -146,6 +159,7 @@ export type FallbackDecision =
       substituteFamily: string;
       verdict: Verdict;
       evidenceId: string;
+      generic: CssGeneric;
     }
   | {
       /** the family has a renderable substitute, but it does not provide the requested face - route
@@ -153,8 +167,9 @@ export type FallbackDecision =
       kind: "face_missing";
       substituteFamily: string;
       evidenceId: string;
+      generic: CssGeneric;
     }
-  | { kind: "no_recommended_fallback"; evidenceId: string }
-  | { kind: "customer_supplied"; evidenceId: string }
-  | { kind: "preserve_only"; evidenceId: string }
+  | { kind: "no_recommended_fallback"; evidenceId: string; generic: CssGeneric }
+  | { kind: "customer_supplied"; evidenceId: string; generic: CssGeneric }
+  | { kind: "preserve_only"; evidenceId: string; generic: CssGeneric }
   | { kind: "unknown" };

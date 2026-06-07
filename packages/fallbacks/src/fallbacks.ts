@@ -83,6 +83,7 @@ function buildFallback(
     lineBreakSafe: LINE_BREAK_SAFE_VERDICTS.has(verdict),
     faces: row.faces,
     evidenceId: row.evidenceId,
+    generic: row.generic,
     ...(glyphExceptions && glyphExceptions.length > 0
       ? { glyphExceptions }
       : {}),
@@ -94,16 +95,16 @@ function decideRow(
   row: SubstitutionEvidence,
   canRenderFamily: CanRenderFamily | undefined,
 ): FallbackDecision {
-  const { policyAction, physicalFamily, verdict, evidenceId } = row;
+  const { policyAction, physicalFamily, verdict, evidenceId, generic } = row;
   // Deliberate non-substitution policies first: nothing renders in the original's place.
   if (policyAction === "preserve_only")
-    return { kind: "preserve_only", evidenceId };
+    return { kind: "preserve_only", evidenceId, generic };
   if (policyAction === "customer_supplied")
-    return { kind: "customer_supplied", evidenceId };
+    return { kind: "customer_supplied", evidenceId, generic };
   // substitute / category_fallback with no named open family: docfonts knows the font but recommends
   // no renderable family - distinct from the `no_substitute` verdict (read the row for that nuance).
   if (physicalFamily === null)
-    return { kind: "no_recommended_fallback", evidenceId };
+    return { kind: "no_recommended_fallback", evidenceId, generic };
   // Named substitute the consumer does not bundle: surfaced so a UI can say which font to add.
   if (canRenderFamily && !canRenderFamily(physicalFamily))
     return {
@@ -111,6 +112,7 @@ function decideRow(
       substituteFamily: physicalFamily,
       verdict,
       evidenceId,
+      generic,
     };
   return {
     kind: "fallback",
@@ -146,6 +148,7 @@ function decideRowForFace(
       kind: "face_missing",
       substituteFamily: base.fallback.substituteFamily,
       evidenceId: row.evidenceId,
+      generic: row.generic,
     };
   const faceVerdict = row.faceVerdicts?.[face] ?? row.verdict;
   return {
