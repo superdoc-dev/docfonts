@@ -339,12 +339,31 @@ export function sampleMetrics(
   return map;
 }
 
-// --- Source cache + archives ------------------------------------------------
+// --- Source cache + candidates ---------------------------------------------
 
-interface SnapshotSource {
+/** One snapshot file entry: a font member by path, with its display name. */
+interface SnapshotFile {
+  name: string;
+  path: string;
+}
+
+/**
+ * A source as recorded in `source-snapshot.json`. Archive sources extract their candidate fonts from a
+ * cached zip; GitHub tree sources read each `files[].path` directly from the cache. `kind` is optional so
+ * older snapshots (archive-only) still load and default to archive behavior.
+ */
+export interface SnapshotSource {
   sourceId: string;
   family: string;
   targetFamilies: string[];
+  kind?: "archive" | "github-tree";
+  files?: SnapshotFile[];
+}
+
+/** A candidate font ready to score: its display name and raw bytes. */
+export interface CandidateFile {
+  file: string;
+  bytes: Uint8Array;
 }
 
 function requireUnzip(): void {
@@ -400,6 +419,53 @@ function loadSnapshot(cacheDir: string): SnapshotSource[] {
   if (snapshots.length === 0)
     throw new Error(`${SNAPSHOT_FILE} lists no acquired sources.`);
   return snapshots;
+}
+
+/**
+ * Collect the candidate fonts for one source from the cache. GitHub tree sources read each snapshot file
+ * entry directly; archive sources list and extract font members from the cached zip. Throws when an
+ * expected cache file is absent so the caller can point the user back at `bun run acquire`.
+ */
+export function collectCandidates(
+  source: SnapshotSource,
+  cacheDir: string,
+): CandidateFile[] {
+  if (source.kind === "github-tree") {
+    const files = source.files ?? [];
+    if (files.length === 0)
+      throw new Error(`no candidate files listed for ${source.sourceId}`);
+    return files.map((entry) => {
+      const filePath = join(cacheDir, entry.path);
+      if (!existsSync(filePath))
+        throw new Error(
+          `candidate file missing for ${source.sourceId}: ${filePath}. Run \`bun run acquire\` first.`,
+        );
+      return { file: entry.name, bytes: readFileSync(filePath) };
+    });
+  }
+
+  const zipPath = join(cacheDir, `${source.sourceId}.zip`);
+  if (!existsSync(zipPath))
+    throw new Error(
+      `candidate archive missing for ${source.sourceId}: ${zipPath}. Run \`bun run acquire\` first.`,
+    );
+  const members = listFontMembers(zipPath);
+  if (members.length === 0)
+    throw new Error(`no candidate font files in ${zipPath}`);
+
+  const basenameCounts = new Map<string, number>();
+  for (const member of members) {
+    const file = basename(member);
+    basenameCounts.set(file, (basenameCounts.get(file) ?? 0) + 1);
+  }
+  const duplicateBasenames = new Set(
+    [...basenameCounts].filter(([, count]) => count > 1).map(([file]) => file),
+  );
+
+  return members.map((member) => ({
+    file: displayNameForMember(member, duplicateBasenames),
+    bytes: readArchiveMember(zipPath, member),
+  }));
 }
 
 // --- CLI --------------------------------------------------------------------
@@ -557,8 +623,6 @@ function main(): void {
   if (!existsSync(args.reference))
     throw new Error(`reference font not found: ${args.reference}`);
 
-  requireUnzip();
-
   const cacheDir = process.env.DOCFONTS_SOURCE_CACHE ?? DEFAULT_CACHE_DIR;
   const snapshot = loadSnapshot(cacheDir);
   const byId = new Map(snapshot.map((source) => [source.sourceId, source]));
@@ -575,38 +639,19 @@ function main(): void {
     selected = snapshot;
   }
 
+  // Only archive sources need `unzip`; a GitHub-tree-only run does not.
+  if (selected.some((source) => source.kind !== "github-tree")) requireUnzip();
+
   const reference = sampleMetrics(parseFont(readFileSync(args.reference)));
 
   const rows: CompareRow[] = [];
   let skipped = 0;
   for (const source of selected) {
-    const zipPath = join(cacheDir, `${source.sourceId}.zip`);
-    if (!existsSync(zipPath))
-      throw new Error(
-        `candidate archive missing for ${source.sourceId}: ${zipPath}. Run \`bun run acquire\` first.`,
-      );
-    const members = listFontMembers(zipPath);
-    if (members.length === 0)
-      throw new Error(`no candidate font files in ${zipPath}`);
-    const basenameCounts = new Map<string, number>();
-    for (const member of members) {
-      const file = basename(member);
-      basenameCounts.set(file, (basenameCounts.get(file) ?? 0) + 1);
-    }
-    const duplicateBasenames = new Set(
-      [...basenameCounts]
-        .filter(([, count]) => count > 1)
-        .map(([file]) => file),
-    );
-    for (const member of members) {
+    for (const candidate of collectCandidates(source, cacheDir)) {
       try {
-        const font = parseFont(readArchiveMember(zipPath, member));
+        const font = parseFont(candidate.bytes);
         const score = scoreAdvances(reference, sampleMetrics(font));
-        rows.push({
-          sourceId: source.sourceId,
-          file: displayNameForMember(member, duplicateBasenames),
-          score,
-        });
+        rows.push({ sourceId: source.sourceId, file: candidate.file, score });
       } catch {
         skipped++;
       }
