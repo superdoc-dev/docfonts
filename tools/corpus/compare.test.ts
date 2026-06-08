@@ -25,6 +25,7 @@ import {
 
 const UNITS_PER_EM = 1000;
 const ADVANCES = [500, 600, 300, 750]; // by glyph id
+const SYNTHETIC_SAMPLE = [0x20, 0x41, 0x42] as const;
 
 function u16(value: number): number[] {
   return [(value >> 8) & 0xff, value & 0xff];
@@ -265,8 +266,24 @@ describe("scoreAdvances", () => {
     expect(score.maxDelta).toBe(0);
     expect(score.over1Percent).toBe(0);
     expect(score.over2_5Percent).toBe(0);
-    expect(score.tier).toBe("metric_safe");
+    expect(score.tier).toBe("visual_only");
     expect(score.worstGlyphs).toEqual([]);
+  });
+
+  test("does not give a metric tier to low-coverage candidates", () => {
+    const reference = new Map(
+      LATIN_TEXT_SAMPLE.map((codepoint) => [codepoint, 0.5] as const),
+    );
+    const candidate = new Map([[0x20, 0.5]]);
+    const score = scoreAdvances(reference, candidate, {
+      reportSample: LATIN_SAMPLE,
+      tierSample: LATIN_TEXT_SAMPLE,
+    });
+    expect(score.compared).toBe(1);
+    expect(score.total).toBe(LATIN_TEXT_SAMPLE.length);
+    expect(score.meanDelta).toBe(0);
+    expect(score.maxDelta).toBe(0);
+    expect(score.tier).toBe("visual_only");
   });
 
   test("computes mean and max deltas and worst glyphs", () => {
@@ -480,6 +497,33 @@ describe("renderReport", () => {
     expect(lines[3]).toContain("visual_only");
   });
 
+  test("ranks fuller coverage before lower-mean partial matches within a tier", () => {
+    const sample = [0x41, 0x42, 0x43];
+    const reference = sampleMetrics(mockFont(0.5), sample);
+    const partial = scoreAdvances(
+      reference,
+      sampleMetrics(partialFont(0.5, [0x41]), sample),
+      sample,
+    );
+    const full = scoreAdvances(
+      reference,
+      sampleMetrics(mockFont(0.7), sample),
+      sample,
+    );
+    expect(partial.tier).toBe("visual_only");
+    expect(full.tier).toBe("visual_only");
+
+    const report = renderReport([
+      { sourceId: "partial-src", file: "partial.otf", score: partial },
+      { sourceId: "full-src", file: "full.otf", score: full },
+    ]);
+    const lines = report.split("\n");
+    expect(lines[1]).toContain("full-src");
+    expect(lines[1]).toContain("3/3");
+    expect(lines[2]).toContain("partial-src");
+    expect(lines[2]).toContain("1/3");
+  });
+
   test("can limit the rendered table to the top rows", () => {
     const reference = sampleMetrics(mockFont(0.5), [0x41]);
     const close = scoreAdvances(
@@ -570,11 +614,15 @@ describe("collectCandidates (GitHub tree sources)", () => {
       const candidates = collectCandidates(source, cacheDir);
       expect(candidates.map((c) => c.file)).toEqual(names);
 
-      const reference = sampleMetrics(parseFont(syntheticFont()));
+      const reference = sampleMetrics(
+        parseFont(syntheticFont()),
+        SYNTHETIC_SAMPLE,
+      );
       for (const candidate of candidates) {
         const score = scoreAdvances(
           reference,
-          sampleMetrics(parseFont(candidate.bytes)),
+          sampleMetrics(parseFont(candidate.bytes), SYNTHETIC_SAMPLE),
+          SYNTHETIC_SAMPLE,
         );
         expect(score.tier).toBe("metric_safe");
         expect(score.meanDelta).toBe(0);
@@ -649,8 +697,9 @@ describe("collectCandidates (archive sources)", () => {
         "Example-Regular.ttf",
       ]);
       const score = scoreAdvances(
-        sampleMetrics(parseFont(syntheticFont())),
-        sampleMetrics(parseFont(candidates[0].bytes)),
+        sampleMetrics(parseFont(syntheticFont()), SYNTHETIC_SAMPLE),
+        sampleMetrics(parseFont(candidates[0].bytes), SYNTHETIC_SAMPLE),
+        SYNTHETIC_SAMPLE,
       );
       expect(score.tier).toBe("metric_safe");
     } finally {

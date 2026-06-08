@@ -116,7 +116,8 @@ function normalizeScoreOptions(
 /**
  * Score one candidate against the reference. The tier can use a narrower text sample while the report
  * still surfaces full-sample outliers. Both inputs are normalized advance maps (codepoint ->
- * advance/unitsPerEm); only codepoints present in both are compared.
+ * advance/unitsPerEm). A metric tier requires full tier-sample coverage: matching one shared glyph
+ * does not prove a font is a usable fallback.
  */
 export function scoreAdvances(
   reference: ReadonlyMap<number, number>,
@@ -145,7 +146,7 @@ export function scoreAdvances(
     over1Percent: report.over1Percent,
     over2_5Percent: report.over2_5Percent,
     tier:
-      tierMetrics.compared === 0
+      tierMetrics.compared !== tierMetrics.total
         ? "visual_only"
         : classifyTier(
             tierMetrics.meanDelta,

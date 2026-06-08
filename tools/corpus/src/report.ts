@@ -34,6 +34,12 @@ export function renderReport(
   const ranked = [...rows].sort((a, b) => {
     const tierDiff = TIER_RANK[a.score.tier] - TIER_RANK[b.score.tier];
     if (tierDiff !== 0) return tierDiff;
+    const aCoverage =
+      a.score.total === 0 ? 0 : a.score.compared / a.score.total;
+    const bCoverage =
+      b.score.total === 0 ? 0 : b.score.compared / b.score.total;
+    const coverageDiff = bCoverage - aCoverage;
+    if (coverageDiff !== 0) return coverageDiff;
     const aMean = Number.isNaN(a.score.meanDelta)
       ? Infinity
       : a.score.meanDelta;
