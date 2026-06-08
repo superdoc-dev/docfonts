@@ -347,16 +347,19 @@ interface SnapshotFile {
   path: string;
 }
 
+type ArchiveFormat = "zip" | "tar.gz";
+
 /**
  * A source as recorded in `source-snapshot.json`. Archive sources extract their candidate fonts from a
- * cached zip; GitHub tree sources read each `files[].path` directly from the cache. `kind` is optional so
- * older snapshots (archive-only) still load and default to archive behavior.
+ * cached release archive; GitHub tree sources read each `files[].path` directly from the cache. `kind` is
+ * optional so older snapshots (archive-only) still load and default to archive behavior.
  */
 export interface SnapshotSource {
   sourceId: string;
   family: string;
   targetFamilies: string[];
   kind?: "archive" | "github-tree";
+  archiveFormat?: ArchiveFormat;
   files?: SnapshotFile[];
 }
 
@@ -366,11 +369,21 @@ export interface CandidateFile {
   bytes: Uint8Array;
 }
 
-function requireUnzip(): void {
+const archiveFormatOf = (source: SnapshotSource): ArchiveFormat =>
+  source.archiveFormat ?? "zip";
+
+const archiveExtensions: Record<ArchiveFormat, string> = {
+  zip: "zip",
+  "tar.gz": "tar.gz",
+};
+
+function requireArchiveTool(format: ArchiveFormat): void {
+  const tool = format === "tar.gz" ? "tar" : "unzip";
+  const probe = format === "tar.gz" ? "--version" : "-v";
   try {
-    execFileSync("unzip", ["-v"], { stdio: "ignore" });
+    execFileSync(tool, [probe], { stdio: "ignore" });
   } catch {
-    throw new Error("`unzip` is required on PATH.");
+    throw new Error(`\`${tool}\` is required on PATH.`);
   }
 }
 
@@ -379,8 +392,12 @@ function isFontFile(path: string): boolean {
 }
 
 /** Font members inside a source archive, by their in-archive path. */
-function listFontMembers(zipPath: string): string[] {
-  return execFileSync("unzip", ["-Z1", zipPath], { encoding: "utf8" })
+function listFontMembers(archivePath: string, format: ArchiveFormat): string[] {
+  const out =
+    format === "tar.gz"
+      ? execFileSync("tar", ["-tzf", archivePath], { encoding: "utf8" })
+      : execFileSync("unzip", ["-Z1", archivePath], { encoding: "utf8" });
+  return out
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean)
@@ -393,11 +410,20 @@ function listFontMembers(zipPath: string): string[] {
 const escapeArchiveMember = (name: string): string =>
   name.replace(/[\\*?[\]]/g, "\\$&");
 
-function readArchiveMember(zipPath: string, member: string): Uint8Array {
+function readArchiveMember(
+  archivePath: string,
+  member: string,
+  format: ArchiveFormat,
+): Uint8Array {
+  const opts = { maxBuffer: 256 * 1024 * 1024 };
   return new Uint8Array(
-    execFileSync("unzip", ["-p", zipPath, escapeArchiveMember(member)], {
-      maxBuffer: 256 * 1024 * 1024,
-    }),
+    format === "tar.gz"
+      ? execFileSync("tar", ["-xzOf", archivePath, "--", member], opts)
+      : execFileSync(
+          "unzip",
+          ["-p", archivePath, escapeArchiveMember(member)],
+          opts,
+        ),
   );
 }
 
@@ -423,8 +449,8 @@ function loadSnapshot(cacheDir: string): SnapshotSource[] {
 
 /**
  * Collect the candidate fonts for one source from the cache. GitHub tree sources read each snapshot file
- * entry directly; archive sources list and extract font members from the cached zip. Throws when an
- * expected cache file is absent so the caller can point the user back at `bun run acquire`.
+ * entry directly; archive sources list and extract font members from the cached release archive. Throws
+ * when an expected cache file is absent so the caller can point the user back at `bun run acquire`.
  */
 export function collectCandidates(
   source: SnapshotSource,
@@ -444,14 +470,18 @@ export function collectCandidates(
     });
   }
 
-  const zipPath = join(cacheDir, `${source.sourceId}.zip`);
-  if (!existsSync(zipPath))
+  const format = archiveFormatOf(source);
+  const archivePath = join(
+    cacheDir,
+    `${source.sourceId}.${archiveExtensions[format]}`,
+  );
+  if (!existsSync(archivePath))
     throw new Error(
-      `candidate archive missing for ${source.sourceId}: ${zipPath}. Run \`bun run acquire\` first.`,
+      `candidate archive missing for ${source.sourceId}: ${archivePath}. Run \`bun run acquire\` first.`,
     );
-  const members = listFontMembers(zipPath);
+  const members = listFontMembers(archivePath, format);
   if (members.length === 0)
-    throw new Error(`no candidate font files in ${zipPath}`);
+    throw new Error(`no candidate font files in ${archivePath}`);
 
   const basenameCounts = new Map<string, number>();
   for (const member of members) {
@@ -464,7 +494,7 @@ export function collectCandidates(
 
   return members.map((member) => ({
     file: displayNameForMember(member, duplicateBasenames),
-    bytes: readArchiveMember(zipPath, member),
+    bytes: readArchiveMember(archivePath, member, format),
   }));
 }
 
@@ -639,8 +669,11 @@ function main(): void {
     selected = snapshot;
   }
 
-  // Only archive sources need `unzip`; a GitHub-tree-only run does not.
-  if (selected.some((source) => source.kind !== "github-tree")) requireUnzip();
+  const archiveSources = selected.filter(
+    (source) => source.kind !== "github-tree",
+  );
+  for (const format of new Set(archiveSources.map(archiveFormatOf)))
+    requireArchiveTool(format);
 
   const reference = sampleMetrics(parseFont(readFileSync(args.reference)));
 

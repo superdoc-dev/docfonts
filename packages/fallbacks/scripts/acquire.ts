@@ -33,7 +33,12 @@ export type LicenseFamily =
   | "OFL-1.1"
   | "AGPL-3.0-FE"
   | "Apache-2.0"
-  | "UFL-1.0";
+  | "UFL-1.0"
+  | "GPL-2.0-FE"
+  | "Bitstream-Vera-DejaVu";
+
+/** Container format an archive source ships in. Absent is treated as "zip". */
+export type ArchiveFormat = "zip" | "tar.gz";
 
 /** Fields shared by every acquisition source, regardless of how it is fetched. */
 interface BaseSource {
@@ -48,10 +53,12 @@ interface LicensedSource extends BaseSource {
   licenseUrl: string;
 }
 
-/** A source delivered as a single zip archive containing many font members. */
+/** A source delivered as a single archive containing many font members. */
 export interface ArchiveSource extends LicensedSource {
   /** Optional for archive sources: an absent `kind` is treated as "archive". */
   kind?: "archive";
+  /** Archive container format. Absent is treated as "zip". */
+  archiveFormat?: ArchiveFormat;
   downloadUrl: string;
   expectedFiles: string[];
 }
@@ -383,6 +390,114 @@ export const SOURCE_RELEASES: SourceRelease[] = [
   },
 
   {
+    sourceId: "liberation-fonts",
+    family: "Liberation",
+    project: "Liberation",
+    licenseFamily: "OFL-1.1",
+    archiveFormat: "tar.gz",
+    downloadUrl:
+      "https://github.com/liberationfonts/liberation-fonts/files/7261482/liberation-fonts-ttf-2.1.5.tar.gz",
+    licenseUrl:
+      "https://raw.githubusercontent.com/liberationfonts/liberation-fonts/2.1.5/LICENSE",
+    expectedFiles: [
+      "LiberationMono-Regular.ttf",
+      "LiberationMono-Bold.ttf",
+      "LiberationMono-Italic.ttf",
+      "LiberationMono-BoldItalic.ttf",
+      "LiberationSans-Regular.ttf",
+      "LiberationSans-Bold.ttf",
+      "LiberationSans-Italic.ttf",
+      "LiberationSans-BoldItalic.ttf",
+      "LiberationSerif-Regular.ttf",
+      "LiberationSerif-Bold.ttf",
+      "LiberationSerif-Italic.ttf",
+      "LiberationSerif-BoldItalic.ttf",
+    ],
+    targetFamilies: ["Arial", "Helvetica", "Times New Roman", "Courier New"],
+  },
+  {
+    sourceId: "liberation-sans-narrow",
+    family: "Liberation Sans Narrow",
+    project: "Liberation",
+    licenseFamily: "GPL-2.0-FE",
+    archiveFormat: "tar.gz",
+    downloadUrl:
+      "https://github.com/liberationfonts/liberation-sans-narrow/files/2579431/liberation-narrow-fonts-ttf-1.07.6.tar.gz",
+    licenseUrl:
+      "https://raw.githubusercontent.com/liberationfonts/liberation-sans-narrow/1.07.6/License.txt",
+    expectedFiles: [
+      "LiberationSansNarrow-Regular.ttf",
+      "LiberationSansNarrow-Bold.ttf",
+      "LiberationSansNarrow-Italic.ttf",
+      "LiberationSansNarrow-BoldItalic.ttf",
+    ],
+    targetFamilies: ["Arial Narrow"],
+  },
+  {
+    sourceId: "selawik",
+    family: "Selawik",
+    project: "Selawik",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/microsoft/Selawik/releases/download/1.01/Selawik_Release.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/microsoft/Selawik/1.01/LICENSE.txt",
+    expectedFiles: [
+      "selawk.ttf",
+      "selawk.woff",
+      "selawk.woff2",
+      "selawkb.ttf",
+      "selawkb.woff",
+      "selawkb.woff2",
+      "selawkl.ttf",
+      "selawkl.woff",
+      "selawkl.woff2",
+      "selawksb.ttf",
+      "selawksb.woff",
+      "selawksb.woff2",
+      "selawksl.ttf",
+      "selawksl.woff",
+      "selawksl.woff2",
+    ],
+    targetFamilies: ["Segoe UI"],
+  },
+  {
+    sourceId: "dejavu",
+    family: "DejaVu",
+    project: "DejaVu",
+    licenseFamily: "Bitstream-Vera-DejaVu",
+    downloadUrl:
+      "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/dejavu-fonts/dejavu-fonts/version_2_37/LICENSE",
+    expectedFiles: [
+      "DejaVuMathTeXGyre.ttf",
+      "DejaVuSans.ttf",
+      "DejaVuSans-Bold.ttf",
+      "DejaVuSans-BoldOblique.ttf",
+      "DejaVuSans-ExtraLight.ttf",
+      "DejaVuSans-Oblique.ttf",
+      "DejaVuSansCondensed.ttf",
+      "DejaVuSansCondensed-Bold.ttf",
+      "DejaVuSansCondensed-BoldOblique.ttf",
+      "DejaVuSansCondensed-Oblique.ttf",
+      "DejaVuSansMono.ttf",
+      "DejaVuSansMono-Bold.ttf",
+      "DejaVuSansMono-BoldOblique.ttf",
+      "DejaVuSansMono-Oblique.ttf",
+      "DejaVuSerif.ttf",
+      "DejaVuSerif-Bold.ttf",
+      "DejaVuSerif-BoldItalic.ttf",
+      "DejaVuSerif-Italic.ttf",
+      "DejaVuSerifCondensed.ttf",
+      "DejaVuSerifCondensed-Bold.ttf",
+      "DejaVuSerifCondensed-BoldItalic.ttf",
+      "DejaVuSerifCondensed-Italic.ttf",
+    ],
+    targetFamilies: ["Verdana", "Tahoma"],
+  },
+
+  {
     kind: "github-tree",
     sourceId: "google-fonts",
     family: "Google Fonts",
@@ -420,6 +535,7 @@ interface BaseSnapshot {
 
 interface ArchiveSnapshot extends BaseSnapshot {
   kind: "archive";
+  archiveFormat: ArchiveFormat;
   licenseFamily: string;
   licenseUrl: string;
   licenseSha256: string;
@@ -554,16 +670,30 @@ async function mapLimit<T, U>(
   return results;
 }
 
-function requireUnzip(): void {
+const archiveFormatOf = (source: ArchiveSource): ArchiveFormat =>
+  source.archiveFormat ?? "zip";
+
+const archiveExtensions: Record<ArchiveFormat, string> = {
+  zip: "zip",
+  "tar.gz": "tar.gz",
+};
+
+function requireArchiveTool(format: ArchiveFormat): void {
+  const tool = format === "tar.gz" ? "tar" : "unzip";
+  const probe = format === "tar.gz" ? "--version" : "-v";
   try {
-    execFileSync("unzip", ["-v"], { stdio: "ignore" });
+    execFileSync(tool, [probe], { stdio: "ignore" });
   } catch {
-    throw new Error("`unzip` is required on PATH.");
+    throw new Error(`\`${tool}\` is required on PATH.`);
   }
 }
 
-function listArchive(zipPath: string): string[] {
-  return execFileSync("unzip", ["-Z1", zipPath], { encoding: "utf8" })
+function listArchive(archivePath: string, format: ArchiveFormat): string[] {
+  const out =
+    format === "tar.gz"
+      ? execFileSync("tar", ["-tzf", archivePath], { encoding: "utf8" })
+      : execFileSync("unzip", ["-Z1", archivePath], { encoding: "utf8" });
+  return out
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
@@ -575,11 +705,22 @@ function listArchive(zipPath: string): string[] {
 const escapeArchiveMember = (name: string): string =>
   name.replace(/[\\*?[\]]/g, "\\$&");
 
-function readArchiveMember(zipPath: string, name: string): Uint8Array {
+function readArchiveMember(
+  archivePath: string,
+  name: string,
+  format: ArchiveFormat,
+): Uint8Array {
+  const opts = { maxBuffer: 256 * 1024 * 1024 };
+  // tar takes the member as a path after `--`; the tar.gz sources use plain ASCII
+  // member names, so the glob escaping that `unzip -p` needs does not apply here.
   return new Uint8Array(
-    execFileSync("unzip", ["-p", zipPath, escapeArchiveMember(name)], {
-      maxBuffer: 256 * 1024 * 1024,
-    }),
+    format === "tar.gz"
+      ? execFileSync("tar", ["-xzOf", archivePath, "--", name], opts)
+      : execFileSync(
+          "unzip",
+          ["-p", archivePath, escapeArchiveMember(name)],
+          opts,
+        ),
   );
 }
 
@@ -587,11 +728,15 @@ async function acquireArchive(
   source: ArchiveSource,
   cacheDir: string,
 ): Promise<ArchiveSnapshot> {
+  const format = archiveFormatOf(source);
   const archive = await fetchBytes(source.downloadUrl);
-  const zipPath = join(cacheDir, `${source.sourceId}.zip`);
-  writeFileSync(zipPath, archive);
+  const archivePath = join(
+    cacheDir,
+    `${source.sourceId}.${archiveExtensions[format]}`,
+  );
+  writeFileSync(archivePath, archive);
 
-  const members = listArchive(zipPath).filter(isFontFile);
+  const members = listArchive(archivePath, format).filter(isFontFile);
   if (members.length === 0)
     throw new Error(`${source.sourceId}: archive has no font files`);
 
@@ -599,7 +744,7 @@ async function acquireArchive(
     .map((member) => ({
       name: basename(member),
       path: member,
-      sha256: sha256(readArchiveMember(zipPath, member)),
+      sha256: sha256(readArchiveMember(archivePath, member, format)),
     }))
     .sort((a, b) => a.path.localeCompare(b.path));
 
@@ -615,6 +760,7 @@ async function acquireArchive(
 
   return {
     kind: "archive",
+    archiveFormat: format,
     sourceId: source.sourceId,
     family: source.family,
     project: source.project,
@@ -751,7 +897,11 @@ async function main(): Promise<void> {
           return source;
         });
 
-  if (sources.some((source) => source.kind !== "github-tree")) requireUnzip();
+  const archiveSources = sources.filter(
+    (source): source is ArchiveSource => source.kind !== "github-tree",
+  );
+  for (const format of new Set(archiveSources.map(archiveFormatOf)))
+    requireArchiveTool(format);
 
   const cacheDir = process.env.DOCFONTS_SOURCE_CACHE ?? DEFAULT_CACHE_DIR;
   mkdirSync(cacheDir, { recursive: true });

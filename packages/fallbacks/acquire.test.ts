@@ -22,6 +22,8 @@ describe("source acquisition catalog", () => {
       "AGPL-3.0-FE",
       "Apache-2.0",
       "UFL-1.0",
+      "GPL-2.0-FE",
+      "Bitstream-Vera-DejaVu",
     ]);
     for (const source of SOURCE_RELEASES) {
       expect(source.sourceId).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
@@ -38,6 +40,8 @@ describe("source acquisition catalog", () => {
         expect(allowedLicenses.has(source.licenseFamily)).toBe(true);
         expect(source.downloadUrl.startsWith("https://")).toBe(true);
         expect(source.expectedFiles.length).toBeGreaterThan(0);
+        if (source.archiveFormat !== undefined)
+          expect(["zip", "tar.gz"]).toContain(source.archiveFormat);
       }
     }
   });
@@ -109,6 +113,69 @@ describe("source acquisition catalog", () => {
         licenseSourcePath: "ufl/ubuntu/UFL.txt",
       },
     ]);
+  });
+
+  test("carries the priority Liberation, Selawik, and DejaVu sources", () => {
+    const byId = new Map(
+      SOURCE_RELEASES.map((source) => [source.sourceId, source]),
+    );
+    for (const id of [
+      "liberation-fonts",
+      "liberation-sans-narrow",
+      "selawik",
+      "dejavu",
+    ])
+      expect(byId.has(id)).toBe(true);
+  });
+
+  test("declares tar.gz sources and defaults the rest to zip", () => {
+    const byId = new Map(
+      SOURCE_RELEASES.map((source) => [source.sourceId, source]),
+    );
+    const archiveFormatOf = (id: string) => {
+      const source = byId.get(id);
+      if (!source || source.kind === "github-tree") return undefined;
+      return source.archiveFormat ?? "zip";
+    };
+
+    expect(archiveFormatOf("liberation-fonts")).toBe("tar.gz");
+    expect(archiveFormatOf("liberation-sans-narrow")).toBe("tar.gz");
+    expect(archiveFormatOf("selawik")).toBe("zip");
+    expect(archiveFormatOf("dejavu")).toBe("zip");
+    // Pre-existing sources never set the field, so they keep extracting as zip.
+    expect(archiveFormatOf("urw-base35")).toBe("zip");
+    expect(byId.get("urw-base35")).not.toHaveProperty("archiveFormat");
+  });
+
+  test("anchors every Selawik 1.01 TTF, WOFF, and WOFF2 member", () => {
+    const source = SOURCE_RELEASES.find(
+      (candidate) => candidate.sourceId === "selawik",
+    );
+    expect(source?.kind !== "github-tree").toBe(true);
+    if (!source || source.kind === "github-tree") return;
+
+    // Selawik 1.01 ships five weights, each as .ttf, .woff, and .woff2.
+    const weights = ["selawk", "selawkb", "selawkl", "selawksb", "selawksl"];
+    const expected = weights.flatMap((stem) => [
+      `${stem}.ttf`,
+      `${stem}.woff`,
+      `${stem}.woff2`,
+    ]);
+    expect([...source.expectedFiles].sort()).toEqual([...expected].sort());
+  });
+
+  test("uses the GPL font exception and DejaVu license families", () => {
+    const byId = new Map(
+      SOURCE_RELEASES.map((source) => [source.sourceId, source]),
+    );
+    const narrow = byId.get("liberation-sans-narrow");
+    const dejavu = byId.get("dejavu");
+    expect(narrow?.kind !== "github-tree" && narrow?.licenseFamily).toBe(
+      "GPL-2.0-FE",
+    );
+    expect(dejavu?.kind !== "github-tree" && dejavu?.licenseFamily).toBe(
+      "Bitstream-Vera-DejaVu",
+    );
   });
 
   test("spans more than one project and license family", () => {
