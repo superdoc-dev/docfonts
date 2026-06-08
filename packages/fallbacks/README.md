@@ -107,6 +107,27 @@ getRenderableFallbackForFace("Baskerville Old Face", "bold", opts);             
 
 The full structured rows are exported as `SUBSTITUTION_EVIDENCE` for richer reporting (faces, per-face verdicts, glyph exceptions).
 
+## Local tools
+
+These maintainer tools use ignored `.cache` files and are not shipped in the package.
+
+`bun run acquire` downloads open-font candidate archives into `.cache/sources`. Set `DOCFONTS_SOURCE_CACHE` to use another cache directory.
+
+`bun run compare` checks a private reference font against acquired OTF/TTF candidates and prints a ranked Latin advance-width table. It writes no fonts, paths, or results to the tree.
+
+```sh
+bun run --cwd packages/fallbacks compare -- \
+  --reference /path/to/reference.ttf \
+  --family "Bookman Old Style" \
+  --source tex-gyre-bonum
+```
+
+- `--reference` (required) - path to the font to measure against.
+- `--family` - a label shown in the report header.
+- `--source` - restrict to one or more acquired source ids (repeat the flag or comma-separate). Defaults to every acquired source.
+
+The comparison is a lead finder, not an automatic verdict. It measures Latin advance widths over a fixed sample and reports the tier, coverage, outlier counts, and worst glyphs for each candidate.
+
 ## Provenance
 
 The data comes from reviewed docfonts evidence. Measurements are produced against licensed originals, but this package distributes no proprietary binaries or raw proprietary metrics.
