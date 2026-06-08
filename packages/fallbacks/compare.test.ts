@@ -8,6 +8,8 @@ import {
   collectCandidates,
   type FontMetrics,
   LATIN_SAMPLE,
+  LATIN_TEXT_SAMPLE,
+  parseArgs,
   parseFont,
   renderReport,
   type SnapshotSource,
@@ -190,6 +192,29 @@ describe("LATIN_SAMPLE", () => {
   });
 });
 
+describe("LATIN_TEXT_SAMPLE", () => {
+  test("keeps text carriers and excludes symbol outliers", () => {
+    expect(LATIN_TEXT_SAMPLE).toContain(0x41); // 'A'
+    expect(LATIN_TEXT_SAMPLE).toContain(0x39); // '9'
+    expect(LATIN_TEXT_SAMPLE).toContain(0x00e9); // e with acute
+    expect(LATIN_TEXT_SAMPLE).toContain(0x00a0); // no-break space
+    expect(LATIN_TEXT_SAMPLE).toContain(0x2014); // em dash codepoint
+    expect(LATIN_TEXT_SAMPLE).not.toContain(0x00af); // macron
+    expect(LATIN_TEXT_SAMPLE).not.toContain(0x00b5); // micro sign
+    expect(LATIN_TEXT_SAMPLE).not.toContain(0x00b7); // middle dot
+    expect(LATIN_TEXT_SAMPLE).not.toContain(0x00b1); // plus-minus sign
+  });
+
+  test("is a sorted subset of the full Latin sample", () => {
+    const full = new Set(LATIN_SAMPLE);
+    expect(LATIN_TEXT_SAMPLE.every((cp) => full.has(cp))).toBe(true);
+    expect(new Set(LATIN_TEXT_SAMPLE).size).toBe(LATIN_TEXT_SAMPLE.length);
+    expect([...LATIN_TEXT_SAMPLE]).toEqual(
+      [...LATIN_TEXT_SAMPLE].sort((a, b) => a - b),
+    );
+  });
+});
+
 // --- Tiers ------------------------------------------------------------------
 
 describe("classifyTier", () => {
@@ -200,6 +225,18 @@ describe("classifyTier", () => {
     expect(classifyTier(0.01, 0.025)).toBe("near_metric");
     expect(classifyTier(0.0101, 0.025)).toBe("visual_only");
     expect(classifyTier(0.01, 0.026)).toBe("visual_only");
+    expect(classifyTier(0, 0)).toBe("metric_safe");
+  });
+
+  test("monospace model collapses the metric bands to cell_width_only", () => {
+    // What the latin model calls metric_safe or near_metric is only proof of cell width here.
+    expect(classifyTier(0, 0, "monospace")).toBe("cell_width_only");
+    expect(classifyTier(0.005, 0.01, "monospace")).toBe("cell_width_only");
+    expect(classifyTier(0.01, 0.025, "monospace")).toBe("cell_width_only");
+    // Non-matching candidates stay visual_only under both models.
+    expect(classifyTier(0.0101, 0.025, "monospace")).toBe("visual_only");
+    // The latin model is the default and is unchanged.
+    expect(classifyTier(0, 0, "latin")).toBe("metric_safe");
     expect(classifyTier(0, 0)).toBe("metric_safe");
   });
 });
@@ -259,6 +296,58 @@ describe("scoreAdvances", () => {
     expect(score.tier).toBe("visual_only");
     expect(Number.isNaN(score.meanDelta)).toBe(true);
     expect(Number.isNaN(score.maxDelta)).toBe(true);
+  });
+
+  test("monospace model downgrades a matching candidate to cell_width_only", () => {
+    const reference = new Map([
+      [0x41, 0.6],
+      [0x42, 0.6],
+      [0x43, 0.6],
+    ]);
+    const matching = new Map([
+      [0x41, 0.6],
+      [0x42, 0.6],
+      [0x43, 0.6],
+    ]);
+    const diverging = new Map([
+      [0x41, 0.6],
+      [0x42, 0.7],
+      [0x43, 0.8],
+    ]);
+    // A matching cell is metric_safe under latin but only cell_width_only under monospace.
+    expect(scoreAdvances(reference, matching, sample).tier).toBe("metric_safe");
+    expect(
+      scoreAdvances(reference, matching, sample, 3, "monospace").tier,
+    ).toBe("cell_width_only");
+    // A non-matching candidate stays visual_only under either model.
+    expect(
+      scoreAdvances(reference, diverging, sample, 3, "monospace").tier,
+    ).toBe("visual_only");
+  });
+
+  test("can rank on text carriers while reporting full-sample outliers", () => {
+    const reportSample = [0x41, 0x00af, 0x00b5, 0x00b7];
+    const tierSample = [0x41];
+    const reference = new Map(reportSample.map((cp) => [cp, 0.5]));
+    const candidate = new Map([
+      [0x41, 0.5],
+      [0x00af, 0.33],
+      [0x00b5, 0.58],
+      [0x00b7, 0.42],
+    ]);
+    const score = scoreAdvances(reference, candidate, {
+      reportSample,
+      tierSample,
+    });
+    expect(score.tier).toBe("metric_safe");
+    expect(score.compared).toBe(1);
+    expect(score.total).toBe(1);
+    expect(score.meanDelta).toBe(0);
+    expect(score.maxDelta).toBe(0);
+    expect(score.over2_5Percent).toBe(3);
+    expect(score.worstGlyphs.map((g) => g.codepoint)).toEqual([
+      0x00af, 0x00b7, 0x00b5,
+    ]);
   });
 });
 
@@ -360,6 +449,37 @@ describe("renderReport", () => {
     expect(lines[2]).toContain("visual_only");
   });
 
+  test("ranks cell_width_only after near_metric and before visual_only", () => {
+    const reference = new Map([[0x41, 0.6]]);
+    const sample = [0x41];
+    // mean 0, max 0 -> near_metric is impossible from a perfect match, so build a near_metric by a
+    // small delta, a cell_width_only via the monospace model, and a visual_only via a large delta.
+    const near = scoreAdvances(reference, new Map([[0x41, 0.607]]), sample);
+    const cell = scoreAdvances(
+      reference,
+      new Map([[0x41, 0.6]]),
+      sample,
+      3,
+      "monospace",
+    );
+    const visual = scoreAdvances(reference, new Map([[0x41, 0.9]]), sample);
+    expect(near.tier).toBe("near_metric");
+    expect(cell.tier).toBe("cell_width_only");
+    expect(visual.tier).toBe("visual_only");
+    const report = renderReport([
+      { sourceId: "visual-src", file: "v.otf", score: visual },
+      { sourceId: "cell-src", file: "c.otf", score: cell },
+      { sourceId: "near-src", file: "n.otf", score: near },
+    ]);
+    const lines = report.split("\n");
+    expect(lines[1]).toContain("near-src");
+    expect(lines[1]).toContain("near_metric");
+    expect(lines[2]).toContain("cell-src");
+    expect(lines[2]).toContain("cell_width_only");
+    expect(lines[3]).toContain("visual-src");
+    expect(lines[3]).toContain("visual_only");
+  });
+
   test("can limit the rendered table to the top rows", () => {
     const reference = sampleMetrics(mockFont(0.5), [0x41]);
     const close = scoreAdvances(
@@ -402,6 +522,27 @@ describe("renderReport", () => {
     expect(row[headers.indexOf("missing")]).toBe("1");
     expect(row[headers.indexOf("over1")]).toBe("0");
     expect(row[headers.indexOf("over2.5")]).toBe("0");
+  });
+});
+
+// --- Argument parsing -------------------------------------------------------
+
+describe("parseArgs", () => {
+  test("defaults to the latin model", () => {
+    expect(parseArgs(["--reference", "ref.otf"]).model).toBe("latin");
+  });
+
+  test("accepts --model monospace", () => {
+    expect(parseArgs(["--model", "monospace"]).model).toBe("monospace");
+    expect(parseArgs(["--model", "latin"]).model).toBe("latin");
+  });
+
+  test("rejects an unknown model", () => {
+    expect(() => parseArgs(["--model", "serif"])).toThrow(/--model requires/);
+  });
+
+  test("rejects --model without a value", () => {
+    expect(() => parseArgs(["--model"])).toThrow(/requires a value/);
   });
 });
 

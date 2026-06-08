@@ -125,8 +125,9 @@ bun run --cwd packages/fallbacks compare -- \
 - `--reference` (required) - path to the font to measure against.
 - `--family` - a label shown in the report header.
 - `--source` - restrict to one or more acquired source ids (repeat the flag or comma-separate). Defaults to every acquired source.
+- `--model` - `latin` by default. Use `monospace` for mono references so matching cells report `cell_width_only`, not `metric_safe`.
 
-The comparison is a lead finder, not an automatic verdict. It measures Latin advance widths over a fixed sample and reports the tier, coverage, outlier counts, and worst glyphs for each candidate.
+The comparison is a lead finder, not an automatic verdict. For proportional Latin fonts, tier, mean, and max use a text-carrying subset while outlier counts and worst glyphs still use the full Latin sample.
 
 ## Provenance
 

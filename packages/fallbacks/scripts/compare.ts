@@ -36,25 +36,96 @@ export const LATIN_SAMPLE: readonly number[] = (() => {
   return [...new Set(all)].sort((a, b) => a - b);
 })();
 
+const TEXT_PUNCTUATION = new Set([
+  0x20, // space
+  0x21, // !
+  0x22, // "
+  0x23, // #
+  0x26, // &
+  0x27, // '
+  0x28, // (
+  0x29, // )
+  0x2c, // ,
+  0x2d, // -
+  0x2e, // .
+  0x2f, // /
+  0x3a, // :
+  0x3b, // ;
+  0x3f, // ?
+  0x40, // @
+  0x5b, // [
+  0x5d, // ]
+  0x7b, // {
+  0x7d, // }
+  0x00a0, // no-break space
+  0x2013, // en dash
+  0x2014, // em dash
+  0x2018, // left single quote
+  0x2019, // right single quote
+  0x201c, // left double quote
+  0x201d, // right double quote
+  0x2026, // ellipsis
+]);
+
+const EXCLUDED_TEXT_LETTERS = new Set([
+  0x00b5, // micro sign: Unicode treats it as a letter, but it behaves like a symbol here.
+]);
+
+function isTextLetterOrDigit(codepoint: number): boolean {
+  if (EXCLUDED_TEXT_LETTERS.has(codepoint)) return false;
+  return /^[\p{L}\p{N}]$/u.test(String.fromCodePoint(codepoint));
+}
+
+/**
+ * Text-carrying Latin sample used to rank proportional-font candidates. The full sample still reports
+ * outliers, but rare symbols should not hide a strong body-text lead.
+ */
+export const LATIN_TEXT_SAMPLE: readonly number[] = LATIN_SAMPLE.filter(
+  (cp) => TEXT_PUNCTUATION.has(cp) || isTextLetterOrDigit(cp),
+);
+
 // --- Tiers ------------------------------------------------------------------
 
 /**
  * Advance-fidelity tier. Thresholds mirror the package's verdict language (see `src/types.ts`):
  * metric_safe is the DIRECT band, near_metric the LIKELY band, everything else visual_only.
+ * cell_width_only is the monospace model's verdict for a matching cell: it proves line width, not
+ * glyph-shape fidelity.
  */
-export type CompareTier = "metric_safe" | "near_metric" | "visual_only";
+export type CompareTier =
+  | "metric_safe"
+  | "near_metric"
+  | "cell_width_only"
+  | "visual_only";
+
+/**
+ * Classification model. `latin` is the default proportional comparison. `monospace` treats a matching
+ * advance as proof of cell width only, since every glyph in a monospace cell shares one advance.
+ */
+export type CompareModel = "latin" | "monospace";
 
 const TIER_RANK: Record<CompareTier, number> = {
   metric_safe: 0,
   near_metric: 1,
-  visual_only: 2,
+  cell_width_only: 2,
+  visual_only: 3,
 };
 
-/** Classify a (mean, max) advance-delta pair into a fidelity tier. Deltas are fractions of the em. */
-export function classifyTier(meanDelta: number, maxDelta: number): CompareTier {
-  if (meanDelta <= 0.005 && maxDelta <= 0.01) return "metric_safe";
-  if (meanDelta <= 0.01 && maxDelta <= 0.025) return "near_metric";
-  return "visual_only";
+/**
+ * Classify a (mean, max) advance-delta pair into a fidelity tier. Deltas are fractions of the em. Under
+ * the monospace model a matching cell only vouches for line width, so the metric bands collapse to
+ * cell_width_only while non-matching candidates stay visual_only.
+ */
+export function classifyTier(
+  meanDelta: number,
+  maxDelta: number,
+  model: CompareModel = "latin",
+): CompareTier {
+  let tier: CompareTier = "visual_only";
+  if (meanDelta <= 0.005 && maxDelta <= 0.01) tier = "metric_safe";
+  else if (meanDelta <= 0.01 && maxDelta <= 0.025) tier = "near_metric";
+  if (model === "monospace" && tier !== "visual_only") return "cell_width_only";
+  return tier;
 }
 
 // --- SFNT parsing -----------------------------------------------------------
@@ -260,33 +331,48 @@ export interface GlyphDelta {
 
 /** The advance-parity score of one candidate font against the reference, over a fixed sample. */
 export interface CompareScore {
-  /** codepoints in the sample that both fonts map. */
+  /** codepoints in the tier sample that both fonts map. */
   compared: number;
-  /** sample size. */
+  /** tier sample size. */
   total: number;
-  /** sample codepoints not mapped by both fonts. */
+  /** tier sample codepoints not mapped by both fonts. */
   missing: number;
   meanDelta: number;
   maxDelta: number;
-  /** shared sample codepoints whose advance delta exceeds the metric_safe max threshold. */
+  /** shared report-sample codepoints whose advance delta exceeds the metric_safe max threshold. */
   over1Percent: number;
-  /** shared sample codepoints whose advance delta exceeds the near_metric max threshold. */
+  /** shared report-sample codepoints whose advance delta exceeds the near_metric max threshold. */
   over2_5Percent: number;
   tier: CompareTier;
   worstGlyphs: GlyphDelta[];
 }
 
-/**
- * Score one candidate against the reference over the sample. Both inputs are normalized advance maps
- * (codepoint -> advance/unitsPerEm); only codepoints present in both are compared. Pure, so it can be
- * tested with mocked metric maps and never needs a real font.
- */
-export function scoreAdvances(
+export interface ScoreOptions {
+  /** Sample used for outlier reporting and worst-glyph display. */
+  reportSample?: readonly number[];
+  /** Sample used for tier classification and mean/max columns. Defaults to `reportSample`. */
+  tierSample?: readonly number[];
+  worstCount?: number;
+  model?: CompareModel;
+}
+
+interface MeasuredDeltas {
+  compared: number;
+  total: number;
+  missing: number;
+  meanDelta: number;
+  maxDelta: number;
+  over1Percent: number;
+  over2_5Percent: number;
+  worstGlyphs: GlyphDelta[];
+}
+
+function measureDeltas(
   reference: ReadonlyMap<number, number>,
   candidate: ReadonlyMap<number, number>,
-  sample: readonly number[] = LATIN_SAMPLE,
-  worstCount = 3,
-): CompareScore {
+  sample: readonly number[],
+  worstCount: number,
+): MeasuredDeltas {
   const deltas: GlyphDelta[] = [];
   let sum = 0;
   let max = 0;
@@ -320,9 +406,75 @@ export function scoreAdvances(
     maxDelta,
     over1Percent,
     over2_5Percent,
-    // With no shared codepoints there is nothing to vouch for: report the floor tier.
-    tier: compared === 0 ? "visual_only" : classifyTier(meanDelta, maxDelta),
     worstGlyphs,
+  };
+}
+
+function normalizeScoreOptions(
+  optionsOrSample: ScoreOptions | readonly number[] | undefined,
+  worstCount: number | undefined,
+  model: CompareModel | undefined,
+): Required<ScoreOptions> {
+  if (!optionsOrSample || Array.isArray(optionsOrSample)) {
+    const reportSample = optionsOrSample ?? LATIN_SAMPLE;
+    return {
+      reportSample,
+      tierSample: reportSample,
+      worstCount: worstCount ?? 3,
+      model: model ?? "latin",
+    };
+  }
+
+  const options = optionsOrSample as ScoreOptions;
+  const reportSample = options.reportSample ?? LATIN_SAMPLE;
+  return {
+    reportSample,
+    tierSample: options.tierSample ?? reportSample,
+    worstCount: options.worstCount ?? 3,
+    model: options.model ?? "latin",
+  };
+}
+
+/**
+ * Score one candidate against the reference. The tier can use a narrower text sample while the report
+ * still surfaces full-sample outliers. Both inputs are normalized advance maps (codepoint ->
+ * advance/unitsPerEm); only codepoints present in both are compared.
+ */
+export function scoreAdvances(
+  reference: ReadonlyMap<number, number>,
+  candidate: ReadonlyMap<number, number>,
+  optionsOrSample?: ScoreOptions | readonly number[],
+  worstCount?: number,
+  model?: CompareModel,
+): CompareScore {
+  const options = normalizeScoreOptions(optionsOrSample, worstCount, model);
+  const report = measureDeltas(
+    reference,
+    candidate,
+    options.reportSample,
+    options.worstCount,
+  );
+  const tierMetrics =
+    options.tierSample === options.reportSample
+      ? report
+      : measureDeltas(reference, candidate, options.tierSample, 0);
+  return {
+    compared: tierMetrics.compared,
+    total: tierMetrics.total,
+    missing: tierMetrics.missing,
+    meanDelta: tierMetrics.meanDelta,
+    maxDelta: tierMetrics.maxDelta,
+    over1Percent: report.over1Percent,
+    over2_5Percent: report.over2_5Percent,
+    tier:
+      tierMetrics.compared === 0
+        ? "visual_only"
+        : classifyTier(
+            tierMetrics.meanDelta,
+            tierMetrics.maxDelta,
+            options.model,
+          ),
+    worstGlyphs: report.worstGlyphs,
   };
 }
 
@@ -506,15 +658,16 @@ interface CompareRow {
   score: CompareScore;
 }
 
-interface ParsedArgs {
+export interface ParsedArgs {
   reference?: string;
   family?: string;
   limit: number | null;
   sources: string[];
+  model: CompareModel;
 }
 
-function parseArgs(argv: string[]): ParsedArgs {
-  const args: ParsedArgs = { limit: 50, sources: [] };
+export function parseArgs(argv: string[]): ParsedArgs {
+  const args: ParsedArgs = { limit: 50, sources: [], model: "latin" };
   const readValue = (flag: string, index: number): string => {
     const value = argv[index + 1];
     if (!value || value.startsWith("--"))
@@ -540,6 +693,14 @@ function parseArgs(argv: string[]): ParsedArgs {
           args.sources.push(id);
         i++;
         break;
+      case "--model": {
+        const value = readValue(flag, i);
+        if (value !== "latin" && value !== "monospace")
+          throw new Error("--model requires 'latin' or 'monospace'");
+        args.model = value;
+        i++;
+        break;
+      }
       case "--limit": {
         const value = readValue(flag, i);
         if (value === "all") {
@@ -683,7 +844,11 @@ function main(): void {
     for (const candidate of collectCandidates(source, cacheDir)) {
       try {
         const font = parseFont(candidate.bytes);
-        const score = scoreAdvances(reference, sampleMetrics(font));
+        const score = scoreAdvances(reference, sampleMetrics(font), {
+          reportSample: LATIN_SAMPLE,
+          tierSample: args.model === "latin" ? LATIN_TEXT_SAMPLE : LATIN_SAMPLE,
+          model: args.model,
+        });
         rows.push({ sourceId: source.sourceId, file: candidate.file, score });
       } catch {
         skipped++;
@@ -695,8 +860,12 @@ function main(): void {
   const shown =
     args.limit === null ? rows.length : Math.min(args.limit, rows.length);
   const skippedText = skipped === 0 ? "" : `; skipped ${skipped} unsupported`;
+  const modelText =
+    args.model === "latin"
+      ? `; tier/mean/max ${LATIN_TEXT_SAMPLE.length} text codepoints`
+      : `; model ${args.model}`;
   console.log(
-    `reference ${basename(args.reference)} as "${label}" vs ${rows.length} candidate(s) over ${LATIN_SAMPLE.length} Latin codepoints; showing ${shown}${skippedText}\n`,
+    `reference ${basename(args.reference)} as "${label}" vs ${rows.length} candidate(s) over ${LATIN_SAMPLE.length} Latin codepoints${modelText}; showing ${shown}${skippedText}\n`,
   );
   console.log(renderReport(rows, { limit: args.limit }));
 }

@@ -22,8 +22,9 @@ Built by the team behind [SuperDoc](https://github.com/superdoc-dev/superdoc). S
 - Runtime: install `@docfonts/fallbacks` and call the lookup helpers.
 - Acquire: run `bun run --cwd packages/fallbacks acquire` to download reviewed open-font source
   archives into an ignored local cache and write local hash snapshots.
-- Compare: planned local tooling. Results should stay local unless deliberately published through a
-  curated product surface.
+- Compare: run `bun run --cwd packages/fallbacks compare` to rank acquired open fonts against a
+  licensed local reference. Results stay local unless deliberately published through a curated
+  product surface.
 
 ## API
 
