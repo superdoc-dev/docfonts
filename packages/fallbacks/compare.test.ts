@@ -1,10 +1,15 @@
 import { describe, expect, test } from "bun:test";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   classifyTier,
+  collectCandidates,
   type FontMetrics,
   LATIN_SAMPLE,
   parseFont,
   renderReport,
+  type SnapshotSource,
   sampleMetrics,
   scoreAdvances,
 } from "./scripts/compare";
@@ -396,5 +401,67 @@ describe("renderReport", () => {
     expect(row[headers.indexOf("missing")]).toBe("1");
     expect(row[headers.indexOf("over1")]).toBe("0");
     expect(row[headers.indexOf("over2.5")]).toBe("0");
+  });
+});
+
+// --- Cached-file candidate collection ---------------------------------------
+
+describe("collectCandidates (GitHub tree sources)", () => {
+  test("reads each snapshot file directly from the cache and parses it", () => {
+    const cacheDir = mkdtempSync(join(tmpdir(), "docfonts-github-tree-"));
+    try {
+      const sourceId = "google-example";
+      mkdirSync(join(cacheDir, sourceId), { recursive: true });
+      // Two readable names, including a bracketed variable-font name, mirroring the Google shape.
+      const names = ["Example-Regular.ttf", "Example[wght].ttf"];
+      for (const name of names)
+        writeFileSync(join(cacheDir, sourceId, name), syntheticFont());
+
+      const source: SnapshotSource = {
+        sourceId,
+        family: "Example",
+        targetFamilies: ["Some Proprietary"],
+        kind: "github-tree",
+        files: names.map((name) => ({ name, path: `${sourceId}/${name}` })),
+      };
+
+      const candidates = collectCandidates(source, cacheDir);
+      expect(candidates.map((c) => c.file)).toEqual(names);
+
+      const reference = sampleMetrics(parseFont(syntheticFont()));
+      for (const candidate of candidates) {
+        const score = scoreAdvances(
+          reference,
+          sampleMetrics(parseFont(candidate.bytes)),
+        );
+        expect(score.tier).toBe("metric_safe");
+        expect(score.meanDelta).toBe(0);
+      }
+    } finally {
+      rmSync(cacheDir, { recursive: true, force: true });
+    }
+  });
+
+  test("throws when a listed raw file is missing from the cache", () => {
+    const cacheDir = mkdtempSync(join(tmpdir(), "docfonts-github-tree-"));
+    try {
+      const source: SnapshotSource = {
+        sourceId: "google-missing",
+        family: "Missing",
+        targetFamilies: ["X"],
+        kind: "github-tree",
+        files: [
+          {
+            name: "Missing-Regular.ttf",
+            path: "google-missing/Missing-Regular.ttf",
+          },
+        ],
+      };
+      expect(() => collectCandidates(source, cacheDir)).toThrow(
+        /candidate file missing/,
+      );
+    } finally {
+      rmSync(cacheDir, { recursive: true, force: true });
+    }
   });
 });

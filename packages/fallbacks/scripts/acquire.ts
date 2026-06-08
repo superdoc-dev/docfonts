@@ -1,23 +1,70 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 const GUST_LICENSE_URL =
   "https://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt/at_download/file";
 
-export type LicenseFamily = "GUST-FL" | "OFL-1.1" | "AGPL-3.0-FE";
+// Pinned google/fonts commit. The Google tree source resolves against this SHA
+// so acquisitions stay reproducible even as the upstream branch moves.
+const GOOGLE_FONTS_COMMIT = "c89741abbf4eeabce432c3ed2fd7dc28b022701e";
 
-export interface SourceRelease {
+const githubRawUrl = (repo: string, commit: string, path: string): string =>
+  `https://raw.githubusercontent.com/${repo}/${commit}/${path
+    .split("/")
+    .map(encodeURIComponent)
+    .join("/")}`;
+
+const githubTreeUrl = (repo: string, commit: string): string =>
+  `https://api.github.com/repos/${repo}/git/trees/${commit}?recursive=1`;
+
+const LICENSE_FILE_NAMES = new Set([
+  "LICENSE",
+  "LICENSE.md",
+  "LICENSE.txt",
+  "LICENCE.txt",
+  "OFL.txt",
+  "UFL.txt",
+]);
+
+export type LicenseFamily =
+  | "GUST-FL"
+  | "OFL-1.1"
+  | "AGPL-3.0-FE"
+  | "Apache-2.0"
+  | "UFL-1.0";
+
+/** Fields shared by every acquisition source, regardless of how it is fetched. */
+interface BaseSource {
   sourceId: string;
   family: string;
   project: string;
-  licenseFamily: LicenseFamily;
-  downloadUrl: string;
-  licenseUrl: string;
-  expectedFiles: string[];
   targetFamilies: string[];
 }
+
+interface LicensedSource extends BaseSource {
+  licenseFamily: LicenseFamily;
+  licenseUrl: string;
+}
+
+/** A source delivered as a single zip archive containing many font members. */
+export interface ArchiveSource extends LicensedSource {
+  /** Optional for archive sources: an absent `kind` is treated as "archive". */
+  kind?: "archive";
+  downloadUrl: string;
+  expectedFiles: string[];
+}
+
+/** A source discovered from a pinned GitHub tree, then downloaded as raw files. */
+export interface GitHubTreeSource extends BaseSource {
+  kind: "github-tree";
+  repo: string;
+  commit: string;
+  licenseDirs: Record<string, LicenseFamily>;
+}
+
+export type SourceRelease = ArchiveSource | GitHubTreeSource;
 
 export const SOURCE_RELEASES: SourceRelease[] = [
   {
@@ -334,26 +381,59 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     expectedFiles: ["NotoSansMono-Regular.otf", "NotoSansMono-Bold.otf"],
     targetFamilies: ["Consolas", "Courier New"],
   },
+
+  {
+    kind: "github-tree",
+    sourceId: "google-fonts",
+    family: "Google Fonts",
+    project: "Google Fonts",
+    repo: "google/fonts",
+    commit: GOOGLE_FONTS_COMMIT,
+    licenseDirs: {
+      apache: "Apache-2.0",
+      ofl: "OFL-1.1",
+      ufl: "UFL-1.0",
+    },
+    targetFamilies: ["Document font discovery"],
+  },
 ];
 
 interface FileSnapshot {
   name: string;
+  /** For archives: the in-archive member path. For cached files: the cache-relative path. */
   path: string;
   sha256: string;
+  sourcePath?: string;
+  licenseFamily?: LicenseFamily;
+  licensePath?: string;
+  licenseSha256?: string;
 }
 
-interface SourceSnapshot {
+/** Snapshot fields common to both source kinds. */
+interface BaseSnapshot {
   sourceId: string;
   family: string;
   project: string;
-  licenseFamily: string;
-  downloadUrl: string;
-  archiveSha256: string;
-  licenseUrl: string;
-  licenseSha256: string;
   files: FileSnapshot[];
   targetFamilies: string[];
 }
+
+interface ArchiveSnapshot extends BaseSnapshot {
+  kind: "archive";
+  licenseFamily: string;
+  licenseUrl: string;
+  licenseSha256: string;
+  downloadUrl: string;
+  archiveSha256: string;
+}
+
+interface GitHubTreeSnapshot extends BaseSnapshot {
+  kind: "github-tree";
+  repo: string;
+  commit: string;
+}
+
+type SourceSnapshot = ArchiveSnapshot | GitHubTreeSnapshot;
 
 const PKG_DIR = join(import.meta.dir, "..");
 const DEFAULT_CACHE_DIR = join(PKG_DIR, ".cache", "sources");
@@ -371,6 +451,107 @@ async function fetchBytes(url: string): Promise<Uint8Array> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`GET ${url} -> ${res.status} ${res.statusText}`);
   return new Uint8Array(await res.arrayBuffer());
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`GET ${url} -> ${res.status} ${res.statusText}`);
+  return (await res.json()) as T;
+}
+
+export interface GitHubTreeEntry {
+  path: string;
+  type: string;
+}
+
+interface GitHubTreeResponse {
+  tree: GitHubTreeEntry[];
+  truncated?: boolean;
+}
+
+interface GitHubFontEntry {
+  name: string;
+  sourcePath: string;
+  licenseFamily: LicenseFamily;
+  licenseSourcePath: string;
+}
+
+const familyRootOf = (path: string): string | null => {
+  const parts = path.split("/");
+  if (parts.length < 2) return null;
+  return `${parts[0]}/${parts[1]}`;
+};
+
+const licenseFileNameOf = (path: string): string => path.split("/").pop() ?? "";
+
+/**
+ * Select every font file under the source's approved license directories and
+ * attach the matching family license. Pure so catalog behavior is testable
+ * without network access.
+ */
+export function collectGitHubTreeFonts(
+  source: GitHubTreeSource,
+  entries: readonly GitHubTreeEntry[],
+): GitHubFontEntry[] {
+  const licensedRoots = new Map<
+    string,
+    { licenseFamily: LicenseFamily; licenseSourcePath: string }
+  >();
+
+  for (const entry of entries) {
+    if (entry.type !== "blob") continue;
+    const root = familyRootOf(entry.path);
+    if (!root) continue;
+    const [licenseDir] = root.split("/");
+    const licenseFamily = source.licenseDirs[licenseDir];
+    if (!licenseFamily) continue;
+    if (!LICENSE_FILE_NAMES.has(licenseFileNameOf(entry.path))) continue;
+    licensedRoots.set(root, {
+      licenseFamily,
+      licenseSourcePath: entry.path,
+    });
+  }
+
+  const fonts: GitHubFontEntry[] = [];
+  for (const entry of entries) {
+    if (entry.type !== "blob" || !isFontFile(entry.path)) continue;
+    const root = familyRootOf(entry.path);
+    if (!root) continue;
+    const [licenseDir] = root.split("/");
+    if (!source.licenseDirs[licenseDir]) continue;
+    const license = licensedRoots.get(root);
+    if (!license) continue;
+    fonts.push({
+      name: basename(entry.path),
+      sourcePath: entry.path,
+      licenseFamily: license.licenseFamily,
+      licenseSourcePath: license.licenseSourcePath,
+    });
+  }
+
+  return fonts.sort((a, b) => a.sourcePath.localeCompare(b.sourcePath));
+}
+
+async function mapLimit<T, U>(
+  items: readonly T[],
+  limit: number,
+  fn: (item: T) => Promise<U>,
+): Promise<U[]> {
+  const results: U[] = new Array(items.length);
+  let next = 0;
+
+  async function worker(): Promise<void> {
+    while (next < items.length) {
+      const index = next;
+      next += 1;
+      results[index] = await fn(items[index]);
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, () => worker()),
+  );
+  return results;
 }
 
 function requireUnzip(): void {
@@ -402,10 +583,10 @@ function readArchiveMember(zipPath: string, name: string): Uint8Array {
   );
 }
 
-async function acquireSource(
-  source: SourceRelease,
+async function acquireArchive(
+  source: ArchiveSource,
   cacheDir: string,
-): Promise<SourceSnapshot> {
+): Promise<ArchiveSnapshot> {
   const archive = await fetchBytes(source.downloadUrl);
   const zipPath = join(cacheDir, `${source.sourceId}.zip`);
   writeFileSync(zipPath, archive);
@@ -433,6 +614,7 @@ async function acquireSource(
   writeFileSync(join(cacheDir, `${source.sourceId}.license.txt`), license);
 
   return {
+    kind: "archive",
     sourceId: source.sourceId,
     family: source.family,
     project: source.project,
@@ -446,16 +628,142 @@ async function acquireSource(
   };
 }
 
+async function acquireGitHubTree(
+  source: GitHubTreeSource,
+  cacheDir: string,
+): Promise<GitHubTreeSnapshot> {
+  const tree = await fetchJson<GitHubTreeResponse>(
+    githubTreeUrl(source.repo, source.commit),
+  );
+  if (tree.truncated)
+    throw new Error(`${source.sourceId}: GitHub tree response was truncated`);
+
+  const fontEntries = collectGitHubTreeFonts(source, tree.tree);
+  if (fontEntries.length === 0)
+    throw new Error(`${source.sourceId}: tree has no font files`);
+
+  const sourceDir = join(cacheDir, source.sourceId);
+  mkdirSync(sourceDir, { recursive: true });
+
+  const licenseCache = new Map<
+    string,
+    Promise<{ path: string; sha256: string }>
+  >();
+  const acquireLicense = (
+    licenseSourcePath: string,
+  ): Promise<{ path: string; sha256: string }> => {
+    const cached = licenseCache.get(licenseSourcePath);
+    if (cached) return cached;
+
+    const promise = (async () => {
+      const bytes = await fetchBytes(
+        githubRawUrl(source.repo, source.commit, licenseSourcePath),
+      );
+      const path = `${source.sourceId}/licenses/${licenseSourcePath}`;
+      const outPath = join(cacheDir, path);
+      mkdirSync(dirname(outPath), { recursive: true });
+      writeFileSync(outPath, bytes);
+      return { path, sha256: sha256(bytes) };
+    })();
+    licenseCache.set(licenseSourcePath, promise);
+    return promise;
+  };
+
+  const files = await mapLimit(fontEntries, 12, async (entry) => {
+    const [fontBytes, license] = await Promise.all([
+      fetchBytes(githubRawUrl(source.repo, source.commit, entry.sourcePath)),
+      acquireLicense(entry.licenseSourcePath),
+    ]);
+    const path = `${source.sourceId}/${entry.sourcePath}`;
+    const outPath = join(cacheDir, path);
+    mkdirSync(dirname(outPath), { recursive: true });
+    writeFileSync(outPath, fontBytes);
+
+    return {
+      name: entry.name,
+      path,
+      sha256: sha256(fontBytes),
+      sourcePath: entry.sourcePath,
+      licenseFamily: entry.licenseFamily,
+      licensePath: license.path,
+      licenseSha256: license.sha256,
+    };
+  });
+
+  return {
+    kind: "github-tree",
+    sourceId: source.sourceId,
+    family: source.family,
+    project: source.project,
+    repo: source.repo,
+    commit: source.commit,
+    files: files.sort((a, b) => a.path.localeCompare(b.path)),
+    targetFamilies: source.targetFamilies,
+  };
+}
+
+interface AcquireArgs {
+  sources: string[];
+}
+
+function parseArgs(argv: string[]): AcquireArgs {
+  const args: AcquireArgs = { sources: [] };
+  const readValue = (flag: string, index: number): string => {
+    const value = argv[index + 1];
+    if (!value || value.startsWith("--"))
+      throw new Error(`${flag} requires a value`);
+    return value;
+  };
+
+  for (let i = 0; i < argv.length; i++) {
+    const flag = argv[i];
+    switch (flag) {
+      case "--source":
+        for (const id of readValue(flag, i)
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean))
+          args.sources.push(id);
+        i++;
+        break;
+      default:
+        throw new Error(`unknown argument: ${flag}`);
+    }
+  }
+
+  return args;
+}
+
 async function main(): Promise<void> {
-  requireUnzip();
+  const args = parseArgs(process.argv.slice(2));
+  const byId = new Map(
+    SOURCE_RELEASES.map((source) => [source.sourceId, source]),
+  );
+  const sources =
+    args.sources.length === 0
+      ? SOURCE_RELEASES
+      : args.sources.map((id) => {
+          const source = byId.get(id);
+          if (!source)
+            throw new Error(
+              `unknown source: ${id}. Available: ${[...byId.keys()].join(", ")}`,
+            );
+          return source;
+        });
+
+  if (sources.some((source) => source.kind !== "github-tree")) requireUnzip();
 
   const cacheDir = process.env.DOCFONTS_SOURCE_CACHE ?? DEFAULT_CACHE_DIR;
   mkdirSync(cacheDir, { recursive: true });
 
   const snapshots: SourceSnapshot[] = [];
-  for (const source of SOURCE_RELEASES) {
+  for (const source of sources) {
     console.log(`acquiring ${source.sourceId}`);
-    snapshots.push(await acquireSource(source, cacheDir));
+    snapshots.push(
+      source.kind === "github-tree"
+        ? await acquireGitHubTree(source, cacheDir)
+        : await acquireArchive(source, cacheDir),
+    );
   }
 
   snapshots.sort((a, b) => a.sourceId.localeCompare(b.sourceId));
