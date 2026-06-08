@@ -37,6 +37,7 @@
   "scripts": {
     "gen:data": "bun run scripts/generate-data.ts",
     "acquire": "bun run scripts/acquire.ts",
+    "compare": "bun run scripts/compare.ts",
     "build": "tsc -p tsconfig.build.json",
     "prepack": "bun run build"
   },
