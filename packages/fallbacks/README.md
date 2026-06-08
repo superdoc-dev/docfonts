@@ -71,6 +71,7 @@ Some fallbacks are face-scoped. Use `getRenderableFallbackForFace`, or respect t
 - `verdict` - measured fidelity, such as `metric_safe`, `near_metric`, `cell_width_only`, or `visual_only`.
 - `lineBreakSafe` - true when advances preserve line breaks.
 - `glyphExceptions` - named glyphs that can reflow.
+- `advance.basis` - sample/model used for mean and max deltas, such as `latin_core`, `latin_text`, or `monospace_cell`.
 - `generic` - CSS generic family for last-resort fallback.
 - `evidenceId` - stable id for the reviewed evidence row.
 
