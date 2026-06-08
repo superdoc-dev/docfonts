@@ -5,7 +5,7 @@ import {
   collectGitHubTreeFonts,
   type GitHubTreeEntry,
   SOURCE_RELEASES,
-} from "./scripts/acquire";
+} from "./acquire";
 
 const joined = (...parts: string[]) => parts.join("");
 
@@ -213,10 +213,7 @@ describe("source acquisition catalog", () => {
   });
 
   test("does not include private paths or measurement environment details", () => {
-    const script = readFileSync(
-      join(import.meta.dir, "scripts", "acquire.ts"),
-      "utf8",
-    );
+    const script = readFileSync(join(import.meta.dir, "acquire.ts"), "utf8");
     for (const needle of [
       joined("/", "Users", "/"),
       joined("/", "Applications", "/"),

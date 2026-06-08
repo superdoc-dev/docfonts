@@ -13,6 +13,6 @@
       "@docfonts/fallbacks": ["./packages/fallbacks/src/index.ts"]
     }
   },
-  "include": ["packages/fallbacks/**/*.ts"],
+  "include": ["packages/fallbacks/**/*.ts", "tools/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/dist"]
 }
