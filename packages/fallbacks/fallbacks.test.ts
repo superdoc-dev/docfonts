@@ -324,6 +324,30 @@ describe("generic CSS family metadata", () => {
   });
 });
 
+describe("advance measurement basis", () => {
+  test("every measured row states which sample/model produced its deltas", () => {
+    const BASES = new Set(["latin_full", "latin_text", "monospace_cell"]);
+    for (const row of SUBSTITUTION_EVIDENCE) {
+      if (!row.advance) continue;
+      expect(
+        BASES.has(row.advance.basis),
+        `${row.evidenceId} (${row.advance.basis})`,
+      ).toBe(true);
+    }
+  });
+
+  test("monospace cell-width rows are not labeled as proportional Latin measurements", () => {
+    expect(
+      SUBSTITUTION_EVIDENCE.find((row) => row.evidenceId === "consolas")
+        ?.advance?.basis,
+    ).toBe("monospace_cell");
+    expect(
+      SUBSTITUTION_EVIDENCE.find((row) => row.evidenceId === "calibri")?.advance
+        ?.basis,
+    ).toBe("latin_full");
+  });
+});
+
 describe("Cooper Black -> Caprasimo (Regular-only, metric_safe)", () => {
   const renderAll = { canRenderFamily: () => true };
   const onlyCaprasimo = { canRenderFamily: (f: string) => f === "Caprasimo" };

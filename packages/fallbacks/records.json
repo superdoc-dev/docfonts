@@ -24,6 +24,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -56,6 +57,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0.0002378,
       "maxDelta": 0.2310758
     },
@@ -97,6 +99,7 @@
     "measurementRefs": ["arial__liberation-sans#analytic_advance#2026-06-03"],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -126,6 +129,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -155,6 +159,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -191,6 +196,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0.0000197,
       "maxDelta": 0.0183727
     },
@@ -243,6 +249,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0.5
     },
@@ -309,6 +316,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "monospace_cell",
       "meanDelta": 0.00035999999999999997,
       "maxDelta": 0.00035999999999999997
     },
@@ -407,6 +415,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0.1005,
       "maxDelta": 0.1419
     },
@@ -503,6 +512,7 @@
     "measurementRefs": ["lucida-console__cousine#analytic_advance#2026-06-03"],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "monospace_cell",
       "meanDelta": 0.004050000000000001,
       "maxDelta": 0.004050000000000001
     },
@@ -576,6 +586,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -603,6 +614,7 @@
     "measurementRefs": ["calibri-light__carlito#analytic_advance#2026-06-05"],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0.0148,
       "maxDelta": 0.066
     },
@@ -632,6 +644,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0.4915590863952334
     },
@@ -672,6 +685,7 @@
     ],
     "exportRule": "preserve_original_name",
     "advance": {
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
