@@ -111,7 +111,7 @@ The full structured rows are exported as `SUBSTITUTION_EVIDENCE` for richer repo
 
 These maintainer tools use ignored `.cache` files and are not shipped in the package.
 
-`bun run acquire` downloads open-font candidates into `.cache/sources`. Sources come in two shapes: zip archives and pinned source trees. Set `DOCFONTS_SOURCE_CACHE` to use another cache directory, or pass `--source google-fonts` to acquire one source.
+`bun run acquire` downloads open-font candidates into `.cache/sources`. Sources come in two shapes: release archives (zip or tar.gz) and pinned source trees. Set `DOCFONTS_SOURCE_CACHE` to use another cache directory, or pass `--source google-fonts` to acquire one source.
 
 `bun run compare` checks a private reference font against acquired OTF/TTF candidates and prints a ranked Latin advance-width table. It writes no fonts, paths, or results to the tree.
 

@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -460,6 +461,57 @@ describe("collectCandidates (GitHub tree sources)", () => {
       expect(() => collectCandidates(source, cacheDir)).toThrow(
         /candidate file missing/,
       );
+    } finally {
+      rmSync(cacheDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("collectCandidates (archive sources)", () => {
+  test("reads tar.gz archive sources from the acquire snapshot format", () => {
+    const cacheDir = mkdtempSync(join(tmpdir(), "docfonts-tar-source-"));
+    try {
+      const sourceId = "tar-example";
+      const root = join(cacheDir, "archive-root");
+      mkdirSync(join(root, "fonts"), { recursive: true });
+      writeFileSync(
+        join(root, "fonts", "Example-Regular.ttf"),
+        syntheticFont(),
+      );
+      writeFileSync(
+        join(root, "fonts", "Example.woff"),
+        new Uint8Array([1, 2]),
+      );
+      execFileSync(
+        "tar",
+        [
+          "-czf",
+          join(cacheDir, `${sourceId}.tar.gz`),
+          "-C",
+          root,
+          "fonts/Example-Regular.ttf",
+          "fonts/Example.woff",
+        ],
+        { stdio: "ignore" },
+      );
+
+      const source: SnapshotSource = {
+        sourceId,
+        family: "Example",
+        targetFamilies: ["Some Proprietary"],
+        kind: "archive",
+        archiveFormat: "tar.gz",
+      };
+
+      const candidates = collectCandidates(source, cacheDir);
+      expect(candidates.map((candidate) => candidate.file)).toEqual([
+        "Example-Regular.ttf",
+      ]);
+      const score = scoreAdvances(
+        sampleMetrics(parseFont(syntheticFont())),
+        sampleMetrics(parseFont(candidates[0].bytes)),
+      );
+      expect(score.tier).toBe("metric_safe");
     } finally {
       rmSync(cacheDir, { recursive: true, force: true });
     }
