@@ -33,7 +33,7 @@ export type FaceSlot = "regular" | "bold" | "italic" | "boldItalic";
  */
 export type CssGeneric = "serif" | "sans-serif" | "monospace";
 
-/** Advance-width divergence vs the proprietary oracle, as fractions (0 = identical advances). */
+/** Advance-width divergence vs the licensed reference font, as fractions (0 = identical advances). */
 export interface AdvanceDelta {
   meanDelta: number;
   /** the worst-case delta, not the mean, is what gates line-break fidelity. */

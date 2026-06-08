@@ -6,32 +6,21 @@
 > Document font substitution, measured.
 
 docfonts publishes `@docfonts/fallbacks`, a small runtime package for document renderers.
-It maps common proprietary document fonts to reviewed open-font fallback decisions.
-
-The package ships no font binaries and no proprietary data. It contains a public evidence snapshot,
-asset-aware lookup helpers, and tests that prove the npm package only includes supported runtime files.
+It maps common proprietary document fonts to reviewed open-font fallback decisions. It ships no font binaries and no proprietary data.
 
 Built by the team behind [SuperDoc](https://github.com/superdoc-dev/superdoc). Standalone and neutral.
 
-## Package
+## Structure
 
 - `packages/fallbacks` - runtime fallback decisions and lookup helpers.
+- `tools/corpus` - local source acquisition and comparison tools.
 
-## Workflows
+## Use
 
 - Runtime: install `@docfonts/fallbacks` and call the lookup helpers.
-- Acquire: run `bun run --cwd packages/fallbacks acquire` to download reviewed open-font source
-  archives into an ignored local cache and write local hash snapshots.
-- Compare: run `bun run --cwd packages/fallbacks compare` to rank acquired open fonts against a
-  licensed local reference. Results stay local unless deliberately published through a curated
-  product surface.
-
-## API
-
-- `getRenderableFallback` - returns the open family to render, or `null` when none is renderable.
-- `getFallbackDecision` - explains the outcome for UI, diagnostics, and reporting.
-- `createFallbackMap` - builds a resolver map from only the font families you can render.
-- `normalizeFamilyName` - normalizes map lookup keys.
+- Acquire: run `bun run corpus:acquire` to download open-font sources into an ignored local cache.
+- Compare: run `bun run corpus:compare` to rank acquired open fonts against a licensed local
+  reference. Results stay local unless deliberately published through a curated product surface.
 
 ## Install
 

@@ -15,7 +15,7 @@ import {
   type SnapshotSource,
   sampleMetrics,
   scoreAdvances,
-} from "./scripts/compare";
+} from "./compare";
 
 // --- Synthetic SFNT builder -------------------------------------------------
 //

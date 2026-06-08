@@ -7,5 +7,6 @@ dev/
 .wrangler/
 .mcp.json
 mockups/
+.cache/
 packages/fallbacks/.cache/
 STATE.md

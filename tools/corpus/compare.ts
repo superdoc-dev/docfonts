@@ -6,8 +6,8 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 
-const PKG_DIR = join(import.meta.dir, "..");
-const DEFAULT_CACHE_DIR = join(PKG_DIR, ".cache", "sources");
+const REPO_DIR = join(import.meta.dir, "..", "..");
+const DEFAULT_CACHE_DIR = join(REPO_DIR, ".cache", "corpus");
 const SNAPSHOT_FILE = "source-snapshot.json";
 const RAW_SFNT_EXTENSIONS = [".otf", ".ttf"];
 
@@ -583,12 +583,12 @@ function readArchiveMember(
 function loadSnapshot(cacheDir: string): SnapshotSource[] {
   if (!existsSync(cacheDir))
     throw new Error(
-      `source cache not found at ${cacheDir}. Run \`bun run acquire\` first.`,
+      `source cache not found at ${cacheDir}. Run \`bun run corpus:acquire\` first.`,
     );
   const snapshotPath = join(cacheDir, SNAPSHOT_FILE);
   if (!existsSync(snapshotPath))
     throw new Error(
-      `${SNAPSHOT_FILE} not found in ${cacheDir}. Run \`bun run acquire\` first.`,
+      `${SNAPSHOT_FILE} not found in ${cacheDir}. Run \`bun run corpus:acquire\` first.`,
     );
   const parsed = JSON.parse(readFileSync(snapshotPath, "utf8")) as {
     snapshots?: SnapshotSource[];
@@ -602,7 +602,7 @@ function loadSnapshot(cacheDir: string): SnapshotSource[] {
 /**
  * Collect the candidate fonts for one source from the cache. GitHub tree sources read each snapshot file
  * entry directly; archive sources list and extract font members from the cached release archive. Throws
- * when an expected cache file is absent so the caller can point the user back at `bun run acquire`.
+ * when an expected cache file is absent so the caller can point the user back at `bun run corpus:acquire`.
  */
 export function collectCandidates(
   source: SnapshotSource,
@@ -616,7 +616,7 @@ export function collectCandidates(
       const filePath = join(cacheDir, entry.path);
       if (!existsSync(filePath))
         throw new Error(
-          `candidate file missing for ${source.sourceId}: ${filePath}. Run \`bun run acquire\` first.`,
+          `candidate file missing for ${source.sourceId}: ${filePath}. Run \`bun run corpus:acquire\` first.`,
         );
       return { file: entry.name, bytes: readFileSync(filePath) };
     });
@@ -629,7 +629,7 @@ export function collectCandidates(
   );
   if (!existsSync(archivePath))
     throw new Error(
-      `candidate archive missing for ${source.sourceId}: ${archivePath}. Run \`bun run acquire\` first.`,
+      `candidate archive missing for ${source.sourceId}: ${archivePath}. Run \`bun run corpus:acquire\` first.`,
     );
   const members = listFontMembers(archivePath, format);
   if (members.length === 0)

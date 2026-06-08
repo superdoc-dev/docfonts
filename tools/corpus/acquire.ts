@@ -551,8 +551,8 @@ interface GitHubTreeSnapshot extends BaseSnapshot {
 
 type SourceSnapshot = ArchiveSnapshot | GitHubTreeSnapshot;
 
-const PKG_DIR = join(import.meta.dir, "..");
-const DEFAULT_CACHE_DIR = join(PKG_DIR, ".cache", "sources");
+const REPO_DIR = join(import.meta.dir, "..", "..");
+const DEFAULT_CACHE_DIR = join(REPO_DIR, ".cache", "corpus");
 const FONT_EXTENSIONS = [".otf", ".ttf", ".otc", ".ttc", ".woff2", ".woff"];
 
 const sha256 = (bytes: Uint8Array): string =>
@@ -920,7 +920,7 @@ async function main(): Promise<void> {
   const outPath = join(cacheDir, "source-snapshot.json");
   writeFileSync(
     outPath,
-    `${JSON.stringify({ generatedBy: "scripts/acquire.ts", snapshots }, null, 2)}\n`,
+    `${JSON.stringify({ generatedBy: "tools/corpus/acquire.ts", snapshots }, null, 2)}\n`,
   );
   console.log(`wrote ${outPath}`);
 }
