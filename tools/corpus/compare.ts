@@ -11,6 +11,12 @@ import {
   requireArchiveTool,
   type SnapshotSource,
 } from "./src/cache";
+import {
+  type FeatureDistance,
+  type FontFeatures,
+  featureDistance,
+  parseFeatures,
+} from "./src/features";
 import { parseFont, sampleMetrics } from "./src/font";
 import { renderReport } from "./src/report";
 import { LATIN_SAMPLE, LATIN_TEXT_SAMPLE } from "./src/samples";
@@ -24,6 +30,15 @@ export {
   requireArchiveTool,
   type SnapshotSource,
 } from "./src/cache";
+export {
+  DEFAULT_FEATURE_WEIGHTS,
+  FEATURE_COUNT,
+  type FeatureDistance,
+  type FeatureWeights,
+  type FontFeatures,
+  featureDistance,
+  parseFeatures,
+} from "./src/features";
 export { type FontMetrics, parseFont, sampleMetrics } from "./src/font";
 export { renderReport } from "./src/report";
 export { LATIN_SAMPLE, LATIN_TEXT_SAMPLE } from "./src/samples";
@@ -46,6 +61,7 @@ interface CompareRow {
   sourceId: string;
   file: string;
   score: CompareScore;
+  feature: FeatureDistance;
 }
 
 export interface ParsedArgs {
@@ -128,6 +144,7 @@ function selectSources(
 
 function scoreSources(
   reference: ReadonlyMap<number, number>,
+  referenceFeatures: FontFeatures,
   selected: SnapshotSource[],
   cacheDir: string,
   model: CompareModel,
@@ -143,7 +160,16 @@ function scoreSources(
           tierSample: model === "latin" ? LATIN_TEXT_SAMPLE : LATIN_SAMPLE,
           model,
         });
-        rows.push({ sourceId: source.sourceId, file: candidate.file, score });
+        const feature = featureDistance(
+          referenceFeatures,
+          parseFeatures(candidate.bytes),
+        );
+        rows.push({
+          sourceId: source.sourceId,
+          file: candidate.file,
+          score,
+          feature,
+        });
       } catch {
         skipped++;
       }
@@ -174,9 +200,12 @@ function main(): void {
   const selected = selectSources(loadSnapshot(cacheDir), args.sources);
   requireArchiveTools(selected);
 
-  const reference = sampleMetrics(parseFont(readFileSync(args.reference)));
+  const referenceBytes = readFileSync(args.reference);
+  const reference = sampleMetrics(parseFont(referenceBytes));
+  const referenceFeatures = parseFeatures(referenceBytes);
   const { rows, skipped } = scoreSources(
     reference,
+    referenceFeatures,
     selected,
     cacheDir,
     args.model,

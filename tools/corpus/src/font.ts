@@ -9,6 +9,19 @@ export interface FontMetrics {
   normalizedAdvance(codepoint: number): number | undefined;
 }
 
+/** Where one SFNT table lives in the file, and how long it is, so readers can bounds-check. */
+export interface SfntTable {
+  offset: number;
+  length: number;
+}
+
+/** A validated SFNT: the backing view, its table directory, and the em size from `head`. */
+export interface Sfnt {
+  view: DataView;
+  tables: Map<string, SfntTable>;
+  unitsPerEm: number;
+}
+
 function tagAt(view: DataView, offset: number): string {
   return String.fromCharCode(
     view.getUint8(offset),
@@ -129,10 +142,12 @@ function cmapPreference(platformId: number, encodingId: number): number | null {
 }
 
 /**
- * Parse just enough of an SFNT font (TrueType or CFF/OTF) to read normalized advance widths by
- * codepoint. Throws an explicit error when the container is a collection or a required table is missing.
+ * Read and validate the SFNT container: confirm it is a single SFNT (not a collection or other
+ * format), index its table directory, and read the em size from `head`. Throws an explicit error when
+ * the container is unusable or a required table is missing. Feature parsing reuses this so both paths
+ * share one validation step.
  */
-export function parseFont(bytes: Uint8Array): FontMetrics {
+export function openFont(bytes: Uint8Array): Sfnt {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   if (bytes.byteLength < 12)
     throw new Error("unsupported font: file is too small to be an SFNT");
@@ -150,10 +165,13 @@ export function parseFont(bytes: Uint8Array): FontMetrics {
     );
 
   const numTables = view.getUint16(4);
-  const tables = new Map<string, number>();
+  const tables = new Map<string, SfntTable>();
   for (let i = 0; i < numTables; i++) {
     const recordOffset = 12 + i * 16;
-    tables.set(tagAt(view, recordOffset), view.getUint32(recordOffset + 8));
+    tables.set(tagAt(view, recordOffset), {
+      offset: view.getUint32(recordOffset + 8),
+      length: view.getUint32(recordOffset + 12),
+    });
   }
 
   const missing = REQUIRED_TABLES.filter((tag) => !tables.has(tag));
@@ -162,22 +180,34 @@ export function parseFont(bytes: Uint8Array): FontMetrics {
       `unsupported font: missing required table(s): ${missing.join(", ")}`,
     );
 
-  const headOffset = tables.get("head") as number;
+  const headOffset = (tables.get("head") as SfntTable).offset;
   const unitsPerEm = view.getUint16(headOffset + 18);
   if (unitsPerEm === 0)
     throw new Error("unsupported font: head.unitsPerEm is zero");
 
-  const numberOfHMetrics = view.getUint16((tables.get("hhea") as number) + 34);
+  return { view, tables, unitsPerEm };
+}
+
+/**
+ * Parse just enough of an SFNT font (TrueType or CFF/OTF) to read normalized advance widths by
+ * codepoint. Throws an explicit error when the container is a collection or a required table is missing.
+ */
+export function parseFont(bytes: Uint8Array): FontMetrics {
+  const { view, tables, unitsPerEm } = openFont(bytes);
+
+  const numberOfHMetrics = view.getUint16(
+    (tables.get("hhea") as SfntTable).offset + 34,
+  );
   if (numberOfHMetrics === 0)
     throw new Error("unsupported font: hhea.numberOfHMetrics is zero");
 
-  const hmtxOffset = tables.get("hmtx") as number;
+  const hmtxOffset = (tables.get("hmtx") as SfntTable).offset;
   const advanceOfGlyph = (glyphId: number): number => {
     const index = glyphId < numberOfHMetrics ? glyphId : numberOfHMetrics - 1;
     return view.getUint16(hmtxOffset + index * 4);
   };
 
-  const lookup = readCmap(view, tables.get("cmap") as number);
+  const lookup = readCmap(view, (tables.get("cmap") as SfntTable).offset);
 
   return {
     unitsPerEm,

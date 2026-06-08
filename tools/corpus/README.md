@@ -35,4 +35,6 @@ bun run corpus:compare -- \
 - `--model latin` is the default. Proportional Latin ranking uses text-carrying codepoints for tier, mean, and max while still reporting full Latin outliers.
 - `--model monospace` reports matching mono cells as `cell_width_only`, not `metric_safe`.
 
+The advance tier stays the hard primary gate. Within a tier, rows sort by advance coverage, then `fcov`, then `fscore`, then mean advance delta. `fscore` is a typographic feature distance (0 means identical) blended from OS/2 weight, width, x-height, cap-height, PANOSE, and post italic angle; `fcov` shows how many of those features both fonts declared. Missing features are skipped, not scored as zero. `flags` marks strong advance matches whose features disagree enough to need review.
+
 Comparison output is a lead finder. A public fallback row still needs review, provenance, face-scope checks, and visual sanity.

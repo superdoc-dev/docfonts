@@ -1,10 +1,14 @@
+import type { FeatureDistance } from "./features";
 import type { CompareScore, GlyphDelta } from "./score";
+import type { CompareTier } from "./tiers";
 import { TIER_RANK } from "./tiers";
 
 interface CompareRow {
   sourceId: string;
   file: string;
   score: CompareScore;
+  /** Typographic feature distance, when computed. Used as a within-tier ranking signal. */
+  feature?: FeatureDistance;
 }
 
 interface RenderOptions {
@@ -26,6 +30,41 @@ function formatWorst(worst: GlyphDelta[]): string {
     .join("; ");
 }
 
+function featureCoverageOf(feature: FeatureDistance | undefined): number {
+  if (!feature || feature.total === 0) return 0;
+  return feature.compared / feature.total;
+}
+
+/** Feature score for sorting: a real score, or +Infinity when nothing was compared. */
+function featureScoreOf(feature: FeatureDistance | undefined): number {
+  if (!feature || Number.isNaN(feature.score)) return Infinity;
+  return feature.score;
+}
+
+function formatFeatureScore(feature: FeatureDistance | undefined): string {
+  if (!feature || Number.isNaN(feature.score)) return "n/a";
+  return feature.score.toFixed(4);
+}
+
+function formatFeatureCoverage(feature: FeatureDistance | undefined): string {
+  if (!feature) return "-";
+  return `${feature.compared}/${feature.total}`;
+}
+
+function carriesStrongAdvanceSignal(tier: CompareTier): boolean {
+  return (
+    tier === "metric_safe" ||
+    tier === "near_metric" ||
+    tier === "cell_width_only"
+  );
+}
+
+function formatFlags(row: CompareRow): string {
+  if (!carriesStrongAdvanceSignal(row.score.tier) || !row.feature) return "-";
+  if (row.feature.gaps.length === 0) return "-";
+  return row.feature.gaps.map((gap) => `${gap.feature}_gap`).join(",");
+}
+
 /** Render the ranked table. Returned as a string so it can be tested without capturing stdout. */
 export function renderReport(
   rows: CompareRow[],
@@ -40,6 +79,12 @@ export function renderReport(
       b.score.total === 0 ? 0 : b.score.compared / b.score.total;
     const coverageDiff = bCoverage - aCoverage;
     if (coverageDiff !== 0) return coverageDiff;
+    const featureCoverageDiff =
+      featureCoverageOf(b.feature) - featureCoverageOf(a.feature);
+    if (featureCoverageDiff !== 0) return featureCoverageDiff;
+    const aFeature = featureScoreOf(a.feature);
+    const bFeature = featureScoreOf(b.feature);
+    if (aFeature !== bFeature) return aFeature - bFeature;
     const aMean = Number.isNaN(a.score.meanDelta)
       ? Infinity
       : a.score.meanDelta;
@@ -60,6 +105,9 @@ export function renderReport(
     "tier",
     "coverage",
     "missing",
+    "fscore",
+    "fcov",
+    "flags",
     "over1",
     "over2.5",
     "worst",
@@ -72,6 +120,9 @@ export function renderReport(
     row.score.tier,
     `${row.score.compared}/${row.score.total}`,
     String(row.score.missing),
+    formatFeatureScore(row.feature),
+    formatFeatureCoverage(row.feature),
+    formatFlags(row),
     String(row.score.over1Percent),
     String(row.score.over2_5Percent),
     formatWorst(row.score.worstGlyphs),
