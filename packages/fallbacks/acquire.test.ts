@@ -12,13 +12,26 @@ describe("source acquisition catalog", () => {
       SOURCE_RELEASES.length,
     );
 
+    const allowedLicenses = new Set(["GUST-FL", "OFL-1.1", "AGPL-3.0-FE"]);
     for (const source of SOURCE_RELEASES) {
       expect(source.sourceId).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
       expect(source.downloadUrl.startsWith("https://")).toBe(true);
       expect(source.licenseUrl.startsWith("https://")).toBe(true);
+      expect(allowedLicenses.has(source.licenseFamily)).toBe(true);
+      expect(source.family.length).toBeGreaterThan(0);
+      expect(source.project.length).toBeGreaterThan(0);
       expect(source.expectedFiles.length).toBeGreaterThan(0);
       expect(source.targetFamilies.length).toBeGreaterThan(0);
     }
+  });
+
+  test("spans more than one project and license family", () => {
+    expect(
+      new Set(SOURCE_RELEASES.map((source) => source.project)).size,
+    ).toBeGreaterThan(1);
+    expect(
+      new Set(SOURCE_RELEASES.map((source) => source.licenseFamily)).size,
+    ).toBeGreaterThan(1);
   });
 
   test("is source metadata only, not fallback evidence", () => {
