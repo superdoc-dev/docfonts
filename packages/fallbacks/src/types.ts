@@ -34,13 +34,13 @@ export type FaceSlot = "regular" | "bold" | "italic" | "boldItalic";
 export type CssGeneric = "serif" | "sans-serif" | "monospace";
 
 /** Which advance sample/model produced the row's mean and max deltas. */
-export type AdvanceBasis = "latin_core" | "latin_text" | "monospace_cell";
+export type AdvanceBasis = "latin_full" | "latin_text" | "monospace_cell";
 
 /** Advance-width divergence vs the licensed reference font, as fractions (0 = identical advances). */
 export interface AdvanceDelta {
   /**
-   * Measurement basis for the deltas. `latin_core` uses the reviewed Latin sample including
-   * punctuation/symbols, `latin_text` uses text-carrying Latin codepoints, and `monospace_cell` is a
+   * Measurement basis for the deltas. `latin_full` uses the reviewed Latin sample including
+   * punctuation and symbols, `latin_text` uses text-carrying Latin codepoints, and `monospace_cell` is a
    * cell-width measurement for monospace rows.
    */
   basis: AdvanceBasis;

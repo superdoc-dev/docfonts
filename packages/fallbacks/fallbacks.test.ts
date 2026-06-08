@@ -326,7 +326,7 @@ describe("generic CSS family metadata", () => {
 
 describe("advance measurement basis", () => {
   test("every measured row states which sample/model produced its deltas", () => {
-    const BASES = new Set(["latin_core", "latin_text", "monospace_cell"]);
+    const BASES = new Set(["latin_full", "latin_text", "monospace_cell"]);
     for (const row of SUBSTITUTION_EVIDENCE) {
       if (!row.advance) continue;
       expect(
@@ -344,7 +344,7 @@ describe("advance measurement basis", () => {
     expect(
       SUBSTITUTION_EVIDENCE.find((row) => row.evidenceId === "calibri")?.advance
         ?.basis,
-    ).toBe("latin_core");
+    ).toBe("latin_full");
   });
 });
 

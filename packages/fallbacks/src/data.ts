@@ -27,7 +27,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -60,7 +60,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0.0002378,
       "maxDelta": 0.2310758
     },
@@ -104,7 +104,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -134,7 +134,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -164,7 +164,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -201,7 +201,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0.0000197,
       "maxDelta": 0.0183727
     },
@@ -254,7 +254,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0.5
     },
@@ -428,7 +428,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0.1005,
       "maxDelta": 0.1419
     },
@@ -607,7 +607,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },
@@ -637,7 +637,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0.0148,
       "maxDelta": 0.066
     },
@@ -667,7 +667,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0.4915590863952334
     },
@@ -708,7 +708,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "advance": {
-      "basis": "latin_core",
+      "basis": "latin_full",
       "meanDelta": 0,
       "maxDelta": 0
     },

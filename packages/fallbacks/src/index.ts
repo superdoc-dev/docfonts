@@ -15,6 +15,7 @@ export {
   type RenderableFallbackOptions,
 } from "./fallbacks.js";
 export type {
+  AdvanceBasis,
   AdvanceDelta,
   CssGeneric,
   FaceCoverage,
