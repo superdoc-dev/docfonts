@@ -368,9 +368,15 @@ function listFontMembers(zipPath: string): string[] {
     .filter(isFontFile);
 }
 
+// `unzip -p` matches its member argument as a glob, so members with literal glob
+// metacharacters (e.g. variable-font names like `NotoSans-Italic[wdth,wght].ttf`)
+// must be escaped to extract by exact name.
+const escapeArchiveMember = (name: string): string =>
+  name.replace(/[\\*?[\]]/g, "\\$&");
+
 function readArchiveMember(zipPath: string, member: string): Uint8Array {
   return new Uint8Array(
-    execFileSync("unzip", ["-p", zipPath, member], {
+    execFileSync("unzip", ["-p", zipPath, escapeArchiveMember(member)], {
       maxBuffer: 256 * 1024 * 1024,
     }),
   );
@@ -407,11 +413,12 @@ interface CompareRow {
 interface ParsedArgs {
   reference?: string;
   family?: string;
+  limit: number | null;
   sources: string[];
 }
 
 function parseArgs(argv: string[]): ParsedArgs {
-  const args: ParsedArgs = { sources: [] };
+  const args: ParsedArgs = { limit: 50, sources: [] };
   const readValue = (flag: string, index: number): string => {
     const value = argv[index + 1];
     if (!value || value.startsWith("--"))
@@ -437,6 +444,19 @@ function parseArgs(argv: string[]): ParsedArgs {
           args.sources.push(id);
         i++;
         break;
+      case "--limit": {
+        const value = readValue(flag, i);
+        if (value === "all") {
+          args.limit = null;
+        } else {
+          const limit = Number(value);
+          if (!Number.isInteger(limit) || limit <= 0)
+            throw new Error("--limit requires a positive integer or 'all'");
+          args.limit = limit;
+        }
+        i++;
+        break;
+      }
       default:
         throw new Error(`unknown argument: ${flag}`);
     }
@@ -459,8 +479,15 @@ function formatWorst(worst: GlyphDelta[]): string {
     .join("; ");
 }
 
+interface RenderOptions {
+  limit?: number | null;
+}
+
 /** Render the ranked table. Returned as a string so it can be tested without capturing stdout. */
-export function renderReport(rows: CompareRow[]): string {
+export function renderReport(
+  rows: CompareRow[],
+  options: RenderOptions = {},
+): string {
   const ranked = [...rows].sort((a, b) => {
     const tierDiff = TIER_RANK[a.score.tier] - TIER_RANK[b.score.tier];
     if (tierDiff !== 0) return tierDiff;
@@ -472,6 +499,9 @@ export function renderReport(rows: CompareRow[]): string {
       : b.score.meanDelta;
     return aMean - bMean;
   });
+
+  const visible =
+    options.limit === null ? ranked : ranked.slice(0, options.limit);
 
   const header = [
     "source",
@@ -485,7 +515,7 @@ export function renderReport(rows: CompareRow[]): string {
     "over2.5",
     "worst",
   ];
-  const body = ranked.map((row) => [
+  const body = visible.map((row) => [
     row.sourceId,
     row.file,
     formatDelta(row.score.meanDelta),
@@ -507,6 +537,14 @@ export function renderReport(rows: CompareRow[]): string {
       .join("  ")
       .trimEnd();
   return [line(header), ...body.map(line)].join("\n");
+}
+
+function displayNameForMember(
+  member: string,
+  duplicateBasenames: Set<string>,
+): string {
+  const file = basename(member);
+  return duplicateBasenames.has(file) ? member : file;
 }
 
 function main(): void {
@@ -540,6 +578,7 @@ function main(): void {
   const reference = sampleMetrics(parseFont(readFileSync(args.reference)));
 
   const rows: CompareRow[] = [];
+  let skipped = 0;
   for (const source of selected) {
     const zipPath = join(cacheDir, `${source.sourceId}.zip`);
     if (!existsSync(zipPath))
@@ -549,18 +588,39 @@ function main(): void {
     const members = listFontMembers(zipPath);
     if (members.length === 0)
       throw new Error(`no candidate font files in ${zipPath}`);
+    const basenameCounts = new Map<string, number>();
     for (const member of members) {
-      const font = parseFont(readArchiveMember(zipPath, member));
-      const score = scoreAdvances(reference, sampleMetrics(font));
-      rows.push({ sourceId: source.sourceId, file: basename(member), score });
+      const file = basename(member);
+      basenameCounts.set(file, (basenameCounts.get(file) ?? 0) + 1);
+    }
+    const duplicateBasenames = new Set(
+      [...basenameCounts]
+        .filter(([, count]) => count > 1)
+        .map(([file]) => file),
+    );
+    for (const member of members) {
+      try {
+        const font = parseFont(readArchiveMember(zipPath, member));
+        const score = scoreAdvances(reference, sampleMetrics(font));
+        rows.push({
+          sourceId: source.sourceId,
+          file: displayNameForMember(member, duplicateBasenames),
+          score,
+        });
+      } catch {
+        skipped++;
+      }
     }
   }
 
   const label = args.family ?? "(family not specified)";
+  const shown =
+    args.limit === null ? rows.length : Math.min(args.limit, rows.length);
+  const skippedText = skipped === 0 ? "" : `; skipped ${skipped} unsupported`;
   console.log(
-    `reference ${basename(args.reference)} as "${label}" vs ${rows.length} candidate(s) over ${LATIN_SAMPLE.length} Latin codepoints\n`,
+    `reference ${basename(args.reference)} as "${label}" vs ${rows.length} candidate(s) over ${LATIN_SAMPLE.length} Latin codepoints; showing ${shown}${skippedText}\n`,
   );
-  console.log(renderReport(rows));
+  console.log(renderReport(rows, { limit: args.limit }));
 }
 
 if (import.meta.main) {

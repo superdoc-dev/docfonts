@@ -3,14 +3,16 @@ import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const LICENSE_URL =
+const GUST_LICENSE_URL =
   "https://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt/at_download/file";
+
+export type LicenseFamily = "GUST-FL" | "OFL-1.1" | "AGPL-3.0-FE";
 
 export interface SourceRelease {
   sourceId: string;
   family: string;
   project: string;
-  licenseFamily: "GUST-FL";
+  licenseFamily: LicenseFamily;
   downloadUrl: string;
   licenseUrl: string;
   expectedFiles: string[];
@@ -25,7 +27,7 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     licenseFamily: "GUST-FL",
     downloadUrl:
       "https://www.gust.org.pl/projects/e-foundry/tex-gyre/adventor/tg_adventor-otf-2_609-31_03_2026.zip",
-    licenseUrl: LICENSE_URL,
+    licenseUrl: GUST_LICENSE_URL,
     expectedFiles: [
       "texgyreadventor-regular.otf",
       "texgyreadventor-bold.otf",
@@ -41,7 +43,7 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     licenseFamily: "GUST-FL",
     downloadUrl:
       "https://www.gust.org.pl/projects/e-foundry/tex-gyre/bonum/tg_bonum-otf-2_609-31_03_2026.zip",
-    licenseUrl: LICENSE_URL,
+    licenseUrl: GUST_LICENSE_URL,
     expectedFiles: [
       "texgyrebonum-regular.otf",
       "texgyrebonum-bold.otf",
@@ -57,7 +59,7 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     licenseFamily: "GUST-FL",
     downloadUrl:
       "https://www.gust.org.pl/projects/e-foundry/tex-gyre/chorus/tg_chorus-otf-2_609-31_03_2026.zip",
-    licenseUrl: LICENSE_URL,
+    licenseUrl: GUST_LICENSE_URL,
     expectedFiles: ["texgyrechorus-mediumitalic.otf"],
     targetFamilies: ["Monotype Corsiva", "ITC Zapf Chancery"],
   },
@@ -68,7 +70,7 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     licenseFamily: "GUST-FL",
     downloadUrl:
       "https://www.gust.org.pl/projects/e-foundry/tex-gyre/cursor/tg_cursor-otf-2_609-31_03_2026.zip",
-    licenseUrl: LICENSE_URL,
+    licenseUrl: GUST_LICENSE_URL,
     expectedFiles: [
       "texgyrecursor-regular.otf",
       "texgyrecursor-bold.otf",
@@ -84,7 +86,7 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     licenseFamily: "GUST-FL",
     downloadUrl:
       "https://www.gust.org.pl/projects/e-foundry/tex-gyre/heros/tg_heros-otf-2_609-31_03_2026.zip",
-    licenseUrl: LICENSE_URL,
+    licenseUrl: GUST_LICENSE_URL,
     expectedFiles: [
       "texgyreheros-regular.otf",
       "texgyreheros-bold.otf",
@@ -100,7 +102,7 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     licenseFamily: "GUST-FL",
     downloadUrl:
       "https://www.gust.org.pl/projects/e-foundry/tex-gyre/pagella/tg_pagella-otf-2_609-31_03_2026.zip",
-    licenseUrl: LICENSE_URL,
+    licenseUrl: GUST_LICENSE_URL,
     expectedFiles: [
       "texgyrepagella-regular.otf",
       "texgyrepagella-bold.otf",
@@ -116,7 +118,7 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     licenseFamily: "GUST-FL",
     downloadUrl:
       "https://www.gust.org.pl/projects/e-foundry/tex-gyre/schola/tg_schola-otf-2_609-31_03_2026.zip",
-    licenseUrl: LICENSE_URL,
+    licenseUrl: GUST_LICENSE_URL,
     expectedFiles: [
       "texgyreschola-regular.otf",
       "texgyreschola-bold.otf",
@@ -132,7 +134,7 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     licenseFamily: "GUST-FL",
     downloadUrl:
       "https://www.gust.org.pl/projects/e-foundry/tex-gyre/termes/tg_termes-otf-2_609-31_03_2026.zip",
-    licenseUrl: LICENSE_URL,
+    licenseUrl: GUST_LICENSE_URL,
     expectedFiles: [
       "texgyretermes-regular.otf",
       "texgyretermes-bold.otf",
@@ -141,10 +143,202 @@ export const SOURCE_RELEASES: SourceRelease[] = [
     ],
     targetFamilies: ["Times New Roman", "Times"],
   },
+
+  {
+    sourceId: "urw-base35",
+    family: "URW Base 35",
+    project: "URW Base 35",
+    licenseFamily: "AGPL-3.0-FE",
+    downloadUrl:
+      "https://github.com/ArtifexSoftware/urw-base35-fonts/archive/refs/tags/20200910.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/ArtifexSoftware/urw-base35-fonts/20200910/LICENSE",
+    expectedFiles: [
+      "NimbusRoman-Regular.otf",
+      "NimbusSans-Regular.otf",
+      "NimbusMonoPS-Regular.otf",
+      "URWBookman-Light.otf",
+      "P052-Roman.otf",
+      "C059-Roman.otf",
+    ],
+    targetFamilies: [
+      "Times New Roman",
+      "Arial",
+      "Helvetica",
+      "Courier New",
+      "Bookman Old Style",
+      "Palatino Linotype",
+      "Century Schoolbook",
+    ],
+  },
+
+  {
+    sourceId: "source-serif-4",
+    family: "Source Serif 4",
+    project: "Adobe Source",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/adobe-fonts/source-serif/releases/download/4.005R/source-serif-4.005_Desktop.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/adobe-fonts/source-serif/release/LICENSE.md",
+    expectedFiles: [
+      "SourceSerif4-Regular.otf",
+      "SourceSerif4-Bold.otf",
+      "SourceSerif4-It.otf",
+      "SourceSerif4-BoldIt.otf",
+    ],
+    targetFamilies: ["Georgia", "Cambria"],
+  },
+  {
+    sourceId: "source-sans-3",
+    family: "Source Sans 3",
+    project: "Adobe Source",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/adobe-fonts/source-sans/releases/download/3.052R/OTF-source-sans-3.052R.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/adobe-fonts/source-sans/release/LICENSE.md",
+    expectedFiles: [
+      "SourceSans3-Regular.otf",
+      "SourceSans3-Bold.otf",
+      "SourceSans3-It.otf",
+      "SourceSans3-BoldIt.otf",
+    ],
+    targetFamilies: ["Calibri", "Segoe UI"],
+  },
+  {
+    sourceId: "source-code-pro",
+    family: "Source Code Pro",
+    project: "Adobe Source",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/adobe-fonts/source-code-pro/releases/download/2.042R-u/1.062R-i/1.026R-vf/OTF-source-code-pro-2.042R-u_1.062R-i.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/adobe-fonts/source-code-pro/release/LICENSE.md",
+    expectedFiles: [
+      "SourceCodePro-Regular.otf",
+      "SourceCodePro-Bold.otf",
+      "SourceCodePro-It.otf",
+      "SourceCodePro-BoldIt.otf",
+    ],
+    targetFamilies: ["Consolas", "Courier New"],
+  },
+
+  {
+    sourceId: "sil-charis",
+    family: "Charis SIL",
+    project: "SIL",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/silnrsi/font-charis/releases/download/v7.000/Charis-7.000.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/silnrsi/font-charis/v7.000/OFL.txt",
+    expectedFiles: [
+      "Charis-Regular.ttf",
+      "Charis-Bold.ttf",
+      "Charis-Italic.ttf",
+      "Charis-BoldItalic.ttf",
+    ],
+    targetFamilies: ["Charter", "Bitstream Charter"],
+  },
+  {
+    sourceId: "sil-gentium",
+    family: "Gentium Plus",
+    project: "SIL",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/silnrsi/font-gentium/releases/download/v7.000/Gentium-7.000.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/silnrsi/font-gentium/v7.000/OFL.txt",
+    expectedFiles: [
+      "Gentium-Regular.ttf",
+      "Gentium-Bold.ttf",
+      "Gentium-Italic.ttf",
+      "Gentium-BoldItalic.ttf",
+    ],
+    targetFamilies: ["Times New Roman"],
+  },
+  {
+    sourceId: "sil-doulos",
+    family: "Doulos SIL",
+    project: "SIL",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/silnrsi/font-doulos/releases/download/v7.000/DoulosSIL-7.000.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/silnrsi/font-doulos/v7.000/OFL.txt",
+    expectedFiles: ["DoulosSIL-Regular.ttf"],
+    targetFamilies: ["Times New Roman"],
+  },
+  {
+    sourceId: "sil-andika",
+    family: "Andika",
+    project: "SIL",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/silnrsi/font-andika/releases/download/v7.000/Andika-7.000.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/silnrsi/font-andika/v7.000/OFL.txt",
+    expectedFiles: [
+      "Andika-Regular.ttf",
+      "Andika-Bold.ttf",
+      "Andika-Italic.ttf",
+      "Andika-BoldItalic.ttf",
+    ],
+    targetFamilies: ["Verdana", "Tahoma"],
+  },
+
+  {
+    sourceId: "noto-sans",
+    family: "Noto Sans",
+    project: "Noto",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/notofonts/latin-greek-cyrillic/releases/download/NotoSans-v2.015/NotoSans-v2.015.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/notofonts/latin-greek-cyrillic/main/OFL.txt",
+    expectedFiles: [
+      "NotoSans-Regular.otf",
+      "NotoSans-Bold.otf",
+      "NotoSans-Italic.otf",
+      "NotoSans-BoldItalic.otf",
+    ],
+    targetFamilies: ["Calibri", "Segoe UI"],
+  },
+  {
+    sourceId: "noto-serif",
+    family: "Noto Serif",
+    project: "Noto",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/notofonts/latin-greek-cyrillic/releases/download/NotoSerif-v2.015/NotoSerif-v2.015.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/notofonts/latin-greek-cyrillic/main/OFL.txt",
+    expectedFiles: [
+      "NotoSerif-Regular.otf",
+      "NotoSerif-Bold.otf",
+      "NotoSerif-Italic.otf",
+      "NotoSerif-BoldItalic.otf",
+    ],
+    targetFamilies: ["Georgia", "Cambria"],
+  },
+  {
+    sourceId: "noto-sans-mono",
+    family: "Noto Sans Mono",
+    project: "Noto",
+    licenseFamily: "OFL-1.1",
+    downloadUrl:
+      "https://github.com/notofonts/latin-greek-cyrillic/releases/download/NotoSansMono-v2.014/NotoSansMono-v2.014.zip",
+    licenseUrl:
+      "https://raw.githubusercontent.com/notofonts/latin-greek-cyrillic/main/OFL.txt",
+    expectedFiles: ["NotoSansMono-Regular.otf", "NotoSansMono-Bold.otf"],
+    targetFamilies: ["Consolas", "Courier New"],
+  },
 ];
 
 interface FileSnapshot {
   name: string;
+  path: string;
   sha256: string;
 }
 
@@ -194,9 +388,15 @@ function listArchive(zipPath: string): string[] {
     .filter(Boolean);
 }
 
+// `unzip -p` matches its member argument as a glob, so members with literal glob
+// metacharacters (e.g. variable-font names like `NotoSans-Italic[wdth,wght].ttf`)
+// must be escaped to extract by exact name.
+const escapeArchiveMember = (name: string): string =>
+  name.replace(/[\\*?[\]]/g, "\\$&");
+
 function readArchiveMember(zipPath: string, name: string): Uint8Array {
   return new Uint8Array(
-    execFileSync("unzip", ["-p", zipPath, name], {
+    execFileSync("unzip", ["-p", zipPath, escapeArchiveMember(name)], {
       maxBuffer: 256 * 1024 * 1024,
     }),
   );
@@ -217,9 +417,10 @@ async function acquireSource(
   const files = members
     .map((member) => ({
       name: basename(member),
+      path: member,
       sha256: sha256(readArchiveMember(zipPath, member)),
     }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => a.path.localeCompare(b.path));
 
   const fileNames = new Set(files.map((file) => file.name));
   const missing = source.expectedFiles.filter((name) => !fileNames.has(name));

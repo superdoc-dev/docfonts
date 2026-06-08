@@ -354,6 +354,30 @@ describe("renderReport", () => {
     expect(lines[2]).toContain("visual_only");
   });
 
+  test("can limit the rendered table to the top rows", () => {
+    const reference = sampleMetrics(mockFont(0.5), [0x41]);
+    const close = scoreAdvances(
+      reference,
+      sampleMetrics(mockFont(0.5), [0x41]),
+      [0x41],
+    );
+    const far = scoreAdvances(
+      reference,
+      sampleMetrics(mockFont(0.7), [0x41]),
+      [0x41],
+    );
+    const report = renderReport(
+      [
+        { sourceId: "far-src", file: "far.otf", score: far },
+        { sourceId: "near-src", file: "near.otf", score: close },
+      ],
+      { limit: 1 },
+    );
+    expect(report.split("\n")).toHaveLength(2);
+    expect(report).toContain("near-src");
+    expect(report).not.toContain("far-src");
+  });
+
   test("prints coverage and the missing count", () => {
     const sample = [0x41, 0x42, 0x43];
     const reference = sampleMetrics(mockFont(0.5), sample);
