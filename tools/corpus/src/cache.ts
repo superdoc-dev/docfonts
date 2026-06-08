@@ -1,8 +1,16 @@
-import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
+import {
+  type ArchiveFormat,
+  archiveFormatOf,
+  archivePathFor,
+  hasFontExtension,
+  listArchiveMembers,
+  RAW_SFNT_EXTENSIONS,
+  readArchiveMember,
+  requireArchiveTool,
+} from "./archive";
 
-const RAW_SFNT_EXTENSIONS = [".otf", ".ttf"];
 const SNAPSHOT_FILE = "source-snapshot.json";
 
 /** One snapshot file entry: a font member by path, with its display name. */
@@ -10,8 +18,6 @@ interface SnapshotFile {
   name: string;
   path: string;
 }
-
-export type ArchiveFormat = "zip" | "tar.gz";
 
 /**
  * A source as recorded in `source-snapshot.json`. Archive sources extract their candidate fonts from a
@@ -33,61 +39,12 @@ export interface CandidateFile {
   bytes: Uint8Array;
 }
 
-export const archiveFormatOf = (source: SnapshotSource): ArchiveFormat =>
-  source.archiveFormat ?? "zip";
-
-const archiveExtensions: Record<ArchiveFormat, string> = {
-  zip: "zip",
-  "tar.gz": "tar.gz",
-};
-
-export function requireArchiveTool(format: ArchiveFormat): void {
-  const tool = format === "tar.gz" ? "tar" : "unzip";
-  const probe = format === "tar.gz" ? "--version" : "-v";
-  try {
-    execFileSync(tool, [probe], { stdio: "ignore" });
-  } catch {
-    throw new Error(`\`${tool}\` is required on PATH.`);
-  }
-}
-
-function isFontFile(path: string): boolean {
-  return RAW_SFNT_EXTENSIONS.some((ext) => path.toLowerCase().endsWith(ext));
-}
+export { type ArchiveFormat, archiveFormatOf, requireArchiveTool };
 
 /** Font members inside a source archive, by their in-archive path. */
 function listFontMembers(archivePath: string, format: ArchiveFormat): string[] {
-  const out =
-    format === "tar.gz"
-      ? execFileSync("tar", ["-tzf", archivePath], { encoding: "utf8" })
-      : execFileSync("unzip", ["-Z1", archivePath], { encoding: "utf8" });
-  return out
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .filter(isFontFile);
-}
-
-// `unzip -p` matches its member argument as a glob, so members with literal glob
-// metacharacters (e.g. variable-font names like `NotoSans-Italic[wdth,wght].ttf`)
-// must be escaped to extract by exact name.
-const escapeArchiveMember = (name: string): string =>
-  name.replace(/[\\*?[\]]/g, "\\$&");
-
-function readArchiveMember(
-  archivePath: string,
-  member: string,
-  format: ArchiveFormat,
-): Uint8Array {
-  const opts = { maxBuffer: 256 * 1024 * 1024 };
-  return new Uint8Array(
-    format === "tar.gz"
-      ? execFileSync("tar", ["-xzOf", archivePath, "--", member], opts)
-      : execFileSync(
-          "unzip",
-          ["-p", archivePath, escapeArchiveMember(member)],
-          opts,
-        ),
+  return listArchiveMembers(archivePath, format).filter((member) =>
+    hasFontExtension(member, RAW_SFNT_EXTENSIONS),
   );
 }
 
@@ -135,10 +92,7 @@ export function collectCandidates(
   }
 
   const format = archiveFormatOf(source);
-  const archivePath = join(
-    cacheDir,
-    `${source.sourceId}.${archiveExtensions[format]}`,
-  );
+  const archivePath = archivePathFor(cacheDir, source.sourceId, format);
   if (!existsSync(archivePath))
     throw new Error(
       `candidate archive missing for ${source.sourceId}: ${archivePath}. Run \`bun run corpus:acquire\` first.`,

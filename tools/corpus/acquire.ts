@@ -1,7 +1,16 @@
-import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import {
+  ACQUIRE_FONT_EXTENSIONS,
+  type ArchiveFormat,
+  archiveFormatOf,
+  archivePathFor,
+  hasFontExtension,
+  listArchiveMembers,
+  readArchiveMember,
+  requireArchiveTool,
+} from "./src/archive";
 
 const GUST_LICENSE_URL =
   "https://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt/at_download/file";
@@ -36,9 +45,6 @@ export type LicenseFamily =
   | "UFL-1.0"
   | "GPL-2.0-FE"
   | "Bitstream-Vera-DejaVu";
-
-/** Container format an archive source ships in. Absent is treated as "zip". */
-export type ArchiveFormat = "zip" | "tar.gz";
 
 /** Fields shared by every acquisition source, regardless of how it is fetched. */
 interface BaseSource {
@@ -553,7 +559,6 @@ type SourceSnapshot = ArchiveSnapshot | GitHubTreeSnapshot;
 
 const REPO_DIR = join(import.meta.dir, "..", "..");
 const DEFAULT_CACHE_DIR = join(REPO_DIR, ".cache", "corpus");
-const FONT_EXTENSIONS = [".otf", ".ttf", ".otc", ".ttc", ".woff2", ".woff"];
 
 const sha256 = (bytes: Uint8Array): string =>
   createHash("sha256").update(bytes).digest("hex");
@@ -561,7 +566,7 @@ const sha256 = (bytes: Uint8Array): string =>
 const basename = (path: string): string => path.split("/").pop() ?? path;
 
 const isFontFile = (path: string): boolean =>
-  FONT_EXTENSIONS.some((ext) => path.toLowerCase().endsWith(ext));
+  hasFontExtension(path, ACQUIRE_FONT_EXTENSIONS);
 
 async function fetchBytes(url: string): Promise<Uint8Array> {
   const res = await fetch(url);
@@ -670,73 +675,16 @@ async function mapLimit<T, U>(
   return results;
 }
 
-const archiveFormatOf = (source: ArchiveSource): ArchiveFormat =>
-  source.archiveFormat ?? "zip";
-
-const archiveExtensions: Record<ArchiveFormat, string> = {
-  zip: "zip",
-  "tar.gz": "tar.gz",
-};
-
-function requireArchiveTool(format: ArchiveFormat): void {
-  const tool = format === "tar.gz" ? "tar" : "unzip";
-  const probe = format === "tar.gz" ? "--version" : "-v";
-  try {
-    execFileSync(tool, [probe], { stdio: "ignore" });
-  } catch {
-    throw new Error(`\`${tool}\` is required on PATH.`);
-  }
-}
-
-function listArchive(archivePath: string, format: ArchiveFormat): string[] {
-  const out =
-    format === "tar.gz"
-      ? execFileSync("tar", ["-tzf", archivePath], { encoding: "utf8" })
-      : execFileSync("unzip", ["-Z1", archivePath], { encoding: "utf8" });
-  return out
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-}
-
-// `unzip -p` matches its member argument as a glob, so members with literal glob
-// metacharacters (e.g. variable-font names like `NotoSans-Italic[wdth,wght].ttf`)
-// must be escaped to extract by exact name.
-const escapeArchiveMember = (name: string): string =>
-  name.replace(/[\\*?[\]]/g, "\\$&");
-
-function readArchiveMember(
-  archivePath: string,
-  name: string,
-  format: ArchiveFormat,
-): Uint8Array {
-  const opts = { maxBuffer: 256 * 1024 * 1024 };
-  // tar takes the member as a path after `--`; the tar.gz sources use plain ASCII
-  // member names, so the glob escaping that `unzip -p` needs does not apply here.
-  return new Uint8Array(
-    format === "tar.gz"
-      ? execFileSync("tar", ["-xzOf", archivePath, "--", name], opts)
-      : execFileSync(
-          "unzip",
-          ["-p", archivePath, escapeArchiveMember(name)],
-          opts,
-        ),
-  );
-}
-
 async function acquireArchive(
   source: ArchiveSource,
   cacheDir: string,
 ): Promise<ArchiveSnapshot> {
   const format = archiveFormatOf(source);
   const archive = await fetchBytes(source.downloadUrl);
-  const archivePath = join(
-    cacheDir,
-    `${source.sourceId}.${archiveExtensions[format]}`,
-  );
+  const archivePath = archivePathFor(cacheDir, source.sourceId, format);
   writeFileSync(archivePath, archive);
 
-  const members = listArchive(archivePath, format).filter(isFontFile);
+  const members = listArchiveMembers(archivePath, format).filter(isFontFile);
   if (members.length === 0)
     throw new Error(`${source.sourceId}: archive has no font files`);
 
