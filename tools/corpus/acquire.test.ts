@@ -1,13 +1,17 @@
 import { describe, expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import {
-  collectGitHubTreeFonts,
-  type GitHubTreeEntry,
-  SOURCE_RELEASES,
-} from "./acquire";
+import { collectGitHubTreeFonts, type GitHubTreeEntry } from "./acquire";
+import { SOURCE_RELEASES } from "./sources";
 
 const joined = (...parts: string[]) => parts.join("");
+
+const tsFilesIn = (dir: string): string[] =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) return tsFilesIn(path);
+    return entry.name.endsWith(".ts") ? [path] : [];
+  });
 
 describe("source acquisition catalog", () => {
   test("has unique source ids and https release URLs", () => {
@@ -213,7 +217,12 @@ describe("source acquisition catalog", () => {
   });
 
   test("does not include private paths or measurement environment details", () => {
-    const script = readFileSync(join(import.meta.dir, "acquire.ts"), "utf8");
+    const text = [
+      join(import.meta.dir, "acquire.ts"),
+      ...tsFilesIn(join(import.meta.dir, "sources")),
+    ]
+      .map((path) => readFileSync(path, "utf8"))
+      .join("\n");
     for (const needle of [
       joined("/", "Users", "/"),
       joined("/", "Applications", "/"),
@@ -221,7 +230,7 @@ describe("source acquisition catalog", () => {
       joined("or", "acle"),
       "macOS",
     ])
-      expect(script.includes(needle), `script contains "${needle}"`).toBe(
+      expect(text.includes(needle), `corpus source contains "${needle}"`).toBe(
         false,
       );
   });
