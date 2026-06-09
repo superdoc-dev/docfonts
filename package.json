@@ -14,6 +14,7 @@
     "test": "bun test packages/fallbacks tools/corpus",
     "corpus:acquire": "bun run tools/corpus/acquire.ts",
     "corpus:compare": "bun run tools/corpus/compare.ts",
+    "corpus:bakeoff": "bun run tools/corpus/bakeoff.ts",
     "check": "bun run typecheck && bun run test && bun run lint && bun run build",
     "check:fast": "bun run typecheck && bun run lint",
     "prepare": "if [ -z \"$CI\" ]; then bunx lefthook install; fi"

@@ -9,6 +9,7 @@ They download fonts into an ignored cache, compare a licensed local reference ag
 ```sh
 bun run corpus:acquire
 bun run corpus:compare -- --reference /path/to/reference.ttf --family "Verdana"
+bun run corpus:bakeoff -- --reference /path/to/reference.ttf --candidate "Inter=/path/to/Inter.ttf"
 ```
 
 ## Acquire
@@ -38,3 +39,16 @@ bun run corpus:compare -- \
 The advance tier stays the hard primary gate. Within a tier, rows sort by advance coverage, then `fcov`, then `fscore`, then mean advance delta. `fscore` is a typographic feature distance (0 means identical) blended from OS/2 weight, width, x-height, cap-height, PANOSE, and post italic angle; `fcov` shows how many of those features both fonts declared. Missing features are skipped, not scored as zero. `flags` marks strong advance matches whose features disagree enough to need review.
 
 Comparison output is a lead finder. A public fallback row still needs review, provenance, face-scope checks, and visual sanity.
+
+## Bake-off
+
+```sh
+bun run corpus:bakeoff -- \
+  --reference /path/to/reference.ttf \
+  --family "Arial Rounded MT Bold" \
+  --candidate "Inter=/path/to/Inter.ttf" \
+  --candidate "Nunito=/path/to/Nunito.ttf" \
+  --visual
+```
+
+Bake-off compares a reference against a handful of manually chosen candidates side by side, printing the same advance and feature metrics per candidate. Pass `--visual` to add an experimental rendered-glyph difference column, which needs ImageMagick 7 (`magick`) on PATH; without it, no rendering is done. It calibrates the metrics against human judgment and writes nothing to the repo.

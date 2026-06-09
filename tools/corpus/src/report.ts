@@ -19,7 +19,8 @@ function formatCodepoint(cp: number): string {
   return `U+${cp.toString(16).toUpperCase().padStart(4, "0")}`;
 }
 
-function formatDelta(value: number): string {
+/** Format an advance delta (fraction of the em) for a table cell, or "n/a" when not measured. */
+export function formatDelta(value: number): string {
   return Number.isNaN(value) ? "n/a" : value.toFixed(4);
 }
 
@@ -41,12 +42,18 @@ function featureScoreOf(feature: FeatureDistance | undefined): number {
   return feature.score;
 }
 
-function formatFeatureScore(feature: FeatureDistance | undefined): string {
+/** Format the blended feature distance for a table cell, or "n/a" when nothing overlapped. */
+export function formatFeatureScore(
+  feature: FeatureDistance | undefined,
+): string {
   if (!feature || Number.isNaN(feature.score)) return "n/a";
   return feature.score.toFixed(4);
 }
 
-function formatFeatureCoverage(feature: FeatureDistance | undefined): string {
+/** Format how many features both fonts declared as a `compared/total` cell. */
+export function formatFeatureCoverage(
+  feature: FeatureDistance | undefined,
+): string {
   if (!feature) return "-";
   return `${feature.compared}/${feature.total}`;
 }
@@ -59,10 +66,33 @@ function carriesStrongAdvanceSignal(tier: CompareTier): boolean {
   );
 }
 
-function formatFlags(row: CompareRow): string {
-  if (!carriesStrongAdvanceSignal(row.score.tier) || !row.feature) return "-";
-  if (row.feature.gaps.length === 0) return "-";
-  return row.feature.gaps.map((gap) => `${gap.feature}_gap`).join(",");
+/**
+ * Flag a strong advance match whose declared features disagree enough to need review. Only meaningful
+ * when the advance tier already vouches for line metrics; otherwise there is nothing to flag.
+ */
+export function formatFlags(
+  tier: CompareTier,
+  feature: FeatureDistance | undefined,
+): string {
+  if (!carriesStrongAdvanceSignal(tier) || !feature) return "-";
+  if (feature.gaps.length === 0) return "-";
+  return feature.gaps.map((gap) => `${gap.feature}_gap`).join(",");
+}
+
+/**
+ * Render a fixed-column text table: a header row plus body rows, each cell left-padded to its column
+ * width. Shared by the corpus report and the bake-off so both print aligned columns the same way.
+ */
+export function formatTable(header: string[], body: string[][]): string {
+  const widths = header.map((h, col) =>
+    Math.max(h.length, ...body.map((r) => r[col].length)),
+  );
+  const line = (cells: string[]) =>
+    cells
+      .map((cell, col) => cell.padEnd(widths[col]))
+      .join("  ")
+      .trimEnd();
+  return [line(header), ...body.map(line)].join("\n");
 }
 
 /** Render the ranked table. Returned as a string so it can be tested without capturing stdout. */
@@ -122,19 +152,11 @@ export function renderReport(
     String(row.score.missing),
     formatFeatureScore(row.feature),
     formatFeatureCoverage(row.feature),
-    formatFlags(row),
+    formatFlags(row.score.tier, row.feature),
     String(row.score.over1Percent),
     String(row.score.over2_5Percent),
     formatWorst(row.score.worstGlyphs),
   ]);
 
-  const widths = header.map((h, col) =>
-    Math.max(h.length, ...body.map((r) => r[col].length)),
-  );
-  const line = (cells: string[]) =>
-    cells
-      .map((cell, col) => cell.padEnd(widths[col]))
-      .join("  ")
-      .trimEnd();
-  return [line(header), ...body.map(line)].join("\n");
+  return formatTable(header, body);
 }
