@@ -6,9 +6,13 @@ import { join } from "node:path";
 import {
   classifyTier,
   collectCandidates,
+  compareReferenceToTarget,
+  extractFont,
   type FontMetrics,
   LATIN_SAMPLE,
   LATIN_TEXT_SAMPLE,
+  listCandidateFiles,
+  listCorpusFonts,
   parseArgs,
   parseFont,
   renderReport,
@@ -80,8 +84,8 @@ function hheaTable(numberOfHMetrics: number): number[] {
   return bytes;
 }
 
-function hmtxTable(): number[] {
-  return ADVANCES.flatMap((advance) => [...u16(advance), ...i16(0)]);
+function hmtxTable(advances: readonly number[] = ADVANCES): number[] {
+  return advances.flatMap((advance) => [...u16(advance), ...i16(0)]);
 }
 
 function cmapFormat4(): number[] {
@@ -160,14 +164,42 @@ function buildFont(tables: { name: string; data: number[] }[]): Uint8Array {
   return bytes;
 }
 
-function syntheticFont(): Uint8Array {
+function syntheticFont(advances: readonly number[] = ADVANCES): Uint8Array {
   return buildFont([
     { name: "cmap", data: cmapFormat4() },
     { name: "head", data: headTable() },
-    { name: "hhea", data: hheaTable(ADVANCES.length) },
-    { name: "hmtx", data: hmtxTable() },
-    { name: "maxp", data: maxpTable(ADVANCES.length) },
+    { name: "hhea", data: hheaTable(advances.length) },
+    { name: "hmtx", data: hmtxTable(advances) },
+    { name: "maxp", data: maxpTable(advances.length) },
   ]);
+}
+
+function buildCollection(fonts: readonly Uint8Array[]): Uint8Array {
+  const headerSize = 12 + fonts.length * 4;
+  let offset = headerSize;
+  const offsets = fonts.map((font) => {
+    offset = (offset + 3) & ~3;
+    const at = offset;
+    offset += font.byteLength;
+    return at;
+  });
+  const out = new Uint8Array((offset + 3) & ~3);
+  out.set([...tag("ttcf"), ...u32(0x00010000), ...u32(fonts.length)], 0);
+  offsets.forEach((at, index) => {
+    out.set(u32(at), 12 + index * 4);
+  });
+  fonts.forEach((font, index) => {
+    const at = offsets[index];
+    const shifted = new Uint8Array(font);
+    const view = new DataView(shifted.buffer);
+    const numTables = view.getUint16(4);
+    for (let i = 0; i < numTables; i++) {
+      const recordOffset = 12 + i * 16;
+      view.setUint32(recordOffset + 8, view.getUint32(recordOffset + 8) + at);
+    }
+    out.set(shifted, at);
+  });
+  return out;
 }
 
 // --- Latin sample -----------------------------------------------------------
@@ -399,9 +431,31 @@ describe("parseFont", () => {
     expect(() => parseFont(noCmap)).toThrow(/missing required table/);
   });
 
-  test("throws on a font collection container", () => {
-    const ttcf = new Uint8Array([...u32(0x74746366), ...u32(0), ...u32(0)]);
-    expect(() => parseFont(ttcf)).toThrow(/collection/);
+  test("reads a selected font from a collection container", () => {
+    const collection = buildCollection([
+      syntheticFont([500, 600, 300, 750]),
+      syntheticFont([500, 900, 300, 750]),
+    ]);
+    expect(parseFont(collection).normalizedAdvance(0x41)).toBeCloseTo(0.6, 10);
+    expect(parseFont(collection, 1).normalizedAdvance(0x41)).toBeCloseTo(
+      0.9,
+      10,
+    );
+  });
+
+  test("extracts a collection member into a standalone SFNT", () => {
+    const collection = buildCollection([
+      syntheticFont([500, 600, 300, 750]),
+      syntheticFont([500, 900, 300, 750]),
+    ]);
+    const extracted = extractFont(collection, 1);
+    expect(extracted[0]).not.toBe("t".charCodeAt(0));
+    expect(parseFont(extracted).normalizedAdvance(0x41)).toBeCloseTo(0.9, 10);
+  });
+
+  test("rejects an out-of-range collection index", () => {
+    const collection = buildCollection([syntheticFont()]);
+    expect(() => parseFont(collection, 1)).toThrow(/out of range/);
   });
 
   test("throws on bytes that are not an SFNT", () => {
@@ -702,6 +756,140 @@ describe("collectCandidates (archive sources)", () => {
         SYNTHETIC_SAMPLE,
       );
       expect(score.tier).toBe("metric_safe");
+    } finally {
+      rmSync(cacheDir, { recursive: true, force: true });
+    }
+  });
+});
+
+// --- Corpus catalog + targeted compare --------------------------------------
+
+function writeGithubTreeSource(
+  cacheDir: string,
+  sourceId: string,
+  names: string[],
+): SnapshotSource {
+  mkdirSync(join(cacheDir, sourceId), { recursive: true });
+  for (const name of names)
+    writeFileSync(join(cacheDir, sourceId, name), syntheticFont());
+  return {
+    sourceId,
+    family: sourceId,
+    targetFamilies: ["Some Proprietary"],
+    kind: "github-tree",
+    files: names.map((name) => ({ name, path: `${sourceId}/${name}` })),
+  };
+}
+
+function writeSnapshot(cacheDir: string, sources: SnapshotSource[]): void {
+  writeFileSync(
+    join(cacheDir, "source-snapshot.json"),
+    JSON.stringify({ snapshots: sources }),
+  );
+}
+
+describe("listCandidateFiles", () => {
+  test("lists github-tree names without reading font bytes", () => {
+    const cacheDir = mkdtempSync(join(tmpdir(), "docfonts-list-"));
+    try {
+      const names = ["Example-Regular.ttf", "Example[wght].ttf"];
+      const source = writeGithubTreeSource(cacheDir, "google-list", names);
+      expect(listCandidateFiles(source, cacheDir)).toEqual(names);
+    } finally {
+      rmSync(cacheDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("listCorpusFonts", () => {
+  test("flattens every source into sourceId/file pairs", () => {
+    const cacheDir = mkdtempSync(join(tmpdir(), "docfonts-corpus-"));
+    try {
+      const source = writeGithubTreeSource(cacheDir, "google-corpus", [
+        "A-Regular.ttf",
+        "B-Bold.ttf",
+      ]);
+      writeSnapshot(cacheDir, [source]);
+      expect(listCorpusFonts(cacheDir)).toEqual([
+        { sourceId: "google-corpus", file: "A-Regular.ttf" },
+        { sourceId: "google-corpus", file: "B-Bold.ttf" },
+      ]);
+    } finally {
+      rmSync(cacheDir, { recursive: true, force: true });
+    }
+  });
+
+  test("skips sources whose cache files are missing rather than failing", () => {
+    const cacheDir = mkdtempSync(join(tmpdir(), "docfonts-corpus-skip-"));
+    try {
+      const present = writeGithubTreeSource(cacheDir, "google-present", [
+        "Present-Regular.ttf",
+      ]);
+      // An archive source with no cached archive: listing it throws, so it is skipped, not fatal.
+      const missing: SnapshotSource = {
+        sourceId: "missing-archive",
+        family: "Missing",
+        targetFamilies: ["X"],
+        kind: "archive",
+        archiveFormat: "tar.gz",
+      };
+      writeSnapshot(cacheDir, [present, missing]);
+      expect(listCorpusFonts(cacheDir)).toEqual([
+        { sourceId: "google-present", file: "Present-Regular.ttf" },
+      ]);
+    } finally {
+      rmSync(cacheDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("compareReferenceToTarget", () => {
+  test("scores the reference against one named corpus font", () => {
+    const cacheDir = mkdtempSync(join(tmpdir(), "docfonts-target-"));
+    try {
+      const source = writeGithubTreeSource(cacheDir, "google-target", [
+        "Wanted-Regular.ttf",
+        "Other-Regular.ttf",
+      ]);
+      writeSnapshot(cacheDir, [source]);
+      const row = compareReferenceToTarget(syntheticFont(), {
+        cacheDir,
+        sourceId: "google-target",
+        file: "Wanted-Regular.ttf",
+        model: "latin",
+      });
+      expect(row.sourceId).toBe("google-target");
+      expect(row.file).toBe("Wanted-Regular.ttf");
+      // The font scored against itself has zero advance deltas over the shared glyphs.
+      expect(row.score.meanDelta).toBe(0);
+      expect(row.score.maxDelta).toBe(0);
+      expect(row.bytes.length).toBeGreaterThan(0);
+    } finally {
+      rmSync(cacheDir, { recursive: true, force: true });
+    }
+  });
+
+  test("throws for an unknown source or font", () => {
+    const cacheDir = mkdtempSync(join(tmpdir(), "docfonts-target-miss-"));
+    try {
+      const source = writeGithubTreeSource(cacheDir, "google-target", [
+        "Wanted-Regular.ttf",
+      ]);
+      writeSnapshot(cacheDir, [source]);
+      expect(() =>
+        compareReferenceToTarget(syntheticFont(), {
+          cacheDir,
+          sourceId: "nope",
+          file: "Wanted-Regular.ttf",
+        }),
+      ).toThrow(/source not in cache/);
+      expect(() =>
+        compareReferenceToTarget(syntheticFont(), {
+          cacheDir,
+          sourceId: "google-target",
+          file: "missing.ttf",
+        }),
+      ).toThrow(/font not found/);
     } finally {
       rmSync(cacheDir, { recursive: true, force: true });
     }

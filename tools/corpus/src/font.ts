@@ -1,6 +1,7 @@
 import { LATIN_SAMPLE } from "./samples";
 
 const REQUIRED_TABLES = ["head", "maxp", "hhea", "hmtx", "cmap"] as const;
+const TTCF = 0x74746366;
 
 /** A parsed font's em size plus a normalized advance lookup over its Unicode `cmap`. */
 export interface FontMetrics {
@@ -29,6 +30,33 @@ function tagAt(view: DataView, offset: number): string {
     view.getUint8(offset + 2),
     view.getUint8(offset + 3),
   );
+}
+
+function align4(value: number): number {
+  return (value + 3) & ~3;
+}
+
+function sfntOffsetFor(view: DataView, fontIndex: number): number {
+  const sfntVersion = view.getUint32(0);
+  if (sfntVersion !== TTCF) {
+    if (fontIndex !== 0)
+      throw new Error("unsupported font: fontIndex requires a collection");
+    return 0;
+  }
+
+  const count = view.getUint32(8);
+  if (count === 0) throw new Error("unsupported font: empty collection");
+  if (!Number.isInteger(fontIndex) || fontIndex < 0 || fontIndex >= count)
+    throw new Error(
+      `unsupported font: collection index ${fontIndex} out of range`,
+    );
+  const offsetTableEnd = 12 + count * 4;
+  if (offsetTableEnd > view.byteLength)
+    throw new Error("unsupported font: truncated collection header");
+  const offset = view.getUint32(12 + fontIndex * 4);
+  if (offset + 12 > view.byteLength)
+    throw new Error("unsupported font: collection member is truncated");
+  return offset;
 }
 
 /** Resolve a codepoint to a glyph id within one `cmap` subtable, for the formats we support (4, 6, 12). */
@@ -142,19 +170,18 @@ function cmapPreference(platformId: number, encodingId: number): number | null {
 }
 
 /**
- * Read and validate the SFNT container: confirm it is a single SFNT (not a collection or other
- * format), index its table directory, and read the em size from `head`. Throws an explicit error when
+ * Read and validate the SFNT container: confirm it is a supported SFNT, index its table directory,
+ * and read the em size from `head`. Throws an explicit error when
  * the container is unusable or a required table is missing. Feature parsing reuses this so both paths
  * share one validation step.
  */
-export function openFont(bytes: Uint8Array): Sfnt {
+export function openFont(bytes: Uint8Array, fontIndex = 0): Sfnt {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   if (bytes.byteLength < 12)
     throw new Error("unsupported font: file is too small to be an SFNT");
 
-  const sfntVersion = view.getUint32(0);
-  if (sfntVersion === 0x74746366)
-    throw new Error("unsupported font: TrueType/OpenType collections (ttcf)");
+  const sfntOffset = sfntOffsetFor(view, fontIndex);
+  const sfntVersion = view.getUint32(sfntOffset);
   const isSfnt =
     sfntVersion === 0x00010000 ||
     sfntVersion === 0x4f54544f ||
@@ -164,14 +191,18 @@ export function openFont(bytes: Uint8Array): Sfnt {
       `unsupported font: not an SFNT (sfntVersion 0x${sfntVersion.toString(16)})`,
     );
 
-  const numTables = view.getUint16(4);
+  const numTables = view.getUint16(sfntOffset + 4);
+  const directoryEnd = sfntOffset + 12 + numTables * 16;
+  if (directoryEnd > view.byteLength)
+    throw new Error("unsupported font: truncated table directory");
   const tables = new Map<string, SfntTable>();
   for (let i = 0; i < numTables; i++) {
-    const recordOffset = 12 + i * 16;
-    tables.set(tagAt(view, recordOffset), {
-      offset: view.getUint32(recordOffset + 8),
-      length: view.getUint32(recordOffset + 12),
-    });
+    const recordOffset = sfntOffset + 12 + i * 16;
+    const offset = view.getUint32(recordOffset + 8);
+    const length = view.getUint32(recordOffset + 12);
+    if (offset + length > view.byteLength)
+      throw new Error("unsupported font: table extends past end of file");
+    tables.set(tagAt(view, recordOffset), { offset, length });
   }
 
   const missing = REQUIRED_TABLES.filter((tag) => !tables.has(tag));
@@ -189,11 +220,68 @@ export function openFont(bytes: Uint8Array): Sfnt {
 }
 
 /**
- * Parse just enough of an SFNT font (TrueType or CFF/OTF) to read normalized advance widths by
- * codepoint. Throws an explicit error when the container is a collection or a required table is missing.
+ * Extract one collection member into a standalone SFNT. Browsers can be ambiguous about which face in
+ * a TTC they load, so the local app serves the selected member as a single font file.
  */
-export function parseFont(bytes: Uint8Array): FontMetrics {
-  const { view, tables, unitsPerEm } = openFont(bytes);
+export function extractFont(bytes: Uint8Array, fontIndex = 0): Uint8Array {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (bytes.byteLength < 12)
+    throw new Error("unsupported font: file is too small to be an SFNT");
+  const sfntOffset = sfntOffsetFor(view, fontIndex);
+  if (sfntOffset === 0) return bytes;
+
+  const sfntVersion = view.getUint32(sfntOffset);
+  const numTables = view.getUint16(sfntOffset + 4);
+  const searchRange = view.getUint16(sfntOffset + 6);
+  const entrySelector = view.getUint16(sfntOffset + 8);
+  const rangeShift = view.getUint16(sfntOffset + 10);
+  const records = [];
+  let outputOffset = 12 + numTables * 16;
+  for (let i = 0; i < numTables; i++) {
+    const recordOffset = sfntOffset + 12 + i * 16;
+    const tag = [
+      view.getUint8(recordOffset),
+      view.getUint8(recordOffset + 1),
+      view.getUint8(recordOffset + 2),
+      view.getUint8(recordOffset + 3),
+    ] as const;
+    const checksum = view.getUint32(recordOffset + 4);
+    const sourceOffset = view.getUint32(recordOffset + 8);
+    const length = view.getUint32(recordOffset + 12);
+    if (sourceOffset + length > view.byteLength)
+      throw new Error("unsupported font: table extends past end of file");
+    outputOffset = align4(outputOffset);
+    records.push({ tag, checksum, sourceOffset, length, outputOffset });
+    outputOffset += length;
+  }
+
+  const out = new Uint8Array(align4(outputOffset));
+  const outView = new DataView(out.buffer);
+  outView.setUint32(0, sfntVersion);
+  outView.setUint16(4, numTables);
+  outView.setUint16(6, searchRange);
+  outView.setUint16(8, entrySelector);
+  outView.setUint16(10, rangeShift);
+  records.forEach((record, index) => {
+    const recordOffset = 12 + index * 16;
+    out.set(record.tag, recordOffset);
+    outView.setUint32(recordOffset + 4, record.checksum);
+    outView.setUint32(recordOffset + 8, record.outputOffset);
+    outView.setUint32(recordOffset + 12, record.length);
+    out.set(
+      bytes.subarray(record.sourceOffset, record.sourceOffset + record.length),
+      record.outputOffset,
+    );
+  });
+  return out;
+}
+
+/**
+ * Parse just enough of an SFNT font (TrueType or CFF/OTF) to read normalized advance widths by
+ * codepoint. Throws an explicit error when the container is unusable or a required table is missing.
+ */
+export function parseFont(bytes: Uint8Array, fontIndex = 0): FontMetrics {
+  const { view, tables, unitsPerEm } = openFont(bytes, fontIndex);
 
   const numberOfHMetrics = view.getUint16(
     (tables.get("hhea") as SfntTable).offset + 34,

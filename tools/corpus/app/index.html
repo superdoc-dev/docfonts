@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>docfonts - Corpus Review</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo"><svg viewBox="0 0 12 12" role="img" aria-label="docfonts"><title>docfonts</title><path d="M2 6.5 L5 9.5 L10 2.5"/></svg></span>
+      <span class="word">docfonts</span>
+      <span class="crumb">Corpus Review</span>
+    </div>
+    <div class="spacer"></div>
+  </header>
+
+  <div class="app">
+    <!-- LEFT RAIL: controls -->
+    <aside class="rail">
+      <div class="controls">
+        <label class="ctl">
+          <span>Reference family</span>
+          <input class="field" id="detected" list="detected-list" placeholder="Loading detected fonts..." autocomplete="off" />
+          <datalist id="detected-list"></datalist>
+        </label>
+
+        <label class="ctl">
+          <span>Or choose a file</span>
+          <div class="filepick">
+            <button type="button" class="btn ghost" id="choose">Choose file</button>
+            <span class="fname" id="fname">No font loaded</span>
+            <input id="reference" type="file" accept=".ttf,.otf,.ttc,.otc,.woff,.woff2,font/*" />
+          </div>
+        </label>
+
+        <div class="face-sources" id="face-sources" aria-label="Resolved reference faces"></div>
+
+        <label class="ctl">
+          <span>Corpus scope</span>
+          <select class="field" id="scope"><option value="">All acquired</option></select>
+        </label>
+
+        <div class="row2">
+          <label class="ctl" style="margin-bottom:0">
+            <span>Model</span>
+            <div class="seg" id="model" role="tablist">
+              <button type="button" data-model="latin" aria-selected="true">Latin</button>
+              <button type="button" data-model="monospace" aria-selected="false">Monospace</button>
+            </div>
+          </label>
+          <label class="ctl" style="margin-bottom:0;max-width:84px">
+            <span>Limit</span>
+            <input class="field num" id="limit" type="number" min="1" max="50" value="25" />
+          </label>
+        </div>
+
+        <label class="ctl" style="margin-top:11px">
+          <span>Sample text</span>
+          <input class="field" id="sample" value="Hamburgefonstiv 0123" />
+        </label>
+
+        <button class="btn full" id="run" type="button">Run comparison</button>
+      </div>
+
+    </aside>
+
+    <!-- MAIN: review workspace (Option C) -->
+    <main class="main" id="main">
+      <div class="empty" id="empty">
+        <div class="big">No comparison yet</div>
+        <div>Choose a licensed reference font and run a comparison.<br>The closest open candidates load into the review, switchable from the header.</div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="foot">
+    <span class="fine" id="footnote">Pick a detected family; faces auto-resolved</span>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

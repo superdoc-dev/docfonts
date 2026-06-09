@@ -3,7 +3,7 @@ import type { CompareScore, GlyphDelta } from "./score";
 import type { CompareTier } from "./tiers";
 import { TIER_RANK } from "./tiers";
 
-interface CompareRow {
+export interface CompareRow {
   sourceId: string;
   file: string;
   score: CompareScore;
@@ -95,12 +95,9 @@ export function formatTable(header: string[], body: string[][]): string {
   return [line(header), ...body.map(line)].join("\n");
 }
 
-/** Render the ranked table. Returned as a string so it can be tested without capturing stdout. */
-export function renderReport(
-  rows: CompareRow[],
-  options: RenderOptions = {},
-): string {
-  const ranked = [...rows].sort((a, b) => {
+/** Rank rows by the same order the text report prints. */
+export function rankRows<T extends CompareRow>(rows: T[]): T[] {
+  return [...rows].sort((a, b) => {
     const tierDiff = TIER_RANK[a.score.tier] - TIER_RANK[b.score.tier];
     if (tierDiff !== 0) return tierDiff;
     const aCoverage =
@@ -123,6 +120,14 @@ export function renderReport(
       : b.score.meanDelta;
     return aMean - bMean;
   });
+}
+
+/** Render the ranked table. Returned as a string so it can be tested without capturing stdout. */
+export function renderReport(
+  rows: CompareRow[],
+  options: RenderOptions = {},
+): string {
+  const ranked = rankRows(rows);
 
   const visible =
     options.limit === null ? ranked : ranked.slice(0, options.limit);

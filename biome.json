@@ -3,7 +3,7 @@
   "files": {
     "includes": [
       "**",
-      "!mockups",
+      "!**/mockups",
       "!.internal",
       "!**/.cache",
       "!**/dist",

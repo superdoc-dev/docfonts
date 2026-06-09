@@ -10,6 +10,7 @@ They download fonts into an ignored cache, compare a licensed local reference ag
 bun run corpus:acquire
 bun run corpus:compare -- --reference /path/to/reference.ttf --family "Verdana"
 bun run corpus:bakeoff -- --reference /path/to/reference.ttf --candidate "Inter=/path/to/Inter.ttf"
+bun run corpus:app
 ```
 
 ## Acquire
@@ -36,9 +37,17 @@ bun run corpus:compare -- \
 - `--model latin` is the default. Proportional Latin ranking uses text-carrying codepoints for tier, mean, and max while still reporting full Latin outliers.
 - `--model monospace` reports matching mono cells as `cell_width_only`, not `metric_safe`.
 
-The advance tier stays the hard primary gate. Within a tier, rows sort by advance coverage, then `fcov`, then `fscore`, then mean advance delta. `fscore` is a typographic feature distance (0 means identical) blended from OS/2 weight, width, x-height, cap-height, PANOSE, and post italic angle; `fcov` shows how many of those features both fonts declared. Missing features are skipped, not scored as zero. `flags` marks strong advance matches whose features disagree enough to need review.
+Rows are ranked by advance tier, coverage, feature coverage (`fcov`), feature distance (`fscore`), then mean advance delta. `flags` marks strong advance matches whose font metadata disagrees enough to need review.
 
-Comparison output is a lead finder. A public fallback row still needs review, provenance, face-scope checks, and visual sanity.
+Comparison output is a lead finder, not a fallback decision.
+
+## App
+
+```sh
+bun run corpus:app
+```
+
+The local app compares real reference faces against the corpus and shows the top candidates with overlays. It runs on localhost and stores temporary font files in `.cache/corpus-app`.
 
 ## Bake-off
 
@@ -63,7 +72,7 @@ bun run corpus:visual -- \
   --candidate "Nunito=/path/to/Nunito.ttf"
 ```
 
-Visual review writes a small HTML app that loads the reference font and each candidate font, then shows live specimen rows and cyan/magenta overlays. Use it for the top candidates from `corpus:compare`.
+Visual review writes a small HTML page for a known shortlist of candidates.
 
 - `--reference` and at least one `--candidate "Label=/path"` are required.
 - `--reference` and `--candidate` are regular-face shorthands.

@@ -71,8 +71,8 @@ function parsePost(view: DataView, table: SfntTable, out: FontFeatures): void {
  * same SFNT validation. OS/2 and post are optional tables: when they are absent, or too short for a
  * field, that feature is simply left unset rather than guessed.
  */
-export function parseFeatures(bytes: Uint8Array): FontFeatures {
-  const sfnt: Sfnt = openFont(bytes);
+export function parseFeatures(bytes: Uint8Array, fontIndex = 0): FontFeatures {
+  const sfnt: Sfnt = openFont(bytes, fontIndex);
   const out: FontFeatures = {};
   const os2 = sfnt.tables.get("OS/2");
   if (os2) parseOs2(sfnt.view, os2, sfnt.unitsPerEm, out);
