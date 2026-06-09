@@ -64,7 +64,7 @@ const map = createFallbackMap({
 map[normalizeFamilyName("Times New Roman")];
 ```
 
-Some fallbacks are face-scoped. Use `getRenderableFallbackForFace`, or respect the returned `faces` field before applying a fallback to bold or italic text.
+Some fallbacks are face-scoped. `faces` reports real face coverage. Use `getRenderableFallbackForFace` for styled text; a result may include `faceSource`, where `synthetic` means render from the indicated face and let your renderer synthesize the requested style.
 
 ## Fidelity fields
 

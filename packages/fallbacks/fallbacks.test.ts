@@ -158,6 +158,20 @@ describe("normalizeFamilyName (public)", () => {
 describe("face-aware lookups (Regular-only safety)", () => {
   const renderAll = { canRenderFamily: () => true };
 
+  test("synthetic face sources stay separate from real face coverage", () => {
+    for (const row of SUBSTITUTION_EVIDENCE) {
+      if (!row.faceSources) continue;
+      for (const face of ["regular", "bold", "italic", "boldItalic"] as const) {
+        const source = row.faceSources[face];
+        if (source?.kind !== "synthetic") continue;
+        expect(row.faces[face], `${row.evidenceId} ${face}`).toBe(false);
+        expect(row.faceVerdicts?.[face], `${row.evidenceId} ${face}`).toBe(
+          "visual_only",
+        );
+      }
+    }
+  });
+
   test("every FontFallback now carries the substitute's face coverage", () => {
     // The family-level result is self-describing, so a map consumer can route per-face.
     expect(
@@ -348,42 +362,45 @@ describe("advance measurement basis", () => {
   });
 });
 
-describe("Cooper Black -> Caprasimo (Regular-only, metric_safe)", () => {
+describe("Cooper Black -> Caprasimo (real Regular plus synthetic faces)", () => {
   const renderAll = { canRenderFamily: () => true };
   const onlyCaprasimo = { canRenderFamily: (f: string) => f === "Caprasimo" };
 
-  test("the family resolves to Caprasimo as an exact, line-break-safe Regular substitute", () => {
+  test("the family resolves to Caprasimo with Regular-only real face coverage", () => {
     // Unlike Baskerville -> Bacasime (visual_only, NBSP reflows), Cooper measures 0% across the Latin
-    // core, so the row is metric_safe with no glyph exceptions.
+    // core for Regular. Styled faces are synthetic and intentionally roll the family to visual_only.
     expect(getRenderableFallback("Cooper Black", renderAll)).toEqual({
       substituteFamily: "Caprasimo",
       policyAction: "substitute",
-      verdict: "metric_safe",
-      lineBreakSafe: true,
+      verdict: "visual_only",
+      lineBreakSafe: false,
       faces: { regular: true, bold: false, italic: false, boldItalic: false },
       evidenceId: "cooper-black",
       generic: "serif",
     });
   });
 
-  test("Regular maps; bold/italic/boldItalic are face_missing (never faux-styled onto Caprasimo)", () => {
+  test("Regular maps as metric_safe; bold/italic/boldItalic map as synthetic visual_only faces", () => {
+    expect(
+      getRenderableFallbackForFace("Cooper Black", "regular", renderAll),
+    ).toMatchObject({
+      substituteFamily: "Caprasimo",
+      verdict: "metric_safe",
+      lineBreakSafe: true,
+    });
     expect(
       getRenderableFallbackForFace("Cooper Black", "regular", renderAll)
-        ?.substituteFamily,
-    ).toBe("Caprasimo");
+        ?.faceSource,
+    ).toBeUndefined();
     for (const face of ["bold", "italic", "boldItalic"] as const) {
       expect(
         getRenderableFallbackForFace("Cooper Black", face, renderAll),
         `Cooper Black ${face}`,
-      ).toBeNull();
-      expect(
-        getFallbackDecisionForFace("Cooper Black", face, renderAll),
-        `Cooper Black ${face} decision`,
-      ).toEqual({
-        kind: "face_missing",
+      ).toMatchObject({
         substituteFamily: "Caprasimo",
-        evidenceId: "cooper-black",
-        generic: "serif",
+        verdict: "visual_only",
+        lineBreakSafe: false,
+        faceSource: { kind: "synthetic", from: "regular" },
       });
     }
   });
@@ -395,7 +412,7 @@ describe("Cooper Black -> Caprasimo (Regular-only, metric_safe)", () => {
     ).toEqual({
       kind: "asset_missing",
       substituteFamily: "Caprasimo",
-      verdict: "metric_safe",
+      verdict: "visual_only",
       evidenceId: "cooper-black",
       generic: "serif",
     });
@@ -403,5 +420,10 @@ describe("Cooper Black -> Caprasimo (Regular-only, metric_safe)", () => {
       getRenderableFallbackForFace("Cooper Black", "regular", onlyCaprasimo)
         ?.substituteFamily,
     ).toBe("Caprasimo");
+    expect(
+      getFallbackDecisionForFace("Cooper Black", "bold", {
+        canRenderFamily: () => false,
+      }).kind,
+    ).toBe("asset_missing");
   });
 });

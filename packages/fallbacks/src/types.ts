@@ -57,6 +57,13 @@ export interface FaceCoverage {
   boldItalic: boolean;
 }
 
+/** How a reviewed fallback supplies one requested face. */
+export type FallbackFaceSource =
+  | { kind: "real" }
+  | { kind: "synthetic"; from: FaceSlot };
+
+export type FallbackFaceSources = Partial<Record<FaceSlot, FallbackFaceSource>>;
+
 /** The four derived gate statuses behind a verdict; the proof is the referenced measurements. */
 export interface SubstituteGates {
   static: GateStatus;
@@ -90,6 +97,8 @@ export interface SubstitutionEvidence {
   verdict: Verdict;
   /** per-face verdicts, AUTHORITATIVE when present (a QUALIFIED substitute); top-level = worst face. */
   faceVerdicts?: Partial<Record<FaceSlot, Verdict>>;
+  /** per-face render sources for reviewed synthetic faces. Real faces stay represented by `faces`. */
+  faceSources?: FallbackFaceSources;
   /** named glyph-level divergences that qualify a face. */
   glyphExceptions?: GlyphException[];
   faces: FaceCoverage;
@@ -129,13 +138,19 @@ export interface FontFallback {
   lineBreakSafe: boolean;
   /**
    * Reviewed face coverage: which RIBBI faces this substitute is PROVEN to supply. A renderer MUST
-   * respect a face-scoped row: it can be Regular-only (e.g. Baskerville -> Bacasime, Cooper Black ->
-   * Caprasimo), and routing bold/italic to a face it lacks is wrong. NOTE: an all-false `faces` means
-   * the row is NOT face-scoped (e.g. a category fallback, whose physical font does have faces), NOT
-   * that the font has no faces - such rows render for any face. The face-aware helpers
+   * respect a face-scoped row: it can be Regular-only (e.g. Baskerville -> Bacasime), and routing
+   * bold/italic to a face it lacks is wrong. NOTE: an all-false `faces` means the row is NOT
+   * face-scoped (e.g. a category fallback, whose physical font does have faces), NOT that the font has
+   * no faces - such rows render for any face. The face-aware helpers
    * ({@link getRenderableFallbackForFace}) encode this rule for you.
    */
   faces: FaceCoverage;
+  /**
+   * Present on face-aware lookup results when docfonts knows the requested face should render from a
+   * synthetic source. Render from `from` and let the renderer synthesize the requested face. Omitted
+   * for real faces, family-level lookups, and non-face-scoped rows.
+   */
+  faceSource?: FallbackFaceSource;
   /** stable reviewed-evidence id; look the full row up in {@link SUBSTITUTION_EVIDENCE}. */
   evidenceId: string;
   /** the logical font's broad CSS category, for a last-resort generic `font-family` keyword. */
