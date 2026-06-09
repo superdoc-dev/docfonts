@@ -108,7 +108,7 @@ export interface SubstitutionEvidence {
   policyAction: PolicyAction;
   /** stable measurement ids behind the row. */
   measurementRefs: string[];
-  /** SPDX id of the substitute's license. */
+  /** Candidate license id or expression. SPDX when exact; stable docfonts label otherwise. */
   candidateLicense?: string | null;
   exportRule: "preserve_original_name";
 }

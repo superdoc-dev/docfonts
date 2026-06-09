@@ -80,3 +80,5 @@ Some fallbacks are face-scoped. `faces` reports real face coverage. Use `getRend
 ## Provenance
 
 Measurements are produced against licensed originals. This package distributes no proprietary binaries, raw proprietary metrics, or font files.
+
+`candidateLicense` is a candidate license id or expression: SPDX when exact, stable docfonts label otherwise.
