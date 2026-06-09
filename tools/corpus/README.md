@@ -52,3 +52,23 @@ bun run corpus:bakeoff -- \
 ```
 
 Bake-off compares a reference against a handful of manually chosen candidates side by side, printing the same advance and feature metrics per candidate. Pass `--visual` to add an experimental rendered-glyph difference column, which needs ImageMagick 7 (`magick`) on PATH; without it, no rendering is done. It calibrates the metrics against human judgment and writes nothing to the repo.
+
+## Visual review
+
+```sh
+bun run corpus:visual -- \
+  --reference /path/to/reference.ttf \
+  --family "Verdana" \
+  --candidate "Inter=/path/to/Inter.ttf" \
+  --candidate "Nunito=/path/to/Nunito.ttf"
+```
+
+Visual review writes a small HTML app that loads the reference font and each candidate font, then shows live specimen rows and cyan/magenta overlays. Use it for the top candidates from `corpus:compare`.
+
+- `--reference` and at least one `--candidate "Label=/path"` are required.
+- `--reference` and `--candidate` are regular-face shorthands.
+- Use `--reference-face face=/path` and `--candidate-face "Label:face=/path"` for `regular`, `bold`, `italic`, and `boldItalic`.
+- `--family` is the report heading.
+- `--out` sets the output path. A `.html` path is the file; any other path is a directory that receives `review.html`. The default is `.cache/corpus-visual/review.html`.
+
+The generated app copies the selected font files into the ignored output directory so the browser can load them locally.
