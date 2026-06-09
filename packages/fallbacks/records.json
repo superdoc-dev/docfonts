@@ -293,6 +293,143 @@
     "candidateLicense": null
   },
   {
+    "evidenceId": "arial-black",
+    "generic": "sans-serif",
+    "logicalFamily": "Arial Black",
+    "physicalFamily": "Archivo Black",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": false,
+      "italic": false,
+      "boldItalic": false
+    },
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      }
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "substitute",
+    "measurementRefs": ["arial-black__archivo-black#visual_review#2026-06-09"],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "italic": "visual_only"
+    }
+  },
+  {
+    "evidenceId": "arial-rounded-mt-bold",
+    "generic": "sans-serif",
+    "logicalFamily": "Arial Rounded MT Bold",
+    "physicalFamily": "Ubuntu",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "arial-rounded-mt-bold__ubuntu#visual_review#2026-06-09"
+    ],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "Ubuntu-font-1.0"
+  },
+  {
+    "evidenceId": "bookman-old-style",
+    "generic": "serif",
+    "logicalFamily": "Bookman Old Style",
+    "physicalFamily": "TeX Gyre Bonum",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "substitute",
+    "measurementRefs": [
+      "bookman-old-style__tex-gyre-bonum#visual_review#2026-06-09"
+    ],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "GUST-Font-License-1.0"
+  },
+  {
+    "evidenceId": "century",
+    "generic": "serif",
+    "logicalFamily": "Century",
+    "physicalFamily": "C059",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "substitute",
+    "measurementRefs": ["century__c059#visual_review#2026-06-09"],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817"
+  },
+  {
+    "evidenceId": "garamond",
+    "generic": "serif",
+    "logicalFamily": "Garamond",
+    "physicalFamily": "Cardo",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": false
+    },
+    "faceSources": {
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": ["garamond__cardo#visual_review#2026-06-09"],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "boldItalic": "visual_only"
+    }
+  },
+  {
     "evidenceId": "consolas",
     "generic": "monospace",
     "logicalFamily": "Consolas",
@@ -349,77 +486,84 @@
     "evidenceId": "tahoma",
     "generic": "sans-serif",
     "logicalFamily": "Tahoma",
-    "physicalFamily": null,
+    "physicalFamily": "Noto Sans",
     "verdict": "visual_only",
     "faces": {
-      "regular": false,
-      "bold": false,
-      "italic": false,
-      "boldItalic": false
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
     },
     "gates": {
-      "static": "not_run",
+      "static": "pass",
       "metric": "fail",
       "layout": "not_run",
-      "ship": "not_run"
+      "ship": "fail"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["tahoma#top_candidates#2026-06-03"],
+    "measurementRefs": ["tahoma__noto-sans#visual_review#2026-06-09"],
     "exportRule": "preserve_original_name",
-    "candidateLicense": null
+    "candidateLicense": "OFL-1.1"
   },
   {
     "evidenceId": "trebuchet-ms",
     "generic": "sans-serif",
     "logicalFamily": "Trebuchet MS",
-    "physicalFamily": null,
+    "physicalFamily": "PT Sans",
     "verdict": "visual_only",
     "faces": {
-      "regular": false,
-      "bold": false,
-      "italic": false,
-      "boldItalic": false
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
     },
     "gates": {
-      "static": "not_run",
+      "static": "pass",
       "metric": "fail",
       "layout": "not_run",
-      "ship": "not_run"
+      "ship": "fail"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["trebuchet-ms#top_candidates#2026-06-03"],
+    "measurementRefs": ["trebuchet-ms__pt-sans#visual_review#2026-06-09"],
     "exportRule": "preserve_original_name",
-    "candidateLicense": null
+    "candidateLicense": "OFL-1.1"
   },
   {
     "evidenceId": "comic-sans-ms",
     "generic": "sans-serif",
     "logicalFamily": "Comic Sans MS",
-    "physicalFamily": "Comic Neue",
+    "physicalFamily": "Comic Relief",
     "verdict": "visual_only",
     "faces": {
-      "regular": false,
-      "bold": false,
+      "regular": true,
+      "bold": true,
       "italic": false,
       "boldItalic": false
     },
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
     "gates": {
-      "static": "not_run",
+      "static": "pass",
       "metric": "fail",
       "layout": "not_run",
-      "ship": "not_run"
+      "ship": "fail"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": [
-      "comic-sans-ms__comic-neue#analytic_advance#2026-06-03"
-    ],
+    "measurementRefs": ["comic-sans-ms__comic-relief#visual_review#2026-06-09"],
     "exportRule": "preserve_original_name",
-    "advance": {
-      "basis": "latin_full",
-      "meanDelta": 0.1005,
-      "maxDelta": 0.1419
-    },
-    "candidateLicense": "OFL-1.1"
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    }
   },
   {
     "evidenceId": "candara",
@@ -517,6 +661,47 @@
       "maxDelta": 0.004050000000000001
     },
     "candidateLicense": "OFL-1.1"
+  },
+  {
+    "evidenceId": "gill-sans-mt-condensed",
+    "generic": "sans-serif",
+    "logicalFamily": "Gill Sans MT Condensed",
+    "physicalFamily": "PT Sans Narrow",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": false,
+      "boldItalic": false
+    },
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "gill-sans-mt-condensed__pt-sans-narrow#visual_review#2026-06-09"
+    ],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "visual_only",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    }
   },
   {
     "evidenceId": "aptos-display",

@@ -54,15 +54,15 @@ describe("getFallbackDecision", () => {
   });
 
   test("a measured 'no open font' is distinct from an unknown font", () => {
-    // The whole point of the decision API: docfonts MEASURED Aptos and Tahoma; it never heard of "Foo".
+    // The whole point of the decision API: docfonts MEASURED Aptos and Verdana; it never heard of "Foo".
     expect(getFallbackDecision("Aptos")).toEqual({
       kind: "customer_supplied",
       evidenceId: "aptos",
       generic: "sans-serif",
     });
-    expect(getFallbackDecision("Tahoma")).toEqual({
+    expect(getFallbackDecision("Verdana")).toEqual({
       kind: "no_recommended_fallback",
-      evidenceId: "tahoma",
+      evidenceId: "verdana",
       generic: "sans-serif",
     });
     expect(getFallbackDecision("Cambria Math")).toEqual({
@@ -311,6 +311,87 @@ describe("glyphExceptions projection", () => {
     expect(
       getRenderableFallback("Cambria", renderAll)?.glyphExceptions,
     ).toHaveLength(1);
+  });
+});
+
+describe("selected visual fallback rows", () => {
+  const renderAll = { canRenderFamily: () => true };
+
+  test("newly reviewed visual rows resolve to their selected families without claiming line-break safety", () => {
+    const expected = [
+      ["Arial Black", "Archivo Black", "substitute"],
+      ["Arial Rounded MT Bold", "Ubuntu", "category_fallback"],
+      ["Bookman Old Style", "TeX Gyre Bonum", "substitute"],
+      ["Century", "C059", "substitute"],
+      ["Comic Sans MS", "Comic Relief", "category_fallback"],
+      ["Garamond", "Cardo", "category_fallback"],
+      ["Gill Sans MT Condensed", "PT Sans Narrow", "category_fallback"],
+      ["Tahoma", "Noto Sans", "category_fallback"],
+      ["Trebuchet MS", "PT Sans", "category_fallback"],
+    ] as const;
+
+    for (const [logical, physical, policyAction] of expected) {
+      expect(getRenderableFallback(logical, renderAll), logical).toMatchObject({
+        substituteFamily: physical,
+        policyAction,
+        verdict: "visual_only",
+        lineBreakSafe: false,
+      });
+    }
+  });
+
+  test("rows with synthetic selected faces expose render instructions without marking those faces real", () => {
+    expect(
+      getRenderableFallbackForFace("Arial Black", "italic", renderAll),
+    ).toMatchObject({
+      substituteFamily: "Archivo Black",
+      faceSource: { kind: "synthetic", from: "regular" },
+      faces: { regular: true, bold: false, italic: false, boldItalic: false },
+    });
+    expect(
+      getFallbackDecisionForFace("Arial Black", "bold", renderAll).kind,
+    ).toBe("face_missing");
+
+    expect(
+      getRenderableFallbackForFace("Comic Sans MS", "boldItalic", renderAll),
+    ).toMatchObject({
+      substituteFamily: "Comic Relief",
+      faceSource: { kind: "synthetic", from: "bold" },
+      faces: { regular: true, bold: true, italic: false, boldItalic: false },
+    });
+
+    expect(
+      getRenderableFallbackForFace(
+        "Gill Sans MT Condensed",
+        "italic",
+        renderAll,
+      ),
+    ).toMatchObject({
+      substituteFamily: "PT Sans Narrow",
+      faceSource: { kind: "synthetic", from: "regular" },
+      faces: { regular: true, bold: true, italic: false, boldItalic: false },
+    });
+  });
+});
+
+describe("candidate license metadata", () => {
+  test("uses public license identifiers or stable docfonts labels", () => {
+    const LICENSE_IDS = new Set([
+      "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817",
+      "Apache-2.0",
+      "GPLv2-with-font-exception",
+      "GUST-Font-License-1.0",
+      "OFL-1.1",
+      "Ubuntu-font-1.0",
+    ]);
+
+    for (const row of SUBSTITUTION_EVIDENCE) {
+      if (!row.candidateLicense) continue;
+      expect(
+        LICENSE_IDS.has(row.candidateLicense),
+        `${row.evidenceId} (${row.candidateLicense})`,
+      ).toBe(true);
+    }
   });
 });
 
