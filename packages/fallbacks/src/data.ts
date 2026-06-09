@@ -665,31 +665,48 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     "evidenceId": "lucida-console",
     "generic": "monospace",
     "logicalFamily": "Lucida Console",
-    "physicalFamily": "Cousine",
-    "verdict": "cell_width_only",
+    "physicalFamily": "Noto Sans Mono",
+    "verdict": "visual_only",
     "faces": {
-      "regular": false,
-      "bold": false,
+      "regular": true,
+      "bold": true,
       "italic": false,
       "boldItalic": false
     },
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
     "gates": {
-      "static": "not_run",
-      "metric": "not_run",
+      "static": "pass",
+      "metric": "pass",
       "layout": "not_run",
-      "ship": "not_run"
+      "ship": "fail"
     },
     "policyAction": "category_fallback",
     "measurementRefs": [
-      "lucida-console__cousine#analytic_advance#2026-06-03"
+      "lucida-console__noto-sans-mono#monospace_cell#analytic_advance#2026-06-09",
+      "lucida-console__noto-sans-mono#visual_review#2026-06-09"
     ],
     "exportRule": "preserve_original_name",
     "advance": {
       "basis": "monospace_cell",
-      "meanDelta": 0.004050000000000001,
-      "maxDelta": 0.004050000000000001
+      "meanDelta": 0.00254,
+      "maxDelta": 0.00303
     },
-    "candidateLicense": "OFL-1.1"
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "cell_width_only",
+      "bold": "cell_width_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    }
   },
   {
     "evidenceId": "gill-sans-mt-condensed",
@@ -848,6 +865,20 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
       "italic": false,
       "boldItalic": false
     },
+    "faceSources": {
+      "bold": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "regular"
+      }
+    },
     "gates": {
       "static": "pass",
       "metric": "fail",
@@ -856,7 +887,8 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     },
     "policyAction": "substitute",
     "measurementRefs": [
-      "baskerville-old-face_regular__bacasime-antique#regular#w400#7dac1e5f#analytic_advance#2026-06-05"
+      "baskerville-old-face_regular__bacasime-antique#regular#w400#7dac1e5f#analytic_advance#2026-06-05",
+      "baskerville-old-face__bacasime-antique#synthetic_faces#visual_review#2026-06-09"
     ],
     "exportRule": "preserve_original_name",
     "advance": {
@@ -866,7 +898,10 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     },
     "candidateLicense": "OFL-1.1",
     "faceVerdicts": {
-      "regular": "visual_only"
+      "regular": "visual_only",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
     },
     "glyphExceptions": [
       {
@@ -876,6 +911,41 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
         "note": "Bacasime Antique Regular's no-break space (U+00A0) advance diverges ~49% from Baskerville Old Face; lines containing NBSP reflow. Every other Latin-core glyph is advance-identical, which is why this is visual_only with a single named exception, not near_metric."
       }
     ]
+  },
+  {
+    "evidenceId": "brush-script-mt",
+    "generic": "serif",
+    "logicalFamily": "Brush Script MT",
+    "physicalFamily": "Oregano Italic",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": false,
+      "italic": false,
+      "boldItalic": false
+    },
+    "faceSources": {
+      "bold": {
+        "kind": "synthetic",
+        "from": "regular"
+      }
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "brush-script-mt__oregano-italic#visual_review#2026-06-09"
+    ],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "visual_only",
+      "bold": "visual_only"
+    }
   },
   {
     "evidenceId": "cooper-black",

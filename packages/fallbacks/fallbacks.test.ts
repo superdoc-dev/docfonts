@@ -184,32 +184,32 @@ describe("face-aware lookups (Regular-only safety)", () => {
     });
   });
 
-  test("a Regular-only substitute is returned for Regular and NULL for bold/italic", () => {
-    // Baskerville -> Bacasime is Regular-only. The face-safe lookup must not route bold to it.
+  test("a Regular-only substitute can expose reviewed synthetic faces", () => {
     expect(
       getRenderableFallbackForFace("Baskerville Old Face", "regular", renderAll)
         ?.substituteFamily,
     ).toBe("Bacasime Antique");
-    expect(
-      getRenderableFallbackForFace("Baskerville Old Face", "bold", renderAll),
-    ).toBeNull();
-    expect(
-      getRenderableFallbackForFace("Baskerville Old Face", "italic", renderAll),
-    ).toBeNull();
+    for (const face of ["bold", "italic", "boldItalic"] as const) {
+      expect(
+        getRenderableFallbackForFace("Baskerville Old Face", face, renderAll),
+        `Baskerville ${face}`,
+      ).toMatchObject({
+        substituteFamily: "Bacasime Antique",
+        verdict: "visual_only",
+        lineBreakSafe: false,
+        faceSource: { kind: "synthetic", from: "regular" },
+      });
+    }
   });
 
   test("an uncovered face is `face_missing`, not `unknown` or null collapse", () => {
     expect(
-      getFallbackDecisionForFace(
-        "Baskerville Old Face",
-        "boldItalic",
-        renderAll,
-      ),
+      getFallbackDecisionForFace("Arial Black", "bold", renderAll),
     ).toEqual({
       kind: "face_missing",
-      substituteFamily: "Bacasime Antique",
-      evidenceId: "baskerville-old-face",
-      generic: "serif",
+      substituteFamily: "Archivo Black",
+      evidenceId: "arial-black",
+      generic: "sans-serif",
     });
   });
 
@@ -252,9 +252,9 @@ describe("face-aware lookups (Regular-only safety)", () => {
         `Calibri Light ${face}`,
       ).toBe("Carlito");
     }
-    // ...while a genuinely face-scoped Regular-only row still gates bold to face_missing.
+    // ...while a genuinely uncovered face still gates to face_missing.
     expect(
-      getFallbackDecisionForFace("Baskerville Old Face", "bold", {
+      getFallbackDecisionForFace("Arial Black", "bold", {
         canRenderFamily: () => true,
       }).kind,
     ).toBe("face_missing");
@@ -322,10 +322,12 @@ describe("selected visual fallback rows", () => {
       ["Arial Black", "Archivo Black", "substitute"],
       ["Arial Rounded MT Bold", "Ubuntu", "category_fallback"],
       ["Bookman Old Style", "TeX Gyre Bonum", "substitute"],
+      ["Brush Script MT", "Oregano Italic", "category_fallback"],
       ["Century", "C059", "substitute"],
       ["Comic Sans MS", "Comic Relief", "category_fallback"],
       ["Garamond", "Cardo", "category_fallback"],
       ["Gill Sans MT Condensed", "PT Sans Narrow", "category_fallback"],
+      ["Lucida Console", "Noto Sans Mono", "category_fallback"],
       ["Tahoma", "Noto Sans", "category_fallback"],
       ["Trebuchet MS", "PT Sans", "category_fallback"],
     ] as const;
@@ -361,6 +363,14 @@ describe("selected visual fallback rows", () => {
     });
 
     expect(
+      getRenderableFallbackForFace("Brush Script MT", "bold", renderAll),
+    ).toMatchObject({
+      substituteFamily: "Oregano Italic",
+      faceSource: { kind: "synthetic", from: "regular" },
+      faces: { regular: true, bold: false, italic: false, boldItalic: false },
+    });
+
+    expect(
       getRenderableFallbackForFace(
         "Gill Sans MT Condensed",
         "italic",
@@ -371,6 +381,42 @@ describe("selected visual fallback rows", () => {
       faceSource: { kind: "synthetic", from: "regular" },
       faces: { regular: true, bold: true, italic: false, boldItalic: false },
     });
+
+    expect(
+      getRenderableFallbackForFace("Lucida Console", "boldItalic", renderAll),
+    ).toMatchObject({
+      substituteFamily: "Noto Sans Mono",
+      faceSource: { kind: "synthetic", from: "bold" },
+      faces: { regular: true, bold: true, italic: false, boldItalic: false },
+    });
+  });
+
+  test("Lucida Console keeps cell-width evidence for real Noto Sans Mono faces", () => {
+    for (const face of ["regular", "bold"] as const) {
+      expect(
+        getRenderableFallbackForFace("Lucida Console", face, renderAll),
+        `Lucida Console ${face}`,
+      ).toMatchObject({
+        substituteFamily: "Noto Sans Mono",
+        verdict: "cell_width_only",
+        lineBreakSafe: true,
+      });
+      expect(
+        getRenderableFallbackForFace("Lucida Console", face, renderAll)
+          ?.faceSource,
+      ).toBeUndefined();
+    }
+
+    for (const face of ["italic", "boldItalic"] as const) {
+      expect(
+        getRenderableFallbackForFace("Lucida Console", face, renderAll),
+        `Lucida Console ${face}`,
+      ).toMatchObject({
+        substituteFamily: "Noto Sans Mono",
+        verdict: "visual_only",
+        lineBreakSafe: false,
+      });
+    }
   });
 });
 
@@ -434,6 +480,10 @@ describe("advance measurement basis", () => {
   test("monospace cell-width rows are not labeled as proportional Latin measurements", () => {
     expect(
       SUBSTITUTION_EVIDENCE.find((row) => row.evidenceId === "consolas")
+        ?.advance?.basis,
+    ).toBe("monospace_cell");
+    expect(
+      SUBSTITUTION_EVIDENCE.find((row) => row.evidenceId === "lucida-console")
         ?.advance?.basis,
     ).toBe("monospace_cell");
     expect(
