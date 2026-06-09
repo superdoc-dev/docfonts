@@ -4,27 +4,42 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
-import {
-  archiveFormatOf,
-  collectCandidates,
-  loadSnapshot,
-  requireArchiveTool,
-  type SnapshotSource,
-} from "./src/cache";
-import { parseFont, sampleMetrics } from "./src/font";
+import { compareReferenceToCorpus } from "./src/compare-engine";
 import { renderReport } from "./src/report";
 import { LATIN_SAMPLE, LATIN_TEXT_SAMPLE } from "./src/samples";
-import { type CompareScore, scoreAdvances } from "./src/score";
 import type { CompareModel } from "./src/tiers";
 
 export {
-  archiveFormatOf,
   collectCandidates,
+  listCandidateFiles,
   loadSnapshot,
   requireArchiveTool,
   type SnapshotSource,
 } from "./src/cache";
-export { type FontMetrics, parseFont, sampleMetrics } from "./src/font";
+export {
+  type CorpusFont,
+  compareReferenceToCorpus,
+  compareReferenceToTarget,
+  listCorpusFonts,
+  requireArchiveTools,
+  scoreCandidateBytes,
+  selectSources,
+} from "./src/compare-engine";
+export {
+  DEFAULT_FEATURE_WEIGHTS,
+  FEATURE_COUNT,
+  type FeatureDistance,
+  type FeatureWeights,
+  type FontFeatures,
+  featureDistance,
+  parseFeatures,
+} from "./src/features";
+export {
+  extractFont,
+  type FontMetrics,
+  parseFont,
+  sampleMetrics,
+} from "./src/font";
 export { renderReport } from "./src/report";
 export { LATIN_SAMPLE, LATIN_TEXT_SAMPLE } from "./src/samples";
 export {
@@ -41,12 +56,6 @@ export {
 
 const REPO_DIR = join(import.meta.dir, "..", "..");
 const DEFAULT_CACHE_DIR = join(REPO_DIR, ".cache", "corpus");
-
-interface CompareRow {
-  sourceId: string;
-  file: string;
-  score: CompareScore;
-}
 
 export interface ParsedArgs {
   reference?: string;
@@ -111,55 +120,6 @@ export function parseArgs(argv: string[]): ParsedArgs {
   return args;
 }
 
-function selectSources(
-  snapshot: SnapshotSource[],
-  requestedIds: string[],
-): SnapshotSource[] {
-  if (requestedIds.length === 0) return snapshot;
-
-  const byId = new Map(snapshot.map((source) => [source.sourceId, source]));
-  const unknown = requestedIds.filter((id) => !byId.has(id));
-  if (unknown.length > 0)
-    throw new Error(
-      `source(s) not in cache: ${unknown.join(", ")}. Acquired: ${[...byId.keys()].join(", ")}`,
-    );
-  return requestedIds.map((id) => byId.get(id) as SnapshotSource);
-}
-
-function scoreSources(
-  reference: ReadonlyMap<number, number>,
-  selected: SnapshotSource[],
-  cacheDir: string,
-  model: CompareModel,
-): { rows: CompareRow[]; skipped: number } {
-  const rows: CompareRow[] = [];
-  let skipped = 0;
-  for (const source of selected) {
-    for (const candidate of collectCandidates(source, cacheDir)) {
-      try {
-        const font = parseFont(candidate.bytes);
-        const score = scoreAdvances(reference, sampleMetrics(font), {
-          reportSample: LATIN_SAMPLE,
-          tierSample: model === "latin" ? LATIN_TEXT_SAMPLE : LATIN_SAMPLE,
-          model,
-        });
-        rows.push({ sourceId: source.sourceId, file: candidate.file, score });
-      } catch {
-        skipped++;
-      }
-    }
-  }
-  return { rows, skipped };
-}
-
-function requireArchiveTools(selected: SnapshotSource[]): void {
-  const archiveSources = selected.filter(
-    (source) => source.kind !== "github-tree",
-  );
-  for (const format of new Set(archiveSources.map(archiveFormatOf)))
-    requireArchiveTool(format);
-}
-
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
 
@@ -171,29 +131,28 @@ function main(): void {
     throw new Error(`reference font not found: ${args.reference}`);
 
   const cacheDir = process.env.DOCFONTS_SOURCE_CACHE ?? DEFAULT_CACHE_DIR;
-  const selected = selectSources(loadSnapshot(cacheDir), args.sources);
-  requireArchiveTools(selected);
-
-  const reference = sampleMetrics(parseFont(readFileSync(args.reference)));
-  const { rows, skipped } = scoreSources(
-    reference,
-    selected,
-    cacheDir,
-    args.model,
+  const referenceBytes = readFileSync(args.reference);
+  const { rows, totalRows, skipped } = compareReferenceToCorpus(
+    referenceBytes,
+    {
+      cacheDir,
+      sources: args.sources,
+      model: args.model,
+      limit: args.limit,
+    },
   );
 
   const label = args.family ?? "(family not specified)";
-  const shown =
-    args.limit === null ? rows.length : Math.min(args.limit, rows.length);
+  const shown = rows.length;
   const skippedText = skipped === 0 ? "" : `; skipped ${skipped} unsupported`;
   const modelText =
     args.model === "latin"
       ? `; tier/mean/max ${LATIN_TEXT_SAMPLE.length} text codepoints`
       : `; model ${args.model}`;
   console.log(
-    `reference ${basename(args.reference)} as "${label}" vs ${rows.length} candidate(s) over ${LATIN_SAMPLE.length} Latin codepoints${modelText}; showing ${shown}${skippedText}\n`,
+    `reference ${basename(args.reference)} as "${label}" vs ${totalRows} candidate(s) over ${LATIN_SAMPLE.length} Latin codepoints${modelText}; showing ${shown}${skippedText}\n`,
   );
-  console.log(renderReport(rows, { limit: args.limit }));
+  console.log(renderReport(rows, { limit: null }));
 }
 
 if (import.meta.main) {

@@ -101,19 +101,53 @@ export function collectCandidates(
   if (members.length === 0)
     throw new Error(`no candidate font files in ${archivePath}`);
 
-  const basenameCounts = new Map<string, number>();
-  for (const member of members) {
-    const file = basename(member);
-    basenameCounts.set(file, (basenameCounts.get(file) ?? 0) + 1);
-  }
-  const duplicateBasenames = new Set(
-    [...basenameCounts].filter(([, count]) => count > 1).map(([file]) => file),
-  );
-
+  const duplicateBasenames = duplicateBasenamesOf(members);
   return members.map((member) => ({
     file: displayNameForMember(member, duplicateBasenames),
     bytes: readArchiveMember(archivePath, member, format),
   }));
+}
+
+/** Basenames shared by more than one member, so those members fall back to a path-qualified display name. */
+function duplicateBasenamesOf(members: string[]): Set<string> {
+  const counts = new Map<string, number>();
+  for (const member of members) {
+    const file = basename(member);
+    counts.set(file, (counts.get(file) ?? 0) + 1);
+  }
+  return new Set(
+    [...counts].filter(([, count]) => count > 1).map(([file]) => file),
+  );
+}
+
+/**
+ * Candidate font display names for one source, without reading any font bytes. Mirrors the naming in
+ * {@link collectCandidates} so a name listed here can be passed straight back to look up its bytes.
+ */
+export function listCandidateFiles(
+  source: SnapshotSource,
+  cacheDir: string,
+): string[] {
+  if (source.kind === "github-tree") {
+    const files = source.files ?? [];
+    if (files.length === 0)
+      throw new Error(`no candidate files listed for ${source.sourceId}`);
+    return files.map((entry) => entry.name);
+  }
+
+  const format = archiveFormatOf(source);
+  const archivePath = archivePathFor(cacheDir, source.sourceId, format);
+  if (!existsSync(archivePath))
+    throw new Error(
+      `candidate archive missing for ${source.sourceId}: ${archivePath}. Run \`bun run corpus:acquire\` first.`,
+    );
+  const members = listFontMembers(archivePath, format);
+  if (members.length === 0)
+    throw new Error(`no candidate font files in ${archivePath}`);
+  const duplicateBasenames = duplicateBasenamesOf(members);
+  return members.map((member) =>
+    displayNameForMember(member, duplicateBasenames),
+  );
 }
 
 function displayNameForMember(
