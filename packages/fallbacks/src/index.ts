@@ -21,6 +21,8 @@ export type {
   FaceCoverage,
   FaceSlot,
   FallbackDecision,
+  FallbackFaceSource,
+  FallbackFaceSources,
   FontFallback,
   GlyphException,
   PolicyAction,

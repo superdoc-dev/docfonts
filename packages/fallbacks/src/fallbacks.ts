@@ -10,6 +10,7 @@ import { SUBSTITUTION_EVIDENCE } from "./data.js";
 import type {
   FaceSlot,
   FallbackDecision,
+  FallbackFaceSource,
   FontFallback,
   SubstitutionEvidence,
   Verdict,
@@ -68,6 +69,7 @@ function buildFallback(
   physicalFamily: string,
   verdict: Verdict,
   faceSlot?: FaceSlot,
+  faceSource?: FallbackFaceSource,
 ): FontFallback {
   // Always hand back a FRESH array - filter() already copies; the family path must copy too, or a
   // consumer mutating it would corrupt the shared evidence row for later lookups.
@@ -84,6 +86,7 @@ function buildFallback(
     faces: row.faces,
     evidenceId: row.evidenceId,
     generic: row.generic,
+    ...(faceSource ? { faceSource: { ...faceSource } } : {}),
     ...(glyphExceptions && glyphExceptions.length > 0
       ? { glyphExceptions }
       : {}),
@@ -128,6 +131,15 @@ function isFaceScoped(row: SubstitutionEvidence): boolean {
   return f.regular || f.bold || f.italic || f.boldItalic;
 }
 
+function faceSourceFor(
+  row: SubstitutionEvidence,
+  face: FaceSlot,
+): FallbackFaceSource | undefined {
+  const explicit = row.faceSources?.[face];
+  if (explicit) return explicit;
+  return isFaceScoped(row) && row.faces[face] ? { kind: "real" } : undefined;
+}
+
 /**
  * Face-aware variant of {@link decideRow}: same family-level outcome, but when the family HAS a
  * renderable substitute AND the row is face-scoped, gate on whether it provides the requested `face`.
@@ -143,7 +155,8 @@ function decideRowForFace(
   const base = decideRow(row, canRenderFamily);
   // Non-fallback outcomes (asset_missing / no_recommended_fallback / policy) do not depend on the face.
   if (base.kind !== "fallback") return base;
-  if (isFaceScoped(row) && !row.faces[face])
+  const faceSource = faceSourceFor(row, face);
+  if (isFaceScoped(row) && !faceSource)
     return {
       kind: "face_missing",
       substituteFamily: base.fallback.substituteFamily,
@@ -151,6 +164,8 @@ function decideRowForFace(
       generic: row.generic,
     };
   const faceVerdict = row.faceVerdicts?.[face] ?? row.verdict;
+  const projectedFaceSource =
+    faceSource?.kind === "synthetic" ? faceSource : undefined;
   return {
     kind: "fallback",
     fallback: buildFallback(
@@ -158,6 +173,7 @@ function decideRowForFace(
       base.fallback.substituteFamily,
       faceVerdict,
       face,
+      projectedFaceSource,
     ),
   };
 }

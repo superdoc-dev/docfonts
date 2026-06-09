@@ -689,12 +689,26 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     "generic": "serif",
     "logicalFamily": "Cooper Black",
     "physicalFamily": "Caprasimo",
-    "verdict": "metric_safe",
+    "verdict": "visual_only",
     "faces": {
       "regular": true,
       "bold": false,
       "italic": false,
       "boldItalic": false
+    },
+    "faceSources": {
+      "bold": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "regular"
+      }
     },
     "gates": {
       "static": "pass",
@@ -704,7 +718,8 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     },
     "policyAction": "substitute",
     "measurementRefs": [
-      "cooper-black_regular__caprasimo#regular#w400#786ab84e#analytic_advance#2026-06-05"
+      "cooper-black_regular__caprasimo#regular#w400#786ab84e#analytic_advance#2026-06-05",
+      "cooper-black__caprasimo#synthetic_faces#visual_review#2026-06-09"
     ],
     "exportRule": "preserve_original_name",
     "advance": {
@@ -714,7 +729,10 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     },
     "candidateLicense": "OFL-1.1",
     "faceVerdicts": {
-      "regular": "metric_safe"
+      "regular": "metric_safe",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
     }
   }
 ];
