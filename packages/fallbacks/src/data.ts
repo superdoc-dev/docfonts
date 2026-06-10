@@ -258,7 +258,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
       "meanDelta": 0,
       "maxDelta": 0.5
     },
-    "candidateLicense": "GPLv2-with-font-exception",
+    "candidateLicense": "GPL-2.0-only WITH Font-exception-2.0",
     "faceVerdicts": {
       "regular": "metric_safe",
       "bold": "visual_only",
@@ -381,7 +381,7 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
       "bookman-old-style__tex-gyre-bonum#visual_review#2026-06-09"
     ],
     "exportRule": "preserve_original_name",
-    "candidateLicense": "GUST-Font-License-1.0"
+    "candidateLicense": "LicenseRef-GUST-Font-License-1.0"
   },
   {
     "evidenceId": "century",
@@ -404,6 +404,31 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     "policyAction": "substitute",
     "measurementRefs": [
       "century__c059#visual_review#2026-06-09"
+    ],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817"
+  },
+  {
+    "evidenceId": "century-schoolbook",
+    "generic": "serif",
+    "logicalFamily": "Century Schoolbook",
+    "physicalFamily": "C059",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "substitute",
+    "measurementRefs": [
+      "century-schoolbook__c059#visual_review#2026-06-09"
     ],
     "exportRule": "preserve_original_name",
     "candidateLicense": "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817"
