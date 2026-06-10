@@ -24,7 +24,11 @@ import {
   formatFlags,
   formatTable,
 } from "./src/report";
-import { LATIN_SAMPLE, LATIN_TEXT_SAMPLE } from "./src/samples";
+import {
+  CJK_JP_TEXT_SAMPLE,
+  LATIN_SAMPLE,
+  LATIN_TEXT_SAMPLE,
+} from "./src/samples";
 import { type CompareScore, scoreAdvances } from "./src/score";
 import type { CompareModel } from "./src/tiers";
 import {
@@ -111,8 +115,8 @@ export function parseArgs(argv: string[]): ParsedArgs {
       }
       case "--model": {
         const value = readValue(flag, i);
-        if (value !== "latin" && value !== "monospace")
-          throw new Error("--model requires 'latin' or 'monospace'");
+        if (value !== "latin" && value !== "monospace" && value !== "cjk-jp")
+          throw new Error("--model requires 'latin', 'monospace', or 'cjk-jp'");
         args.model = value;
         i++;
         break;
@@ -141,11 +145,22 @@ export function scoreCandidate(
   bytes: Uint8Array,
   model: CompareModel,
 ): { score: CompareScore; feature: FeatureDistance } {
-  const score = scoreAdvances(reference, sampleMetrics(parseFont(bytes)), {
-    reportSample: LATIN_SAMPLE,
-    tierSample: model === "latin" ? LATIN_TEXT_SAMPLE : LATIN_SAMPLE,
-    model,
-  });
+  const reportSample = model === "cjk-jp" ? CJK_JP_TEXT_SAMPLE : LATIN_SAMPLE;
+  const tierSample =
+    model === "latin"
+      ? LATIN_TEXT_SAMPLE
+      : model === "cjk-jp"
+        ? CJK_JP_TEXT_SAMPLE
+        : LATIN_SAMPLE;
+  const score = scoreAdvances(
+    reference,
+    sampleMetrics(parseFont(bytes), reportSample),
+    {
+      reportSample,
+      tierSample,
+      model,
+    },
+  );
   const feature = featureDistance(referenceFeatures, parseFeatures(bytes));
   return { score, feature };
 }
@@ -250,7 +265,9 @@ function main(): void {
   if (args.visual) requireMagick();
 
   const referenceBytes = readFileSync(args.reference);
-  const reference = sampleMetrics(parseFont(referenceBytes));
+  const referenceSample =
+    args.model === "cjk-jp" ? CJK_JP_TEXT_SAMPLE : LATIN_SAMPLE;
+  const reference = sampleMetrics(parseFont(referenceBytes), referenceSample);
   const referenceFeatures = parseFeatures(referenceBytes);
 
   const rows: BakeoffRow[] = args.candidates.map((candidate) => {

@@ -31,8 +31,8 @@ export interface FallbackDecisionOptions {
 
 /**
  * Verdicts whose advances preserve line breaks: the proportional metric-grade bands, plus
- * cell_width_only (a monospace whose cell width - and therefore every advance - matches). Glyph shapes
- * may still differ (read `verdict`); line breaks do not move.
+ * cell_width_only (a limited width model matches). Glyph shapes may still differ (read `verdict`);
+ * line breaks do not move.
  */
 const LINE_BREAK_SAFE_VERDICTS: ReadonlySet<Verdict> = new Set<Verdict>([
   "metric_safe",

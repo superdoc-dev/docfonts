@@ -127,11 +127,14 @@ describe("createFallbackMap", () => {
     const map = createFallbackMap({ canRenderFamily });
     expect(Object.keys(map).sort()).toEqual([
       "arial",
+      "arial mt",
       "calibri",
       "calibri light",
       "cambria",
+      "courier",
       "courier new",
       "helvetica",
+      "times",
       "times new roman",
     ]);
     expect(map.helvetica.substituteFamily).toBe("Liberation Sans");
@@ -500,6 +503,57 @@ describe("selected visual fallback rows", () => {
       lineBreakSafe: false,
     });
   });
+
+  test("Japanese CJK rows expose measured regular faces and synthetic italics", () => {
+    expect(
+      SUBSTITUTION_EVIDENCE.find((row) => row.evidenceId === "yu-mincho")
+        ?.advance?.basis,
+    ).toBe("cjk_jp_text");
+    expect(
+      getRenderableFallbackForFace("Yu Mincho", "regular", renderAll),
+    ).toMatchObject({
+      substituteFamily: "BIZ UDMincho",
+      verdict: "visual_only",
+      lineBreakSafe: false,
+    });
+    expect(
+      getRenderableFallbackForFace("Yu Mincho", "bold", renderAll),
+    ).toMatchObject({
+      substituteFamily: "BIZ UDMincho",
+      verdict: "visual_only",
+      lineBreakSafe: false,
+    });
+    expect(
+      getRenderableFallbackForFace("Yu Mincho", "italic", renderAll),
+    ).toMatchObject({
+      substituteFamily: "BIZ UDMincho",
+      verdict: "visual_only",
+      lineBreakSafe: false,
+      faceSource: { kind: "synthetic", from: "regular" },
+    });
+
+    expect(
+      getRenderableFallbackForFace("Yu Gothic", "bold", renderAll),
+    ).toMatchObject({
+      substituteFamily: "BIZ UDGothic",
+      verdict: "visual_only",
+      lineBreakSafe: false,
+    });
+    expect(
+      getRenderableFallbackForFace("MS Gothic", "bold", renderAll),
+    ).toMatchObject({
+      substituteFamily: "BIZ UDGothic",
+      verdict: "visual_only",
+      lineBreakSafe: false,
+    });
+    expect(
+      getRenderableFallbackForFace("MS Gothic", "regular", renderAll),
+    ).toMatchObject({
+      substituteFamily: "BIZ UDGothic",
+      verdict: "cell_width_only",
+      lineBreakSafe: true,
+    });
+  });
 });
 
 describe("candidate license metadata", () => {
@@ -549,7 +603,12 @@ describe("generic CSS family metadata", () => {
 
 describe("advance measurement basis", () => {
   test("every measured row states which sample/model produced its deltas", () => {
-    const BASES = new Set(["latin_full", "latin_text", "monospace_cell"]);
+    const BASES = new Set([
+      "latin_full",
+      "latin_text",
+      "monospace_cell",
+      "cjk_jp_text",
+    ]);
     for (const row of SUBSTITUTION_EVIDENCE) {
       if (!row.advance) continue;
       expect(
