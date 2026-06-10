@@ -15,7 +15,7 @@ import {
 } from "./features";
 import { parseFont, sampleMetrics } from "./font";
 import { rankRows } from "./report";
-import { LATIN_SAMPLE, LATIN_TEXT_SAMPLE } from "./samples";
+import { CJK_JP_TEXT_SAMPLE, LATIN_SAMPLE, LATIN_TEXT_SAMPLE } from "./samples";
 import { type CompareScore, scoreAdvances } from "./score";
 import type { CompareModel } from "./tiers";
 
@@ -38,6 +38,20 @@ export interface CompareCorpusResult {
   rows: ScoredCandidate[];
   totalRows: number;
   skipped: number;
+}
+
+function samplesForModel(model: CompareModel): {
+  reportSample: readonly number[];
+  tierSample: readonly number[];
+} {
+  if (model === "cjk-jp")
+    return {
+      reportSample: CJK_JP_TEXT_SAMPLE,
+      tierSample: CJK_JP_TEXT_SAMPLE,
+    };
+  if (model === "latin")
+    return { reportSample: LATIN_SAMPLE, tierSample: LATIN_TEXT_SAMPLE };
+  return { reportSample: LATIN_SAMPLE, tierSample: LATIN_SAMPLE };
 }
 
 export function selectSources(
@@ -70,10 +84,11 @@ export function scoreCandidateBytes(
   model: CompareModel,
 ): { score: CompareScore; feature: FeatureDistance } {
   const font = parseFont(bytes);
+  const { reportSample, tierSample } = samplesForModel(model);
   return {
-    score: scoreAdvances(reference, sampleMetrics(font), {
-      reportSample: LATIN_SAMPLE,
-      tierSample: model === "latin" ? LATIN_TEXT_SAMPLE : LATIN_SAMPLE,
+    score: scoreAdvances(reference, sampleMetrics(font, reportSample), {
+      reportSample,
+      tierSample,
       model,
     }),
     feature: featureDistance(referenceFeatures, parseFeatures(bytes)),
@@ -86,7 +101,8 @@ export function compareReferenceToSources(
   cacheDir: string,
   model: CompareModel,
 ): { rows: ScoredCandidate[]; skipped: number } {
-  const reference = sampleMetrics(parseFont(referenceBytes));
+  const { reportSample } = samplesForModel(model);
+  const reference = sampleMetrics(parseFont(referenceBytes), reportSample);
   const referenceFeatures = parseFeatures(referenceBytes);
   const rows: ScoredCandidate[] = [];
   let skipped = 0;
@@ -196,7 +212,8 @@ export function compareReferenceToTarget(
   if (!candidate)
     throw new Error(`font not found in ${options.sourceId}: ${options.file}`);
 
-  const reference = sampleMetrics(parseFont(referenceBytes));
+  const { reportSample } = samplesForModel(model);
+  const reference = sampleMetrics(parseFont(referenceBytes), reportSample);
   const referenceFeatures = parseFeatures(referenceBytes);
   const { score, feature } = scoreCandidateBytes(
     reference,

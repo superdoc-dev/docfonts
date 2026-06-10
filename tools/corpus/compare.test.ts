@@ -4,6 +4,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
+  CJK_JP_TEXT_SAMPLE,
   classifyTier,
   collectCandidates,
   compareReferenceToTarget,
@@ -248,6 +249,26 @@ describe("LATIN_TEXT_SAMPLE", () => {
   });
 });
 
+describe("CJK_JP_TEXT_SAMPLE", () => {
+  test("covers Japanese punctuation, kana, half-width katakana, Latin, and common CJK ideographs", () => {
+    expect(CJK_JP_TEXT_SAMPLE).toContain(0x41); // Latin A
+    expect(CJK_JP_TEXT_SAMPLE).toContain(0x30); // digit 0
+    expect(CJK_JP_TEXT_SAMPLE).toContain(0x3001); // ideographic comma
+    expect(CJK_JP_TEXT_SAMPLE).toContain(0x3042); // hiragana A
+    expect(CJK_JP_TEXT_SAMPLE).toContain(0x30a2); // katakana A
+    expect(CJK_JP_TEXT_SAMPLE).toContain(0xff76); // half-width katakana KA
+    expect(CJK_JP_TEXT_SAMPLE).toContain(0x65e5); // day/Japan ideograph
+    expect(CJK_JP_TEXT_SAMPLE).toContain(0xff08); // full-width left parenthesis
+  });
+
+  test("is sorted and unique", () => {
+    expect(new Set(CJK_JP_TEXT_SAMPLE).size).toBe(CJK_JP_TEXT_SAMPLE.length);
+    expect([...CJK_JP_TEXT_SAMPLE]).toEqual(
+      [...CJK_JP_TEXT_SAMPLE].sort((a, b) => a - b),
+    );
+  });
+});
+
 // --- Tiers ------------------------------------------------------------------
 
 describe("classifyTier", () => {
@@ -261,13 +282,15 @@ describe("classifyTier", () => {
     expect(classifyTier(0, 0)).toBe("metric_safe");
   });
 
-  test("monospace model collapses the metric bands to cell_width_only", () => {
+  test("width-only models collapse the metric bands to cell_width_only", () => {
     // What the latin model calls metric_safe or near_metric is only proof of cell width here.
     expect(classifyTier(0, 0, "monospace")).toBe("cell_width_only");
     expect(classifyTier(0.005, 0.01, "monospace")).toBe("cell_width_only");
     expect(classifyTier(0.01, 0.025, "monospace")).toBe("cell_width_only");
+    expect(classifyTier(0, 0, "cjk-jp")).toBe("cell_width_only");
     // Non-matching candidates stay visual_only under both models.
     expect(classifyTier(0.0101, 0.025, "monospace")).toBe("visual_only");
+    expect(classifyTier(0.0101, 0.025, "cjk-jp")).toBe("visual_only");
     // The latin model is the default and is unchanged.
     expect(classifyTier(0, 0, "latin")).toBe("metric_safe");
     expect(classifyTier(0, 0)).toBe("metric_safe");
@@ -372,6 +395,18 @@ describe("scoreAdvances", () => {
     expect(
       scoreAdvances(reference, diverging, sample, 3, "monospace").tier,
     ).toBe("visual_only");
+  });
+
+  test("CJK model downgrades matching advances to width-only evidence", () => {
+    const reference = new Map(
+      CJK_JP_TEXT_SAMPLE.map((codepoint) => [codepoint, 1] as const),
+    );
+    const score = scoreAdvances(reference, new Map(reference), {
+      reportSample: CJK_JP_TEXT_SAMPLE,
+      tierSample: CJK_JP_TEXT_SAMPLE,
+      model: "cjk-jp",
+    });
+    expect(score.tier).toBe("cell_width_only");
   });
 
   test("can rank on text carriers while reporting full-sample outliers", () => {
@@ -630,9 +665,10 @@ describe("parseArgs", () => {
     expect(parseArgs(["--reference", "ref.otf"]).model).toBe("latin");
   });
 
-  test("accepts --model monospace", () => {
+  test("accepts supported models", () => {
     expect(parseArgs(["--model", "monospace"]).model).toBe("monospace");
     expect(parseArgs(["--model", "latin"]).model).toBe("latin");
+    expect(parseArgs(["--model", "cjk-jp"]).model).toBe("cjk-jp");
   });
 
   test("rejects an unknown model", () => {

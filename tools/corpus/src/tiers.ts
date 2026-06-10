@@ -1,7 +1,7 @@
 /**
  * Advance-fidelity tier. Thresholds mirror the package's verdict language (see `src/types.ts`):
  * metric_safe is the DIRECT band, near_metric the LIKELY band, everything else visual_only.
- * cell_width_only is the monospace model's verdict for a matching cell: it proves line width, not
+ * cell_width_only is the width-only verdict for models where matching advances do not prove
  * glyph-shape fidelity.
  */
 export type CompareTier =
@@ -11,10 +11,10 @@ export type CompareTier =
   | "visual_only";
 
 /**
- * Classification model. `latin` is the default proportional comparison. `monospace` treats a matching
- * advance as proof of cell width only, since every glyph in a monospace cell shares one advance.
+ * Classification model. `latin` is the default proportional comparison. `monospace` and `cjk-jp`
+ * cap exact matches at cell_width_only because they prove width behavior, not visual shape.
  */
-export type CompareModel = "latin" | "monospace";
+export type CompareModel = "latin" | "monospace" | "cjk-jp";
 
 export const TIER_RANK: Record<CompareTier, number> = {
   metric_safe: 0,
@@ -25,8 +25,8 @@ export const TIER_RANK: Record<CompareTier, number> = {
 
 /**
  * Classify a (mean, max) advance-delta pair into a fidelity tier. Deltas are fractions of the em. Under
- * the monospace model a matching cell only vouches for line width, so the metric bands collapse to
- * cell_width_only while non-matching candidates stay visual_only.
+ * the monospace and CJK models, matching advances only vouch for width behavior, so the metric bands
+ * collapse to cell_width_only while non-matching candidates stay visual_only.
  */
 export function classifyTier(
   meanDelta: number,
@@ -36,6 +36,7 @@ export function classifyTier(
   let tier: CompareTier = "visual_only";
   if (meanDelta <= 0.005 && maxDelta <= 0.01) tier = "metric_safe";
   else if (meanDelta <= 0.01 && maxDelta <= 0.025) tier = "near_metric";
-  if (model === "monospace" && tier !== "visual_only") return "cell_width_only";
+  if ((model === "monospace" || model === "cjk-jp") && tier !== "visual_only")
+    return "cell_width_only";
   return tier;
 }

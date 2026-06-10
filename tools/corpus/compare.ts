@@ -6,7 +6,11 @@ import { existsSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { compareReferenceToCorpus } from "./src/compare-engine";
 import { renderReport } from "./src/report";
-import { LATIN_SAMPLE, LATIN_TEXT_SAMPLE } from "./src/samples";
+import {
+  CJK_JP_TEXT_SAMPLE,
+  LATIN_SAMPLE,
+  LATIN_TEXT_SAMPLE,
+} from "./src/samples";
 import type { CompareModel } from "./src/tiers";
 
 export {
@@ -41,7 +45,11 @@ export {
   sampleMetrics,
 } from "./src/font";
 export { renderReport } from "./src/report";
-export { LATIN_SAMPLE, LATIN_TEXT_SAMPLE } from "./src/samples";
+export {
+  CJK_JP_TEXT_SAMPLE,
+  LATIN_SAMPLE,
+  LATIN_TEXT_SAMPLE,
+} from "./src/samples";
 export {
   type CompareScore,
   type GlyphDelta,
@@ -94,8 +102,8 @@ export function parseArgs(argv: string[]): ParsedArgs {
         break;
       case "--model": {
         const value = readValue(flag, i);
-        if (value !== "latin" && value !== "monospace")
-          throw new Error("--model requires 'latin' or 'monospace'");
+        if (value !== "latin" && value !== "monospace" && value !== "cjk-jp")
+          throw new Error("--model requires 'latin', 'monospace', or 'cjk-jp'");
         args.model = value;
         i++;
         break;
@@ -145,12 +153,16 @@ function main(): void {
   const label = args.family ?? "(family not specified)";
   const shown = rows.length;
   const skippedText = skipped === 0 ? "" : `; skipped ${skipped} unsupported`;
+  const sampleText =
+    args.model === "cjk-jp"
+      ? `${CJK_JP_TEXT_SAMPLE.length} Japanese CJK text codepoints`
+      : `${LATIN_SAMPLE.length} Latin codepoints`;
   const modelText =
     args.model === "latin"
       ? `; tier/mean/max ${LATIN_TEXT_SAMPLE.length} text codepoints`
       : `; model ${args.model}`;
   console.log(
-    `reference ${basename(args.reference)} as "${label}" vs ${totalRows} candidate(s) over ${LATIN_SAMPLE.length} Latin codepoints${modelText}; showing ${shown}${skippedText}\n`,
+    `reference ${basename(args.reference)} as "${label}" vs ${totalRows} candidate(s) over ${sampleText}${modelText}; showing ${shown}${skippedText}\n`,
   );
   console.log(renderReport(rows, { limit: null }));
 }

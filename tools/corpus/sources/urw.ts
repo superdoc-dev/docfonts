@@ -26,6 +26,7 @@ export const URW_SOURCES: ArchiveSource[] = [
       "Bookman Old Style",
       "Palatino Linotype",
       "Century Schoolbook",
+      "Century Gothic",
     ],
   },
 ];

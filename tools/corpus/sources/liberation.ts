@@ -25,7 +25,15 @@ export const LIBERATION_SOURCES: ArchiveSource[] = [
       "LiberationSerif-Italic.ttf",
       "LiberationSerif-BoldItalic.ttf",
     ],
-    targetFamilies: ["Arial", "Helvetica", "Times New Roman", "Courier New"],
+    targetFamilies: [
+      "Arial",
+      "Arial MT",
+      "Helvetica",
+      "Times New Roman",
+      "Times",
+      "Courier New",
+      "Courier",
+    ],
   },
   {
     sourceId: "liberation-sans-narrow",

@@ -67,10 +67,11 @@ describe("parseArgs", () => {
     expect(args.candidates).toEqual([]);
   });
 
-  test("accepts --model monospace and the --visual flag", () => {
+  test("accepts supported models and the --visual flag", () => {
     const args = parseArgs(["--model", "monospace", "--visual"]);
     expect(args.model).toBe("monospace");
     expect(args.visual).toBe(true);
+    expect(parseArgs(["--model", "cjk-jp"]).model).toBe("cjk-jp");
   });
 
   test("parses ranks keyed by label and keeps the note verbatim", () => {

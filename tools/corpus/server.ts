@@ -559,6 +559,7 @@ function parseLimit(raw: FormDataEntryValue | null): number {
 
 function parseModel(raw: FormDataEntryValue | null): CompareModel {
   if (raw === "monospace") return "monospace";
+  if (raw === "cjk-jp") return "cjk-jp";
   return "latin";
 }
 

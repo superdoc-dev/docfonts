@@ -111,6 +111,64 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     "candidateLicense": "OFL-1.1"
   },
   {
+    "evidenceId": "arial-mt",
+    "generic": "sans-serif",
+    "logicalFamily": "Arial MT",
+    "physicalFamily": "Liberation Sans",
+    "verdict": "metric_safe",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "pass",
+      "layout": "not_run",
+      "ship": "pass"
+    },
+    "policyAction": "substitute",
+    "measurementRefs": [
+      "arial-mt_regular__liberation-sans#regular#w400#analytic_advance#2026-06-10",
+      "arial-mt_bold__liberation-sans#bold#w700#analytic_advance#2026-06-10",
+      "arial-mt_italic__liberation-sans#italic#w400#analytic_advance#2026-06-10",
+      "arial-mt_boldItalic__liberation-sans#boldItalic#w700#analytic_advance#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "advance": {
+      "basis": "latin_text",
+      "meanDelta": 0,
+      "maxDelta": 0
+    },
+    "candidateLicense": "OFL-1.1"
+  },
+  {
+    "evidenceId": "arial-unicode-ms",
+    "generic": "sans-serif",
+    "logicalFamily": "Arial Unicode MS",
+    "physicalFamily": null,
+    "verdict": "customer_supplied",
+    "faces": {
+      "regular": false,
+      "bold": false,
+      "italic": false,
+      "boldItalic": false
+    },
+    "gates": {
+      "static": "not_run",
+      "metric": "not_run",
+      "layout": "not_run",
+      "ship": "not_run"
+    },
+    "policyAction": "customer_supplied",
+    "measurementRefs": [
+      "arial-unicode-ms#broad_unicode_no_open_substitute#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": null
+  },
+  {
     "evidenceId": "times-new-roman",
     "generic": "serif",
     "logicalFamily": "Times New Roman",
@@ -141,6 +199,53 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     "candidateLicense": "OFL-1.1"
   },
   {
+    "evidenceId": "times",
+    "generic": "serif",
+    "logicalFamily": "Times",
+    "physicalFamily": "Liberation Serif",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "pass",
+      "layout": "not_run",
+      "ship": "pass"
+    },
+    "policyAction": "substitute",
+    "measurementRefs": [
+      "times_regular__liberation-serif#regular#w400#analytic_advance#2026-06-10",
+      "times_bold__liberation-serif#bold#w700#analytic_advance#2026-06-10",
+      "times_italic__liberation-serif#italic#w400#analytic_advance#2026-06-10",
+      "times_boldItalic__liberation-serif#boldItalic#w700#analytic_advance#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "advance": {
+      "basis": "latin_text",
+      "meanDelta": 0.00098877,
+      "maxDelta": 0.1171875
+    },
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "metric_safe",
+      "bold": "metric_safe",
+      "italic": "metric_safe",
+      "boldItalic": "visual_only"
+    },
+    "glyphExceptions": [
+      {
+        "slot": "boldItalic",
+        "codepoint": 239,
+        "advanceDelta": 0.1172,
+        "note": "Times Bold Italic vs Liberation Serif Bold Italic: small i diaeresis (U+00EF) advance differs ~11.7%; lines containing it can reflow. Regular, bold, and italic faces are metric_safe on the text sample."
+      }
+    ]
+  },
+  {
     "evidenceId": "courier-new",
     "generic": "monospace",
     "logicalFamily": "Courier New",
@@ -169,6 +274,68 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
       "maxDelta": 0
     },
     "candidateLicense": "OFL-1.1"
+  },
+  {
+    "evidenceId": "courier",
+    "generic": "monospace",
+    "logicalFamily": "Courier",
+    "physicalFamily": "Liberation Mono",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "pass"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "courier__liberation-mono#monospace_cell#analytic_advance#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "advance": {
+      "basis": "monospace_cell",
+      "meanDelta": 0.0016,
+      "maxDelta": 0.2002
+    },
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "visual_only",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    },
+    "glyphExceptions": [
+      {
+        "slot": "regular",
+        "codepoint": 176,
+        "advanceDelta": 0.2002,
+        "note": "Courier Regular vs Liberation Mono Regular: degree sign (U+00B0) advance differs ~20%; plus-minus (U+00B1) and division sign (U+00F7) also exceed the direct threshold."
+      },
+      {
+        "slot": "bold",
+        "codepoint": 176,
+        "advanceDelta": 0.2002,
+        "note": "Courier Bold vs Liberation Mono Bold: degree sign (U+00B0) advance differs ~20%; plus-minus (U+00B1) and division sign (U+00F7) also exceed the direct threshold."
+      },
+      {
+        "slot": "italic",
+        "codepoint": 176,
+        "advanceDelta": 0.2002,
+        "note": "Courier Italic vs Liberation Mono Italic: degree sign (U+00B0) advance differs ~20%; plus-minus (U+00B1) and division sign (U+00F7) also exceed the direct threshold."
+      },
+      {
+        "slot": "boldItalic",
+        "codepoint": 176,
+        "advanceDelta": 0.2002,
+        "note": "Courier Bold Italic vs Liberation Mono Bold Italic: degree sign (U+00B0) advance differs ~20%; plus-minus (U+00B1) and division sign (U+00F7) also exceed the direct threshold."
+      }
+    ]
   },
   {
     "evidenceId": "georgia",
@@ -505,6 +672,54 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ]
   },
   {
+    "evidenceId": "century-gothic",
+    "generic": "sans-serif",
+    "logicalFamily": "Century Gothic",
+    "physicalFamily": "URW Gothic",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "century-gothic_regular__urw-gothic#regular#w400#analytic_advance#2026-06-10",
+      "century-gothic_bold__urw-gothic#bold#w700#analytic_advance#2026-06-10",
+      "century-gothic_italic__urw-gothic#italic#w400#analytic_advance#2026-06-10",
+      "century-gothic_boldItalic__urw-gothic#boldItalic#w700#analytic_advance#2026-06-10",
+      "century-gothic__urw-gothic#visual_review#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "advance": {
+      "basis": "latin_text",
+      "meanDelta": 0.0013,
+      "maxDelta": 0.1662
+    },
+    "candidateLicense": "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817",
+    "faceVerdicts": {
+      "regular": "visual_only",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    },
+    "glyphExceptions": [
+      {
+        "slot": "regular",
+        "codepoint": 35,
+        "advanceDelta": 0.1662,
+        "note": "Century Gothic Regular vs URW Gothic Book: number sign (U+0023) advance differs ~16.6%; caret (U+005E) and plus-minus (U+00B1) also exceed the direct threshold. Body text is close, but not line-break safe."
+      }
+    ]
+  },
+  {
     "evidenceId": "garamond",
     "generic": "serif",
     "logicalFamily": "Garamond",
@@ -633,6 +848,47 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
     ],
     "exportRule": "preserve_original_name",
     "candidateLicense": "OFL-1.1"
+  },
+  {
+    "evidenceId": "segoe-ui",
+    "generic": "sans-serif",
+    "logicalFamily": "Segoe UI",
+    "physicalFamily": "Selawik",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": false,
+      "boldItalic": false
+    },
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "segoe-ui__selawik#coverage_limited_advance_probe#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "visual_only",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    }
   },
   {
     "evidenceId": "trebuchet-ms",
@@ -853,6 +1109,191 @@ export const SUBSTITUTION_EVIDENCE: readonly SubstitutionEvidence[] = [
       "gill-sans-mt-condensed__pt-sans-narrow#visual_review#2026-06-09"
     ],
     "exportRule": "preserve_original_name",
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "visual_only",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    }
+  },
+  {
+    "evidenceId": "yu-mincho",
+    "generic": "serif",
+    "logicalFamily": "Yu Mincho",
+    "physicalFamily": "BIZ UDMincho",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": false,
+      "boldItalic": false
+    },
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "yu-mincho_regular__biz-udmincho#regular#w400#cjk_jp_text#analytic_advance#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "advance": {
+      "basis": "cjk_jp_text",
+      "meanDelta": 0.0425,
+      "maxDelta": 0.4829
+    },
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "visual_only",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    }
+  },
+  {
+    "evidenceId": "ms-mincho",
+    "generic": "serif",
+    "logicalFamily": "MS Mincho",
+    "physicalFamily": "BIZ UDMincho",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": false,
+      "boldItalic": false
+    },
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "pass",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "ms-mincho_regular__biz-udmincho#regular#w400#cjk_jp_text#analytic_advance#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "advance": {
+      "basis": "cjk_jp_text",
+      "meanDelta": 0,
+      "maxDelta": 0
+    },
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "cell_width_only",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    }
+  },
+  {
+    "evidenceId": "ms-gothic",
+    "generic": "sans-serif",
+    "logicalFamily": "MS Gothic",
+    "physicalFamily": "BIZ UDGothic",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": false,
+      "boldItalic": false
+    },
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "pass",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "ms-gothic_regular__biz-udgothic#regular#w400#cjk_jp_text#analytic_advance#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "advance": {
+      "basis": "cjk_jp_text",
+      "meanDelta": 0,
+      "maxDelta": 0
+    },
+    "candidateLicense": "OFL-1.1",
+    "faceVerdicts": {
+      "regular": "cell_width_only",
+      "bold": "visual_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    }
+  },
+  {
+    "evidenceId": "yu-gothic",
+    "generic": "sans-serif",
+    "logicalFamily": "Yu Gothic",
+    "physicalFamily": "BIZ UDGothic",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": false,
+      "boldItalic": false
+    },
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "fail",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "category_fallback",
+    "measurementRefs": [
+      "yu-gothic_regular__biz-udgothic#regular#w400#cjk_jp_text#analytic_advance#2026-06-10",
+      "yu-gothic_bold__biz-udgothic#bold#w700#cjk_jp_text#analytic_advance#2026-06-10"
+    ],
+    "exportRule": "preserve_original_name",
+    "advance": {
+      "basis": "cjk_jp_text",
+      "meanDelta": 0.0415,
+      "maxDelta": 0.4521
+    },
     "candidateLicense": "OFL-1.1",
     "faceVerdicts": {
       "regular": "visual_only",

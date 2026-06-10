@@ -7,7 +7,7 @@
 export type Verdict =
   | "metric_safe" // advances within the DIRECT threshold (weighted-mean <= 0.5%, worst-case <= 1%)
   | "near_metric" // LIKELY band: weighted-mean <= 1%, worst-case <= 2.5% - near-exact, a few glyphs drift
-  | "cell_width_only" // monospace cell width matches; glyph shapes do not
+  | "cell_width_only" // width behavior matches for a limited model; glyph shapes do not
   | "visual_only" // same visual category, but advances are NOT line-break safe
   | "customer_supplied" // the real font must come from the customer
   | "preserve_only" // keep the original name, do not substitute (e.g. math / symbol fonts)
@@ -34,14 +34,19 @@ export type FaceSlot = "regular" | "bold" | "italic" | "boldItalic";
 export type CssGeneric = "serif" | "sans-serif" | "monospace";
 
 /** Which advance sample/model produced the row's mean and max deltas. */
-export type AdvanceBasis = "latin_full" | "latin_text" | "monospace_cell";
+export type AdvanceBasis =
+  | "latin_full"
+  | "latin_text"
+  | "monospace_cell"
+  | "cjk_jp_text";
 
 /** Advance-width divergence vs the licensed reference font, as fractions (0 = identical advances). */
 export interface AdvanceDelta {
   /**
    * Measurement basis for the deltas. `latin_full` uses the reviewed Latin sample including
-   * punctuation and symbols, `latin_text` uses text-carrying Latin codepoints, and `monospace_cell` is a
-   * cell-width measurement for monospace rows.
+   * punctuation and symbols, `latin_text` uses text-carrying Latin codepoints, `monospace_cell` is a
+   * cell-width measurement for monospace rows, and `cjk_jp_text` uses a Japanese CJK text sample that
+   * is width-only evidence, not a shape match.
    */
   basis: AdvanceBasis;
   meanDelta: number;
@@ -130,8 +135,8 @@ export interface FontFallback {
   verdict: Verdict;
   /**
    * Coarse "advances preserve line breaks" flag: true for metric_safe, near_metric, or monospace
-   * cell_width_only (cell width, and so every advance, matches). NOT a claim of a perfect/exact clone -
-   * near_metric drifts a few glyphs, cell_width_only keeps the advances but not the glyph shapes, and a
+   * cell_width_only (the width model matches). NOT a claim of a perfect/exact clone -
+   * near_metric drifts a few glyphs, cell_width_only keeps sampled widths but not glyph shapes, and a
    * row can roll up to a worse top-level verdict because of one face (see Cambria). Read `verdict` (and
    * the row's `faceVerdicts`) for the precise tier.
    */
