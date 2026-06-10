@@ -375,10 +375,10 @@
     "candidateLicense": "LicenseRef-GUST-Font-License-1.0"
   },
   {
-    "evidenceId": "century",
+    "evidenceId": "itc-bookman",
     "generic": "serif",
-    "logicalFamily": "Century",
-    "physicalFamily": "C059",
+    "logicalFamily": "ITC Bookman",
+    "physicalFamily": "TeX Gyre Bonum",
     "verdict": "visual_only",
     "faces": {
       "regular": true,
@@ -393,9 +393,53 @@
       "ship": "fail"
     },
     "policyAction": "substitute",
-    "measurementRefs": ["century__c059#visual_review#2026-06-09"],
+    "measurementRefs": [
+      "itc-bookman__tex-gyre-bonum#alias_of_bookman-old-style#2026-06-10"
+    ],
     "exportRule": "preserve_original_name",
-    "candidateLicense": "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817"
+    "candidateLicense": "LicenseRef-GUST-Font-License-1.0"
+  },
+  {
+    "evidenceId": "century",
+    "generic": "serif",
+    "logicalFamily": "Century",
+    "physicalFamily": "C059",
+    "verdict": "visual_only",
+    "faces": {
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
+    },
+    "gates": {
+      "static": "pass",
+      "metric": "pass",
+      "layout": "not_run",
+      "ship": "fail"
+    },
+    "policyAction": "substitute",
+    "measurementRefs": [
+      "century_regular__c059#regular#w400#analytic_advance#2026-06-10",
+      "century__c059#visual_review#2026-06-09"
+    ],
+    "exportRule": "preserve_original_name",
+    "candidateLicense": "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817",
+    "advance": {
+      "basis": "latin_full",
+      "meanDelta": 0.00293647,
+      "maxDelta": 0.167
+    },
+    "faceVerdicts": {
+      "regular": "metric_safe"
+    },
+    "glyphExceptions": [
+      {
+        "slot": "regular",
+        "codepoint": 175,
+        "advanceDelta": 0.167,
+        "note": "Century Regular vs C059 Roman: macron (U+00AF) advance differs ~16.7%; yen (U+00A5), plus-minus (U+00B1), division sign (U+00F7), and middle dot (U+00B7) also exceed the direct threshold. Body-text Latin sample is metric_safe."
+      }
+    ]
   },
   {
     "evidenceId": "century-schoolbook",
@@ -416,9 +460,40 @@
       "ship": "fail"
     },
     "policyAction": "substitute",
-    "measurementRefs": ["century-schoolbook__c059#visual_review#2026-06-09"],
+    "measurementRefs": [
+      "century-schoolbook_regular__c059#regular#w400#analytic_advance#2026-06-10",
+      "century-schoolbook_bold__c059#bold#w700#analytic_advance#2026-06-10",
+      "century-schoolbook_italic__c059#italic#w400#analytic_advance#2026-06-10",
+      "century-schoolbook_boldItalic__c059#boldItalic#w700#analytic_advance#2026-06-10",
+      "century-schoolbook__c059#visual_review#2026-06-09"
+    ],
     "exportRule": "preserve_original_name",
-    "candidateLicense": "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817"
+    "candidateLicense": "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817",
+    "advance": {
+      "basis": "latin_full",
+      "meanDelta": 0.00337127,
+      "maxDelta": 0.167
+    },
+    "faceVerdicts": {
+      "regular": "metric_safe",
+      "bold": "metric_safe",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    },
+    "glyphExceptions": [
+      {
+        "slot": "regular",
+        "codepoint": 175,
+        "advanceDelta": 0.167,
+        "note": "Century Schoolbook Regular vs C059 Roman: macron (U+00AF) advance differs ~16.7%; yen (U+00A5), plus-minus (U+00B1), division sign (U+00F7), and middle dot (U+00B7) also exceed the direct threshold. Body-text Latin sample is metric_safe."
+      },
+      {
+        "slot": "bold",
+        "codepoint": 175,
+        "advanceDelta": 0.167,
+        "note": "Century Schoolbook Bold vs C059 Bold: macron (U+00AF) advance differs ~16.7%; yen (U+00A5), micro sign (U+00B5), plus-minus (U+00B1), and division sign (U+00F7) also exceed the direct threshold. Body-text Latin sample is metric_safe."
+      }
+    ]
   },
   {
     "evidenceId": "garamond",
@@ -457,53 +532,69 @@
     "generic": "monospace",
     "logicalFamily": "Consolas",
     "physicalFamily": "Inconsolata SemiExpanded",
-    "verdict": "cell_width_only",
+    "verdict": "visual_only",
     "faces": {
-      "regular": false,
-      "bold": false,
+      "regular": true,
+      "bold": true,
       "italic": false,
       "boldItalic": false
     },
     "gates": {
-      "static": "not_run",
-      "metric": "not_run",
+      "static": "pass",
+      "metric": "pass",
       "layout": "not_run",
-      "ship": "not_run"
+      "ship": "fail"
     },
     "policyAction": "category_fallback",
     "measurementRefs": [
-      "consolas__inconsolata-semiexpanded#analytic_advance#2026-06-03"
+      "consolas__inconsolata-semiexpanded#monospace_cell#analytic_advance#2026-06-10"
     ],
     "exportRule": "preserve_original_name",
     "advance": {
       "basis": "monospace_cell",
-      "meanDelta": 0.00035999999999999997,
-      "maxDelta": 0.00035999999999999997
+      "meanDelta": 0.00019531,
+      "maxDelta": 0.00019531
     },
-    "candidateLicense": "OFL-1.1"
+    "candidateLicense": "OFL-1.1",
+    "faceSources": {
+      "italic": {
+        "kind": "synthetic",
+        "from": "regular"
+      },
+      "boldItalic": {
+        "kind": "synthetic",
+        "from": "bold"
+      }
+    },
+    "faceVerdicts": {
+      "regular": "cell_width_only",
+      "bold": "cell_width_only",
+      "italic": "visual_only",
+      "boldItalic": "visual_only"
+    }
   },
   {
     "evidenceId": "verdana",
     "generic": "sans-serif",
     "logicalFamily": "Verdana",
-    "physicalFamily": null,
+    "physicalFamily": "Noto Sans",
     "verdict": "visual_only",
     "faces": {
-      "regular": false,
-      "bold": false,
-      "italic": false,
-      "boldItalic": false
+      "regular": true,
+      "bold": true,
+      "italic": true,
+      "boldItalic": true
     },
     "gates": {
-      "static": "not_run",
+      "static": "pass",
       "metric": "fail",
       "layout": "not_run",
-      "ship": "not_run"
+      "ship": "fail"
     },
     "policyAction": "category_fallback",
-    "measurementRefs": ["verdana#top_candidates#2026-06-03"],
+    "measurementRefs": ["verdana__noto-sans#visual_review#2026-06-10"],
     "exportRule": "preserve_original_name",
-    "candidateLicense": null
+    "candidateLicense": "OFL-1.1"
   },
   {
     "evidenceId": "tahoma",

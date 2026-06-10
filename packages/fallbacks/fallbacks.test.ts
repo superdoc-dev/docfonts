@@ -54,15 +54,15 @@ describe("getFallbackDecision", () => {
   });
 
   test("a measured 'no open font' is distinct from an unknown font", () => {
-    // The whole point of the decision API: docfonts MEASURED Aptos and Verdana; it never heard of "Foo".
+    // The whole point of the decision API: docfonts measured Aptos and Candara; it never heard of "Foo".
     expect(getFallbackDecision("Aptos")).toEqual({
       kind: "customer_supplied",
       evidenceId: "aptos",
       generic: "sans-serif",
     });
-    expect(getFallbackDecision("Verdana")).toEqual({
+    expect(getFallbackDecision("Candara")).toEqual({
       kind: "no_recommended_fallback",
-      evidenceId: "verdana",
+      evidenceId: "candara",
       generic: "sans-serif",
     });
     expect(getFallbackDecision("Cambria Math")).toEqual({
@@ -106,13 +106,19 @@ describe("getRenderableFallback", () => {
     }
   });
 
-  test("a monospace cell_width_only substitute is lineBreakSafe (advances match)", () => {
-    // Consolas -> Inconsolata SemiExpanded: glyph shapes differ, but cell width (every advance) matches.
-    const fb = getRenderableFallback("Consolas", {
+  test("a monospace cell_width_only face is lineBreakSafe (advances match)", () => {
+    // Consolas -> Inconsolata SemiExpanded: glyph shapes differ, but real R/B cell widths match.
+    const family = getRenderableFallback("Consolas", {
       canRenderFamily: () => true,
     });
-    expect(fb?.verdict).toBe("cell_width_only");
-    expect(fb?.lineBreakSafe).toBe(true);
+    expect(family?.verdict).toBe("visual_only");
+    expect(family?.lineBreakSafe).toBe(false);
+
+    const regular = getRenderableFallbackForFace("Consolas", "regular", {
+      canRenderFamily: () => true,
+    });
+    expect(regular?.verdict).toBe("cell_width_only");
+    expect(regular?.lineBreakSafe).toBe(true);
   });
 });
 
@@ -328,9 +334,11 @@ describe("selected visual fallback rows", () => {
       ["Comic Sans MS", "Comic Relief", "category_fallback"],
       ["Garamond", "Cardo", "category_fallback"],
       ["Gill Sans MT Condensed", "PT Sans Narrow", "category_fallback"],
+      ["ITC Bookman", "TeX Gyre Bonum", "substitute"],
       ["Lucida Console", "Noto Sans Mono", "category_fallback"],
       ["Tahoma", "Noto Sans", "category_fallback"],
       ["Trebuchet MS", "PT Sans", "category_fallback"],
+      ["Verdana", "Noto Sans", "category_fallback"],
     ] as const;
 
     for (const [logical, physical, policyAction] of expected) {
@@ -418,6 +426,79 @@ describe("selected visual fallback rows", () => {
         lineBreakSafe: false,
       });
     }
+  });
+
+  test("Consolas keeps cell-width evidence for real Inconsolata SemiExpanded faces", () => {
+    for (const face of ["regular", "bold"] as const) {
+      expect(
+        getRenderableFallbackForFace("Consolas", face, renderAll),
+        `Consolas ${face}`,
+      ).toMatchObject({
+        substituteFamily: "Inconsolata SemiExpanded",
+        verdict: "cell_width_only",
+        lineBreakSafe: true,
+      });
+      expect(
+        getRenderableFallbackForFace("Consolas", face, renderAll)?.faceSource,
+      ).toBeUndefined();
+    }
+
+    expect(
+      getRenderableFallbackForFace("Consolas", "italic", renderAll),
+    ).toMatchObject({
+      substituteFamily: "Inconsolata SemiExpanded",
+      verdict: "visual_only",
+      lineBreakSafe: false,
+      faceSource: { kind: "synthetic", from: "regular" },
+    });
+    expect(
+      getRenderableFallbackForFace("Consolas", "boldItalic", renderAll),
+    ).toMatchObject({
+      substituteFamily: "Inconsolata SemiExpanded",
+      verdict: "visual_only",
+      lineBreakSafe: false,
+      faceSource: { kind: "synthetic", from: "bold" },
+    });
+  });
+
+  test("Century rows expose measured safe faces without advertising the whole family as safe", () => {
+    expect(getRenderableFallback("Century", renderAll)).toMatchObject({
+      substituteFamily: "C059",
+      verdict: "visual_only",
+      lineBreakSafe: false,
+    });
+    expect(
+      getRenderableFallbackForFace("Century", "regular", renderAll),
+    ).toMatchObject({
+      substituteFamily: "C059",
+      verdict: "metric_safe",
+      lineBreakSafe: true,
+      glyphExceptions: [{ slot: "regular", codepoint: 0x00af }],
+    });
+
+    expect(
+      getRenderableFallbackForFace("Century Schoolbook", "regular", renderAll),
+    ).toMatchObject({
+      substituteFamily: "C059",
+      verdict: "metric_safe",
+      lineBreakSafe: true,
+      glyphExceptions: [{ slot: "regular", codepoint: 0x00af }],
+    });
+    expect(
+      getRenderableFallbackForFace("Century Schoolbook", "bold", renderAll),
+    ).toMatchObject({
+      substituteFamily: "C059",
+      verdict: "metric_safe",
+      lineBreakSafe: true,
+      glyphExceptions: [{ slot: "bold", codepoint: 0x00af }],
+    });
+    expect(
+      getRenderableFallbackForFace("Century Schoolbook", "italic", renderAll),
+    ).toMatchObject({
+      substituteFamily: "C059",
+      verdict: "visual_only",
+      lineBreakSafe: false,
+    });
   });
 });
 
