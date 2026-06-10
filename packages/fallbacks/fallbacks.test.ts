@@ -324,6 +324,7 @@ describe("selected visual fallback rows", () => {
       ["Bookman Old Style", "TeX Gyre Bonum", "substitute"],
       ["Brush Script MT", "Oregano Italic", "category_fallback"],
       ["Century", "C059", "substitute"],
+      ["Century Schoolbook", "C059", "substitute"],
       ["Comic Sans MS", "Comic Relief", "category_fallback"],
       ["Garamond", "Cardo", "category_fallback"],
       ["Gill Sans MT Condensed", "PT Sans Narrow", "category_fallback"],
@@ -425,8 +426,8 @@ describe("candidate license metadata", () => {
     const LICENSE_IDS = new Set([
       "AGPL-3.0-only WITH PS-or-PDF-font-exception-20170817",
       "Apache-2.0",
-      "GPLv2-with-font-exception",
-      "GUST-Font-License-1.0",
+      "GPL-2.0-only WITH Font-exception-2.0",
+      "LicenseRef-GUST-Font-License-1.0",
       "OFL-1.1",
       "Ubuntu-font-1.0",
     ]);
